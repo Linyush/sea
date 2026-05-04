@@ -268,6 +268,22 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
 .rc-green .r-value{color:#22bb88}
 .rc-purple{background:color-mix(in srgb,var(--accent2) 6%,transparent);border-color:color-mix(in srgb,var(--accent2) 15%,transparent)}
 .rc-purple .r-value{color:var(--accent2)}
+/* === Titrate styles === */
+.t-table{width:100%;border-collapse:collapse;font-size:13px}
+.t-table th{color:var(--text3);font-weight:600;font-size:11px;letter-spacing:.3px;padding:8px 6px;text-align:center;border-bottom:2px solid var(--border);white-space:nowrap}
+.t-table td{padding:6px;text-align:center;border-bottom:1px solid color-mix(in srgb,var(--border) 60%,transparent)}
+.t-table input{background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:6px 4px;border-radius:6px;font-size:13px;font-weight:500;text-align:center;width:72px;outline:none;transition:border-color .3s}
+.t-table input:focus{border-color:var(--accent)}
+.t-name{font-weight:600;text-align:left !important;white-space:nowrap;padding-left:8px !important}
+.t-sub{display:block;font-size:10px;font-weight:400;color:var(--text4);line-height:1.4}
+.t-fixed{color:var(--warn);font-weight:700;font-size:12px}
+.t-out{color:var(--text3);font-size:13px;font-weight:500}
+.t-result{font-size:16px;font-weight:700;color:var(--accent)}
+.t-gfo-result{font-size:20px;font-weight:700;color:var(--accent);padding:6px 0}
+.t-tips{font-size:12px;color:var(--text3);line-height:2}
+.t-tips strong{color:var(--text)}
+.t-tips p{margin:0}
+
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--scrollbar);border-radius:3px}
@@ -307,6 +323,7 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
       <button class="nav-tab active" data-page="water" onclick="switchPage('water')">💧 水质</button>
       <button class="nav-tab" data-page="light" onclick="switchPage('light')">🌈 光谱</button>
       <button class="nav-tab" data-page="change" onclick="switchPage('change')">🔄 换水</button>
+      <button class="nav-tab" data-page="titrate" onclick="switchPage('titrate')">💉 滴定</button>
       <span class="nav-sep"></span>
       <button class="theme-btn" onclick="toggleTheme()" id="themeBtn" title="切换主题">🌙</button>
     </div>
@@ -455,6 +472,185 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
       </div>
     </div>
   </section>
+
+  <!-- ========== PAGE: Titrate ========== -->
+  <section class="page-section" id="page-titrate">
+    <!-- Solution config -->
+    <div class="card anim-in anim-d1" style="padding:24px">
+      <div class="sec-label">🧪 溶液配方（分析纯）</div>
+      <p style="font-size:11px;color:var(--text4);margin-bottom:12px">红色数值为固定参数，请勿修改。调整纯净水量和分析纯量来配制溶液。</p>
+      <div class="config-row" style="margin-bottom:8px">
+        <div class="config-item">
+          <label>🐠 缸水量</label>
+          <input type="number" id="tTank" value="70" step="1" oninput="tCalc()">
+          <span class="unit">L</span>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="t-table">
+          <thead>
+            <tr>
+              <th>元素</th>
+              <th>所需量(g/L·ppm)</th>
+              <th>纯净水(ml)</th>
+              <th>分析纯(g)</th>
+              <th>浓度比</th>
+              <th>每ppm需(ml)</th>
+              <th>理论体积(ml)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="t-name" style="color:#ff5588">🔴 钙<span class="t-sub">无水氯化钙</span></td>
+              <td class="t-fixed">0.004</td>
+              <td><input type="number" id="tCaW" value="1000" oninput="tCalc()"></td>
+              <td><input type="number" id="tCaG" value="100" oninput="tCalc()"></td>
+              <td class="t-out" id="tCaF">-</td>
+              <td class="t-out" id="tCaML">-</td>
+              <td><input type="number" id="tCaH" value="1020" oninput="tCalc()"></td>
+            </tr>
+            <tr>
+              <td class="t-name" style="color:#22bbaa">🟢 镁<span class="t-sub">六水氯化镁</span></td>
+              <td class="t-fixed">0.009</td>
+              <td><input type="number" id="tMgW" value="1000" oninput="tCalc()"></td>
+              <td><input type="number" id="tMgG" value="500" oninput="tCalc()"></td>
+              <td class="t-out" id="tMgF">-</td>
+              <td class="t-out" id="tMgML">-</td>
+              <td><input type="number" id="tMgH" value="1320" oninput="tCalc()"></td>
+            </tr>
+            <tr>
+              <td class="t-name" style="color:#aa66dd">🟣 KH<span class="t-sub">碳酸氢钠</span></td>
+              <td class="t-fixed">0.03</td>
+              <td><input type="number" id="tKHW" value="1000" oninput="tCalc()"></td>
+              <td><input type="number" id="tKHG" value="50" oninput="tCalc()"></td>
+              <td class="t-out" id="tKHF">-</td>
+              <td class="t-out" id="tKHML">-</td>
+              <td><input type="number" id="tKHH" value="1020" oninput="tCalc()"></td>
+            </tr>
+            <tr>
+              <td class="t-name" style="color:#4499ee">🔵 锶<span class="t-sub">六水氯化锶</span></td>
+              <td class="t-fixed">0.003</td>
+              <td><input type="number" id="tSrW" value="1000" oninput="tCalc()"></td>
+              <td><input type="number" id="tSrG" value="10" oninput="tCalc()"></td>
+              <td class="t-out" id="tSrF">-</td>
+              <td class="t-out" id="tSrML">-</td>
+              <td><input type="number" id="tSrH" value="1004" oninput="tCalc()"></td>
+            </tr>
+            <tr>
+              <td class="t-name" style="color:#f0c040">🟡 钾<span class="t-sub">氯化钾 · 新手慎用</span></td>
+              <td class="t-fixed">0.002</td>
+              <td><input type="number" id="tKW" value="1000" oninput="tCalc()"></td>
+              <td><input type="number" id="tKG" value="200" oninput="tCalc()"></td>
+              <td class="t-out" id="tKF">-</td>
+              <td class="t-out" id="tKML">-</td>
+              <td style="color:var(--text5);text-align:center">—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Test & titration -->
+    <div class="card anim-in anim-d2" style="padding:24px;margin-top:16px">
+      <div class="sec-label">📊 滴定量计算</div>
+      <p style="font-size:11px;color:var(--text4);margin-bottom:12px">输入两次测试值和间隔天数，自动计算每天需要滴定的毫升数</p>
+      <div style="overflow-x:auto">
+        <table class="t-table">
+          <thead>
+            <tr>
+              <th>元素</th>
+              <th>初次测试值</th>
+              <th>最后测试值</th>
+              <th>间隔(天)</th>
+              <th>下降值</th>
+              <th>日消耗</th>
+              <th>每日滴定(ml)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="t-name" style="color:#ff5588">钙</td>
+              <td><input type="number" id="tCa1" value="465" oninput="tCalc()"></td>
+              <td><input type="number" id="tCa2" value="435" oninput="tCalc()"></td>
+              <td><input type="number" id="tCaD" value="7" min="1" oninput="tCalc()"></td>
+              <td class="t-out" id="tCaDrop">-</td>
+              <td class="t-out" id="tCaDaily">-</td>
+              <td class="t-result" id="tCaResult">-</td>
+            </tr>
+            <tr>
+              <td class="t-name" style="color:#22bbaa">镁</td>
+              <td><input type="number" id="tMg1" value="1380" oninput="tCalc()"></td>
+              <td><input type="number" id="tMg2" value="1350" oninput="tCalc()"></td>
+              <td><input type="number" id="tMgD" value="7" min="1" oninput="tCalc()"></td>
+              <td class="t-out" id="tMgDrop">-</td>
+              <td class="t-out" id="tMgDaily">-</td>
+              <td class="t-result" id="tMgResult">-</td>
+            </tr>
+            <tr>
+              <td class="t-name" style="color:#aa66dd">KH</td>
+              <td><input type="number" id="tKH1" value="9" step="0.1" oninput="tCalc()"></td>
+              <td><input type="number" id="tKH2" value="8.1" step="0.1" oninput="tCalc()"></td>
+              <td><input type="number" id="tKHD" value="7" min="1" oninput="tCalc()"></td>
+              <td class="t-out" id="tKHDrop">-</td>
+              <td class="t-out" id="tKHDaily">-</td>
+              <td class="t-result" id="tKHResult">-</td>
+            </tr>
+            <tr>
+              <td class="t-name" style="color:#4499ee">锶</td>
+              <td><input type="number" id="tSr1" value="3.2" step="0.1" oninput="tCalc()"></td>
+              <td><input type="number" id="tSr2" value="3" step="0.1" oninput="tCalc()"></td>
+              <td><input type="number" id="tSrD" value="1" min="1" oninput="tCalc()"></td>
+              <td class="t-out" id="tSrDrop">-</td>
+              <td class="t-out" id="tSrDaily">-</td>
+              <td class="t-result" id="tSrResult">-</td>
+            </tr>
+            <tr>
+              <td class="t-name" style="color:#f0c040">钾</td>
+              <td><input type="number" id="tK1" value="450" oninput="tCalc()"></td>
+              <td><input type="number" id="tK2" value="435" oninput="tCalc()"></td>
+              <td><input type="number" id="tKD" value="7" min="1" oninput="tCalc()"></td>
+              <td class="t-out" id="tKDrop">-</td>
+              <td class="t-out" id="tKDaily">-</td>
+              <td class="t-result" id="tKResult">-</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- GFO -->
+    <div class="card anim-in anim-d3" style="padding:24px;margin-top:16px">
+      <div class="sec-label">🧹 吸磷珠用量</div>
+      <div class="input-row" style="margin-bottom:12px">
+        <div class="input-group" style="max-width:200px">
+          <label>当前 PO₄</label>
+          <input type="number" id="tPO4a" value="0.12" step="0.01" oninput="tCalc()">
+        </div>
+        <div class="input-group" style="max-width:200px">
+          <label>目标 PO₄</label>
+          <input type="number" id="tPO4b" value="0.01" step="0.01" oninput="tCalc()">
+        </div>
+        <div class="input-group" style="max-width:200px">
+          <label>吸磷珠用量</label>
+          <div class="t-gfo-result" id="tGFO">-</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tips -->
+    <div class="card anim-in" style="padding:24px;margin-top:16px;animation-delay:.32s">
+      <div class="sec-label">📖 使用说明</div>
+      <div class="t-tips">
+        <p>1. 先配制溶液：按配方表用纯净水（RO/蒸馏水）溶解分析纯</p>
+        <p>2. 测两次水质：间隔 3-7 天，不添加任何元素，记录数值变化</p>
+        <p>3. 填入表格自动算出每天滴定量，设置滴定泵即可</p>
+        <p style="margin-top:8px"><strong>⚠️ 安全提升上限</strong>：钙/钾 ≤10/天，镁 ≤20/天，KH ≤2/天</p>
+        <p><strong>⚠️ 提升顺序</strong>：先镁 → 再钙 → 最后 KH</p>
+        <p><strong>⚠️ 间隔添加</strong>：不同元素间隔 10-20 分钟</p>
+      </div>
+    </div>
+  </section>
+
 </div>
 
 <!-- Shared toast -->
@@ -536,10 +732,11 @@ function toast(m){const t=document.getElementById('toast');t.textContent=m;t.cla
 const PAGE_META={
   water:{title:'水质记录',badge:'REEF MONITOR'},
   light:{title:'光谱生成器',badge:'SPECTRUM'},
-  change:{title:'换水计算',badge:'WATER CHANGE'}
+  change:{title:'换水计算',badge:'WATER CHANGE'},
+  titrate:{title:'滴定计算',badge:'TITRATION'}
 };
 let _currentPage='water';
-let _pageInited={water:false,light:false,change:false};
+let _pageInited={water:false,light:false,change:false,titrate:false};
 
 function switchPage(page){
   if(!PAGE_META[page])return;
@@ -563,6 +760,7 @@ function switchPage(page){
     if(page==='water') initWater();
     else if(page==='light') initLight();
     else if(page==='change') initChange();
+    else if(page==='titrate') initTitrate();
   }
   // Resize charts
   if(page==='water'&&W_chart){setTimeout(()=>{W_chart.resize();updateLaneLabels();},50);}
@@ -1170,6 +1368,92 @@ function initChange(){
   C_loadInputs();salFromPPT();
 }
 
+
+/* ============================================================
+   TITRATION MODULE
+   ============================================================ */
+const T_SK='reef_titrate_v1';
+
+// Fixed conversion factors (g needed per L of tank per ppm)
+const T_ELEM={
+  Ca:{factor:0.004, defW:1000, defG:100, defH:1020, hasH:true},
+  Mg:{factor:0.009, defW:1000, defG:500, defH:1320, hasH:true},
+  KH:{factor:0.03,  defW:1000, defG:50,  defH:1020, hasH:true},
+  Sr:{factor:0.003, defW:1000, defG:10,  defH:1004, hasH:true},
+  K: {factor:0.002, defW:1000, defG:200, defH:null,  hasH:false},
+};
+
+function tCalc(){
+  const tank=parseFloat(document.getElementById('tTank').value)||70;
+
+  // Solution table
+  const elems=['Ca','Mg','KH','Sr','K'];
+  const solutions={};
+
+  elems.forEach(e=>{
+    const W=parseFloat(document.getElementById('t'+e+'W').value)||1000;
+    const G=parseFloat(document.getElementById('t'+e+'G').value)||1;
+    const F=W/G;
+    const Gml=F*T_ELEM[e].factor;
+    solutions[e]={W,G,F,Gml};
+
+    document.getElementById('t'+e+'F').textContent=F%1===0?F:F.toFixed(1);
+    document.getElementById('t'+e+'ML').textContent=Gml<0.01?Gml.toFixed(4):Gml<1?Gml.toFixed(3):Gml.toFixed(2);
+  });
+
+  // Titration table
+  elems.forEach(e=>{
+    const v1=parseFloat(document.getElementById('t'+e+'1').value)||0;
+    const v2=parseFloat(document.getElementById('t'+e+'2').value)||0;
+    const days=parseFloat(document.getElementById('t'+e+'D').value)||1;
+    const drop=v1-v2;
+    const daily=drop/days;
+
+    document.getElementById('t'+e+'Drop').textContent=drop%1===0?drop:drop.toFixed(2);
+    document.getElementById('t'+e+'Daily').textContent=daily<0.01?daily.toFixed(4):daily.toFixed(2);
+
+    let titration;
+    if(e==='K'){
+      // K formula: daily_consumption * G_solution * tank
+      titration=daily*solutions[e].Gml*tank;
+    }else{
+      // Ca/Mg/KH/Sr formula: G_solution * daily_consumption * tank * theoretical_volume / water_volume
+      const H=parseFloat(document.getElementById('t'+e+'H').value)||solutions[e].W;
+      titration=solutions[e].Gml*daily*tank*H/solutions[e].W;
+    }
+
+    const el=document.getElementById('t'+e+'Result');
+    if(drop<=0){el.textContent='—';el.style.color='var(--text4)';}
+    else{el.textContent=titration.toFixed(2)+' ml';el.style.color='';}
+  });
+
+  // GFO
+  const po4a=parseFloat(document.getElementById('tPO4a').value)||0;
+  const po4b=parseFloat(document.getElementById('tPO4b').value)||0;
+  const gfo=tank*(po4a-po4b)*2;
+  document.getElementById('tGFO').textContent=(gfo>0?gfo.toFixed(1):0)+' g';
+
+  tSave();
+}
+
+function tSave(){
+  const ids=['tTank','tCaW','tCaG','tCaH','tMgW','tMgG','tMgH','tKHW','tKHG','tKHH',
+    'tSrW','tSrG','tSrH','tKW','tKG',
+    'tCa1','tCa2','tCaD','tMg1','tMg2','tMgD','tKH1','tKH2','tKHD',
+    'tSr1','tSr2','tSrD','tK1','tK2','tKD','tPO4a','tPO4b'];
+  const d={};ids.forEach(id=>{const el=document.getElementById(id);if(el)d[id]=el.value;});
+  _s(T_SK,JSON.stringify(d));
+}
+
+function tLoad(){
+  const s=_g(T_SK);if(!s)return;
+  try{const d=JSON.parse(s);for(const k in d){const el=document.getElementById(k);if(el)el.value=d[k];}}catch(e){}
+}
+
+function initTitrate(){
+  tLoad();tCalc();
+}
+
 /* ============================================================
    GLOBAL KEYBOARD + INIT
    ============================================================ */
@@ -1193,6 +1477,7 @@ document.addEventListener('DOMContentLoaded',function(){
   if(startPage==='water') initWater();
   else if(startPage==='light') initLight();
   else if(startPage==='change') initChange();
+  else if(startPage==='titrate') initTitrate();
 });
 </script>
 </body>

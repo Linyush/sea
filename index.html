@@ -316,7 +316,7 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
       </div>
       <div class="chart-outer" id="chartOuter">
         <div class="lane-labels" id="laneLabels"></div>
-        <div class="chart-wrap" id="chartWrap">
+        <div class="chart-wrap" id="chartWrap" style="opacity:0;transition:opacity .4s">
           <div class="chart-inner" id="chartInner"><canvas id="mainChart"></canvas></div>
         </div>
         <div id="customTooltip"></div>
@@ -790,7 +790,7 @@ function renderChart(){
   _hoverX=null;
   W_chart=new Chart(document.getElementById('mainChart'),{type:'line',data:{datasets:ds},options:{
     responsive:true,maintainAspectRatio:false,
-    animation:{duration:600,easing:'easeOutQuart',onComplete:()=>updateLaneLabels()},
+    animation:{duration:600,easing:'easeOutQuart',onComplete:()=>{updateLaneLabels();const cw=document.getElementById('chartWrap');if(cw){cw.scrollLeft=cw.scrollWidth;cw.style.opacity='1';}}},
     interaction:{mode:'nearest',intersect:false,axis:'x'},
     plugins:{legend:{display:false},tooltip:{enabled:false}},
     scales:scales,onHover:function(){}
@@ -934,7 +934,7 @@ function initWater(){
   load();renderChart();renderQuickBar();
   document.getElementById('qDate').addEventListener('keydown',function(e){if(e.key==='Enter')quickAdd();});
   if(_hasAutoBack()){const lbl=document.getElementById('autoBackLabel');if(lbl)lbl.style.display='flex';}
-  setTimeout(()=>{const w=document.getElementById('chartWrap');if(w)w.scrollLeft=w.scrollWidth;updateLaneLabels();},700);
+  // scroll handled in chart onComplete
 }
 
 /* ============================================================

@@ -1056,6 +1056,7 @@ function L_getParams(){
 function L_gen(){
   if(typeof Chart==='undefined'||typeof QRCode==='undefined'){setTimeout(L_gen,100);return}
   const _lScrollY=window.scrollY;
+  document.body.style.overflow='hidden';
   const params=L_getParams(),labels=Array.from({length:25},(_,i)=>i),absDS=[];
   const tc=getCS('--text3'),gc=getCS('--border')+'40',lc=getCS('--text3');
   const mob=window.innerWidth<600;
@@ -1079,7 +1080,7 @@ function L_gen(){
   const qrC=document.getElementById('qrcode');const _qrH=qrC.offsetHeight;if(_qrH)qrC.style.minHeight=_qrH+'px';qrC.innerHTML='';
   new QRCode(qrC,{text:absDS.map(d=>d.join(',')).join('|'),width:256,height:256,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.L});
   setTimeout(()=>{const cv=qrC.querySelector('canvas'),im=qrC.querySelector('img');if(cv&&im){im.src=cv.toDataURL('image/png');im.style.display='block';im.style.maxWidth='100%';im.style.height='auto';cv.style.display='none'}},50);
-  setTimeout(()=>window.scrollTo(0,_lScrollY),0);
+  requestAnimationFrame(()=>{window.scrollTo(0,_lScrollY);document.body.style.overflow='';});
   L_persist();
 }
 

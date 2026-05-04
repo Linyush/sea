@@ -426,6 +426,8 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
     </div>
   </div>
 
+  <!-- ========== Tank Bar ========== -->
+  <div class="tank-bar" id="tankBar"></div>
 
   <!-- ========== PAGE: Profile ========== -->
   <section class="page-section" id="page-profile">
@@ -881,7 +883,7 @@ function TK_migrate(){
   const hasOld=oldW||oldL||oldC||oldT;
   // Create default tank
   const id='t'+Date.now();
-  const tank={id:id,name:'我的鱼缸',type:'LPS',volume:70,startDate:'',source:'',price:'',notes:'',order:0};
+  const tank={id:id,name:'',type:'',volume:'',startDate:'',source:'',price:'',notes:'',order:0};
   _s(TK_LIST_KEY,JSON.stringify([tank]));
   _s(TK_ACTIVE_KEY,id);
   // Copy old data to new keys
@@ -904,7 +906,7 @@ function TK_load(){
   _tanks=s?JSON.parse(s):[];
   if(!_tanks.length){
     const id='t'+Date.now();
-    _tanks=[{id:id,name:'我的鱼缸',type:'LPS',volume:70,startDate:'',source:'',price:'',notes:'',order:0}];
+    _tanks=[{id:id,name:'',type:'',volume:'',startDate:'',source:'',price:'',notes:'',order:0}];
     _s(TK_LIST_KEY,JSON.stringify(_tanks));
     _s('reef_'+id+'_inventory',JSON.stringify({livestock:[],equipment:[],consumables:[]}));
   }
@@ -951,10 +953,13 @@ function TK_renderBar(){
   const bar=document.getElementById('tankBar');
   if(!bar)return;
   bar.innerHTML='';
+  /* Only show bar if >1 tank, or 1 tank with a name */
+  if(_tanks.length<=1 && !(_tanks[0]&&_tanks[0].name)){bar.style.display='none';return;}
+  bar.style.display='';
   _tanks.forEach(t=>{
     const btn=document.createElement('button');
     btn.className='tank-tab'+(t.id===_activeTank?' active':'');
-    btn.innerHTML='<span class="t-dot"></span>'+t.name;
+    btn.innerHTML='<span class="t-dot"></span>'+(t.name||'鱼缸 '+(i+1));
     btn.onclick=()=>TK_switchTo(t.id);
     btn.oncontextmenu=(e)=>{e.preventDefault();TK_showCtx(t.id,e);};
     // Long press for mobile

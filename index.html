@@ -32,7 +32,7 @@ html.light{
 input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 input[type=number]{-moz-appearance:textfield}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background .3s,color .3s;overflow-x:hidden;scrollbar-gutter:stable}
-.container{max-width:1080px;margin:0 auto;padding:20px 24px;padding-left:40px}
+.container{max-width:1080px;margin:0 auto;padding:20px 24px}
 
 /* === Header + Nav === */
 .page-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
@@ -316,18 +316,21 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
 }
 
 /* === Tank Bar === */
-.tank-sidebar{position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:90;display:flex;flex-direction:column;gap:4px;padding:4px 0}
-.tank-tab{writing-mode:vertical-rl;text-orientation:mixed;padding:12px 6px;font-size:11px;font-weight:500;color:var(--text4);background:var(--card);border:1px solid var(--border);border-left:none;border-radius:0 8px 8px 0;cursor:pointer;white-space:nowrap;transition:all .2s;letter-spacing:1px}
-.tank-tab:hover{border-color:var(--accent);color:var(--text);background:color-mix(in srgb,var(--accent) 4%,transparent)}
-.tank-tab.active{color:var(--accent);border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent);font-weight:600;padding-left:8px;box-shadow:2px 0 8px color-mix(in srgb,var(--accent) 10%,transparent)}
-.tank-add{writing-mode:vertical-rl;padding:8px 6px;font-size:14px;color:var(--text5);background:var(--card);border:1px dashed var(--border);border-left:none;border-radius:0 8px 8px 0;cursor:pointer;transition:all .2s}
+.tank-bar{display:flex;align-items:center;gap:6px;padding:8px 0;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;margin-bottom:8px}
+.tank-bar::-webkit-scrollbar{display:none}
+.tank-tab{padding:5px 14px;font-size:12px;font-weight:500;color:var(--text3);background:var(--card);border:1px solid var(--border);border-radius:20px;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0;display:flex;align-items:center;gap:4px}
+.tank-tab:hover{border-color:var(--accent);color:var(--text)}
+.tank-tab.active{color:var(--accent);border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent);font-weight:600}
+.tank-tab .t-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);display:none}
+.tank-tab.active .t-dot{display:block}
+.tank-add{padding:5px 10px;font-size:13px;color:var(--text4);background:none;border:1px dashed var(--border);border-radius:20px;cursor:pointer;transition:all .2s;flex-shrink:0}
 .tank-add:hover{border-color:var(--accent);color:var(--accent)}
 .tank-ctx{position:fixed;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:4px;box-shadow:0 4px 16px var(--shadow);z-index:500;min-width:100px}
 .tank-ctx button{display:block;width:100%;text-align:left;background:none;border:none;color:var(--text2);font-size:12px;padding:6px 10px;border-radius:4px;cursor:pointer;transition:background .2s}
 .tank-ctx button:hover{background:var(--hover);color:var(--text)}
 .tank-ctx button.danger{color:var(--warn)}
 .tank-ctx button.danger:hover{background:color-mix(in srgb,var(--warn) 8%,transparent)}
-@media(max-width:600px){.tank-sidebar{top:auto;bottom:0;left:50%;right:auto;transform:translateX(-50%);flex-direction:row;padding:0 4px}.tank-tab,.tank-add{writing-mode:horizontal-tb;border-radius:8px 8px 0 0;border:1px solid var(--border);border-bottom:none;padding:6px 12px;letter-spacing:0}}
+
 /* === Profile page === */
 .profile-header{display:flex;align-items:center;gap:16px;margin-bottom:20px;flex-wrap:wrap}
 .profile-avatar{width:48px;height:48px;border-radius:12px;background:color-mix(in srgb,var(--accent) 10%,transparent);border:1px solid color-mix(in srgb,var(--accent) 20%,transparent);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
@@ -383,6 +386,13 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
 .if-tag{padding:5px 12px;font-size:12px;border-radius:6px;border:1px solid var(--border);color:var(--text3);cursor:pointer;transition:all .2s;user-select:none}
 .if-tag:hover{border-color:var(--accent);color:var(--accent)}
 .if-tag.active{background:color-mix(in srgb,var(--accent) 10%,transparent);border-color:var(--accent);color:var(--accent);font-weight:600}
+.inv-card-icon{width:28px;height:28px;color:var(--accent);flex-shrink:0}
+.inv-card-icon svg{width:100%;height:100%}
+.if-icon-grid{display:grid;grid-template-columns:repeat(auto-fill,36px);gap:6px}
+.if-icon-opt{width:36px;height:36px;padding:6px;border:1px solid var(--border);border-radius:8px;color:var(--text3);cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center}
+.if-icon-opt:hover{border-color:var(--accent);color:var(--accent)}
+.if-icon-opt.active{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent)}
+.if-icon-opt svg{width:20px;height:20px}
 #ifFields select,#ifFields input[type=date]{appearance:none;-webkit-appearance:none;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;width:100%;outline:none;transition:border-color .2s;cursor:pointer}
 #ifFields select:focus,#ifFields input[type=date]:focus{border-color:var(--accent)}
 #ifFields select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2388888888' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
@@ -396,7 +406,6 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
 </style>
 </head>
 <body>
-<div class="tank-sidebar" id="tankBar"></div>
 <div class="container">
 
 
@@ -940,11 +949,12 @@ function TK_switchTo(id){
 
 function TK_renderBar(){
   const bar=document.getElementById('tankBar');
+  if(!bar)return;
   bar.innerHTML='';
   _tanks.forEach(t=>{
     const btn=document.createElement('button');
     btn.className='tank-tab'+(t.id===_activeTank?' active':'');
-    btn.textContent=t.name;
+    btn.innerHTML='<span class="t-dot"></span>'+t.name;
     btn.onclick=()=>TK_switchTo(t.id);
     btn.oncontextmenu=(e)=>{e.preventDefault();TK_showCtx(t.id,e);};
     // Long press for mobile
@@ -1078,6 +1088,36 @@ const P_STATUS_LABELS={
 const P_SPECIES_OPTS=['鱼','珊瑚','无脊椎','藻','其他'];
 const P_EQ_CATS=['水泵','灯','造浪','蛋分','加热棒','冷水机','温度计','滴定','钙反','煮豆机','补水器','杀菌灯','滤布机','喂食器','检测设备','插座','其他'];
 const P_CM_CATS=['盐','食物','添加剂','试剂','药品','其他'];
+const P_ICONS={'fish':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 12c3-4.5 9-4.5 12-1.5-3 3-9 3-12 1.5z"/><path d="M18.5 10.5c1.5-1.5 3-1 3-1s-.5 2-1 3"/><circle cx="8" cy="11.5" r=".8" fill="currentColor" stroke="none"/></svg>',
+'coral':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20v-6"/><path d="M12 14c-2-3-5-4-5-7 0-2 2-3 3-2 1.5 1.5 2 3 2 3s.5-1.5 2-3c1-1 3 0 3 2 0 3-3 4-5 7z"/><path d="M8 20h8"/></svg>',
+'invert':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19c-4 0-7-2-7-5s3-5 7-5 7 2 7 5-3 5-7 5z"/><path d="M8 12c0-1.5 1.8-3 4-3s4 1.5 4 3"/><path d="M9 14.5h1m4 0h1"/></svg>',
+'algae':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20v-4c0-2-1-3-1-5s1-4 1-6"/><path d="M9 20v-3c0-1.5-.8-2.5-.8-4s.8-3 .8-5"/><path d="M15 20v-3c0-1.5.8-2.5.8-4s-.8-3-.8-5"/></svg>',
+'other_live':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="6"/><path d="M12 8v2m0 4v2m-4-4h2m4 0h2"/></svg>',
+'pump':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 7v-3m0 16v-3m-5-5H4m16 0h-3"/><path d="M12 9.5a2.5 2.5 0 110 5 2.5 2.5 0 010-5"/></svg>',
+'light':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6m-5 2h4"/><path d="M12 2v1m-7 7H4m16 0h-1m-2.5-5.5l-.7.7m-7.6 7.6l-.7.7m10-1.4l.7.7M6.5 6.5l.7.7"/><circle cx="12" cy="10" r="4"/></svg>',
+'wave':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/><path d="M3 8c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/><path d="M3 16c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/></svg>',
+'skimmer':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="16" rx="3"/><path d="M9 15h6"/><path d="M11 19v2m2-2v2"/><circle cx="12" cy="7" r="1.5"/></svg>',
+'heater':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="3" width="4" height="17" rx="2"/><path d="M10 8h4m-4 3h4m-4 3h4"/><path d="M11 20v1m2-1v1"/></svg>',
+'chiller':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="6" width="14" height="12" rx="2"/><path d="M12 9v6m-3-3h6"/><path d="M8 18v2m8-2v2"/></svg>',
+'thermo':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><circle cx="12" cy="18" r="3"/><path d="M10 3h4"/><path d="M10 6h4"/></svg>',
+'doser':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="4" width="10" height="14" rx="2"/><path d="M10 4v-1m4 1v-1"/><path d="M10 11h4"/><path d="M12 9v4"/><path d="M9 18v2m6-2v2"/></svg>',
+'reactor':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="3" width="8" height="18" rx="2"/><path d="M8 7h8m-8 5h8m-8 5h8"/><circle cx="12" cy="14.5" r="1"/></svg>',
+'beansoup':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v4c0 2-2 3-4 3s-4-1-4-3V4z"/><path d="M10 11v3c0 1 1 2 2 2s2-1 2-2v-3"/><path d="M9 19h6"/><path d="M12 16v3"/></svg>',
+'ato':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="8" width="12" height="12" rx="2"/><path d="M12 8V5"/><path d="M9 5h6"/><path d="M9 14c0-1.5 1.3-3 3-3s3 1.5 3 3"/><path d="M12 17v-3"/></svg>',
+'uv':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="3" width="4" height="18" rx="2"/><path d="M7 8l1.5 1m7 0L17 8M7 16l1.5-1m7 0l1.5 1"/><path d="M10 9h4m-4 6h4"/></svg>',
+'roller':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="4" width="10" height="16" rx="2"/><circle cx="12" cy="8" r="2"/><circle cx="12" cy="16" r="2"/><path d="M12 10v4"/></svg>',
+'feeder':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 10h12l-2 8H8l-2-8z"/><path d="M10 6h4v4h-4z"/><path d="M12 10v4"/></svg>',
+'tester':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="6" rx="1"/><path d="M10 8v10c0 1.5 1 3 2 3s2-1.5 2-3V8"/><path d="M10 12h4m-4 3h4"/></svg>',
+'socket':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="6" width="14" height="12" rx="2"/><circle cx="9.5" cy="11" r="1.2"/><circle cx="14.5" cy="11" r="1.2"/><path d="M10 15h4"/></svg>',
+'other_eq':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5" width="14" height="14" rx="3"/><path d="M12 9v3l2 1"/></svg>',
+'salt':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8h10l-1 12H8L7 8z"/><path d="M9 5h6v3H9z"/><path d="M10 12h4m-2-1v2"/></svg>',
+'food':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="14" r="6"/><path d="M9 11.5c1-1.5 2.5-2 3-2s2 .5 3 2"/><path d="M10 14h4"/><circle cx="10.5" cy="15.5" r=".5" fill="currentColor" stroke="none"/><circle cx="13.5" cy="15.5" r=".5" fill="currentColor" stroke="none"/></svg>',
+'additive':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3h4v4l3 10H7L10 7V3z"/><path d="M10 3h4"/><path d="M8.5 14h7"/></svg>',
+'reagent':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6v2l2 14H7L9 5V3z"/><path d="M9 3h6"/><path d="M8 13c1.5 1 4.5 1 6 0"/><circle cx="11" cy="16" r=".8" fill="currentColor" stroke="none"/><circle cx="13" cy="15" r=".5" fill="currentColor" stroke="none"/></svg>',
+'medicine':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="7" width="10" height="10" rx="2"/><path d="M12 4v3m0 10v3m-8-8h3m10 0h3"/><path d="M10 12h4m-2-2v4"/></svg>',
+'other_cm':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"/><path d="M12 9v3h3"/></svg>'};
+const P_ICON_MAP={livestock:{'鱼':'fish','珊瑚':'coral','无脊椎':'invert','藻':'algae','其他':'other_live'},equipment:{'水泵':'pump','灯':'light','造浪':'wave','蛋分':'skimmer','加热棒':'heater','冷水机':'chiller','温度计':'thermo','滴定':'doser','钙反':'reactor','煮豆机':'beansoup','补水器':'ato','杀菌灯':'uv','滤布机':'roller','喂食器':'feeder','检测设备':'tester','插座':'socket','其他':'other_eq'},consumable:{'盐':'salt','食物':'food','添加剂':'additive','试剂':'reagent','药品':'medicine','其他':'other_cm'}};
+function P_getIcon(type,cat){const key=P_ICON_MAP[type]&&P_ICON_MAP[type][cat];return key&&P_ICONS[key]?P_ICONS[key]:'';}
 
 // Default icons per category
 const P_DEF_ICONS={
@@ -1183,7 +1223,9 @@ function P_renderInvSection(prefix,items,type){
     const icon=item.icon||(P_DEF_ICONS[item.species]||P_DEF_ICONS[item.category]||'📦');
     const statusCls='s-'+(item.status||'alive');
     const statusTxt=P_STATUS_LABELS[item.status]||item.status||'';
-    h+='<div class="inv-card" onclick="P_editItem(&#39;'+type+'&#39;,'+i+')">';
+    const iconKey=item.icon||'';
+    const iconSvg=iconKey&&P_ICONS[iconKey]?'<div class="inv-card-icon">'+P_ICONS[iconKey]+'</div>':'';
+    h+='<div class="inv-card" onclick="P_editItem(&#39;'+type+'&#39;,'+i+')">'+iconSvg;
     h+='<div class="inv-icon">'+icon+'</div>';
     h+='<div class="inv-name">'+item.name+'</div>';
     if(item.breed||item.spec)h+='<div class="inv-sub">'+(item.breed||item.spec||'')+'</div>';
@@ -1202,7 +1244,7 @@ const IF_FIELDS={
     {key:'species',label:'物种',type:'select',opts:P_SPECIES_OPTS,required:true},
     {key:'breed',label:'品种',type:'text'},
     {key:'size',label:'尺寸',type:'text',placeholder:'如 5cm'},
-    {key:'icon',label:'图标',type:'text',placeholder:'emoji 如 🤡'},
+    {key:'icon',label:'图标',type:'icon_picker'},
     {key:'addDate',label:'购入日期',type:'date'},
     {key:'source',label:'购入渠道',type:'text'},
     {key:'price',label:'价格',type:'number',placeholder:'¥'},
@@ -1246,6 +1288,18 @@ const IF_INV_KEYS={livestock:'livestock',equipment:'equipment',consumable:'consu
 
 function _ifRenderField(f,val){
   val=val!=null?val:(f.default||'');
+  if(f.type==='icon_picker'){
+    /* Get available icons based on current type */
+    const map=P_ICON_MAP[_ifType]||{};
+    const keys=Object.values(map);
+    let h='<div class="if-icon-grid" id="if_icon">';
+    keys.forEach(k=>{
+      const active=(val===k)?' active':'';
+      h+='<div class="if-icon-opt'+active+'" data-val="'+k+'" onclick="IF_pickIcon(this)">'+P_ICONS[k]+'</div>';
+    });
+    h+='</div>';
+    return h;
+  }
   if(f.type==='select'&&f.opts&&f.opts.length<=5){
     /* Radio tag group for <=5 options */
     const tags=f.opts.map((o,i)=>{
@@ -1280,6 +1334,10 @@ function _ifRenderAll(type,vals){
     return '<div class="if-row" data-fk="'+f.key+'"><label'+(f.required?' class="req"':'')+'>'+ f.label+'</label>'+inp+'</div>';
   }).join('');
 }
+function IF_pickIcon(el){
+  el.parentElement.querySelectorAll('.if-icon-opt').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+}
 function IF_pickTag(el){
   el.parentElement.querySelectorAll('.if-tag').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
@@ -1296,7 +1354,10 @@ function IF_collectVals(){
   IF_FIELDS[_ifType].forEach(f=>{
     const el=document.getElementById('if_'+f.key);
     if(!el)return;
-    if(f.type==='select'&&f.opts&&f.opts.length<=5){
+    if(f.type==='icon_picker'){
+      const active=el.querySelector('.if-icon-opt.active');
+      vals[f.key]=active?active.dataset.val:'';
+    }else if(f.type==='select'&&f.opts&&f.opts.length<=5){
       const active=el.querySelector('.if-tag.active');
       vals[f.key]=active?active.dataset.val:'';
     }else{

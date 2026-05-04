@@ -503,41 +503,41 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
           </thead>
           <tbody>
             <tr>
-              <td class="t-name" style="color:#ff5588">🔴 钙<span class="t-sub">无水氯化钙</span></td>
+              <td class="t-name" style="color:#ff5588">钙<span class="t-sub">无水氯化钙</span></td>
               <td class="t-fixed">0.004</td>
               <td><input type="number" id="tCaW" value="1000" oninput="tCalc()"></td>
               <td><input type="number" id="tCaG" value="100" oninput="tCalc()"></td>
               <td class="t-out" id="tCaF">-</td>
               <td class="t-out" id="tCaML">-</td>
-              <td><input type="number" id="tCaH" value="1020" oninput="tCalc()"></td>
+              <td class="t-out" id="tCaH">-</td>
             </tr>
             <tr>
-              <td class="t-name" style="color:#22bbaa">🟢 镁<span class="t-sub">六水氯化镁</span></td>
+              <td class="t-name" style="color:#22bbaa">镁<span class="t-sub">六水氯化镁</span></td>
               <td class="t-fixed">0.009</td>
               <td><input type="number" id="tMgW" value="1000" oninput="tCalc()"></td>
               <td><input type="number" id="tMgG" value="500" oninput="tCalc()"></td>
               <td class="t-out" id="tMgF">-</td>
               <td class="t-out" id="tMgML">-</td>
-              <td><input type="number" id="tMgH" value="1320" oninput="tCalc()"></td>
+              <td class="t-out" id="tMgH">-</td>
             </tr>
             <tr>
-              <td class="t-name" style="color:#aa66dd">🟣 KH<span class="t-sub">碳酸氢钠</span></td>
+              <td class="t-name" style="color:#aa66dd">KH<span class="t-sub">碳酸氢钠</span></td>
               <td class="t-fixed">0.03</td>
               <td><input type="number" id="tKHW" value="1000" oninput="tCalc()"></td>
               <td><input type="number" id="tKHG" value="50" oninput="tCalc()"></td>
               <td class="t-out" id="tKHF">-</td>
               <td class="t-out" id="tKHML">-</td>
-              <td><input type="number" id="tKHH" value="1020" oninput="tCalc()"></td>
+              <td class="t-out" id="tKHH">-</td>
             </tr>
 
             <tr>
-              <td class="t-name" style="color:#f0c040">🟡 钾<span class="t-sub">氯化钾 · 新手慎用</span></td>
+              <td class="t-name" style="color:#f0c040">钾<span class="t-sub">氯化钾 · 新手慎用</span></td>
               <td class="t-fixed">0.002</td>
               <td><input type="number" id="tKW" value="1000" oninput="tCalc()"></td>
               <td><input type="number" id="tKG" value="200" oninput="tCalc()"></td>
               <td class="t-out" id="tKF">-</td>
               <td class="t-out" id="tKML">-</td>
-              <td style="color:var(--text5);text-align:center">—</td>
+              <td class="t-out" id="tKH_">—</td>
             </tr>
           </tbody>
         </table>
@@ -1345,10 +1345,10 @@ const T_SK='reef_titrate_v1';
 
 // Fixed conversion factors (g needed per L of tank per ppm)
 const T_ELEM={
-  Ca:{factor:0.004, defW:1000, defG:100, defH:1020, hasH:true},
-  Mg:{factor:0.009, defW:1000, defG:500, defH:1320, hasH:true},
-  KH:{factor:0.03,  defW:1000, defG:50,  defH:1020, hasH:true},
-  K: {factor:0.002, defW:1000, defG:200, defH:null,  hasH:false},
+  Ca:{factor:0.004, defW:1000, defG:100, vf:0.2,  hasH:true},
+  Mg:{factor:0.009, defW:1000, defG:500, vf:0.64, hasH:true},
+  KH:{factor:0.03,  defW:1000, defG:50,  vf:0.4,  hasH:true},
+  K: {factor:0.002, defW:1000, defG:200, vf:0,    hasH:false},
 };
 
 function tCalc(){
@@ -1363,10 +1363,13 @@ function tCalc(){
     const G=parseFloat(document.getElementById('t'+e+'G').value)||1;
     const F=W/G;
     const Gml=F*T_ELEM[e].factor;
-    solutions[e]={W,G,F,Gml};
+    const H=Math.round(W+G*T_ELEM[e].vf);
+    solutions[e]={W,G,F,Gml,H};
 
     document.getElementById('t'+e+'F').textContent=F%1===0?F:F.toFixed(1);
     document.getElementById('t'+e+'ML').textContent=Gml<0.01?Gml.toFixed(4):Gml<1?Gml.toFixed(3):Gml.toFixed(2);
+    const hEl=document.getElementById('t'+e+'H');
+    if(hEl&&T_ELEM[e].hasH)hEl.textContent=H;
   });
 
   // Titration table
@@ -1382,12 +1385,9 @@ function tCalc(){
 
     let titration;
     if(e==='K'){
-      // K formula: daily_consumption * G_solution * tank
       titration=daily*solutions[e].Gml*tank;
     }else{
-      // Ca/Mg/KH/Sr formula: G_solution * daily_consumption * tank * theoretical_volume / water_volume
-      const H=parseFloat(document.getElementById('t'+e+'H').value)||solutions[e].W;
-      titration=solutions[e].Gml*daily*tank*H/solutions[e].W;
+      titration=solutions[e].Gml*daily*tank*solutions[e].H/solutions[e].W;
     }
 
     const el=document.getElementById('t'+e+'Result');
@@ -1399,7 +1399,7 @@ function tCalc(){
 }
 
 function tSave(){
-  const ids=['tTank','tCaW','tCaG','tCaH','tMgW','tMgG','tMgH','tKHW','tKHG','tKHH',
+  const ids=['tTank','tCaW','tCaG','tMgW','tMgG','tKHW','tKHG',
     'tKW','tKG',
     'tCa1','tCa2','tCaD','tMg1','tMg2','tMgD','tKH1','tKH2','tKHD',
     'tK1','tK2','tKD'];

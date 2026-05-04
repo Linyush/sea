@@ -529,15 +529,7 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
               <td class="t-out" id="tKHML">-</td>
               <td><input type="number" id="tKHH" value="1020" oninput="tCalc()"></td>
             </tr>
-            <tr>
-              <td class="t-name" style="color:#4499ee">🔵 锶<span class="t-sub">六水氯化锶</span></td>
-              <td class="t-fixed">0.003</td>
-              <td><input type="number" id="tSrW" value="1000" oninput="tCalc()"></td>
-              <td><input type="number" id="tSrG" value="10" oninput="tCalc()"></td>
-              <td class="t-out" id="tSrF">-</td>
-              <td class="t-out" id="tSrML">-</td>
-              <td><input type="number" id="tSrH" value="1004" oninput="tCalc()"></td>
-            </tr>
+
             <tr>
               <td class="t-name" style="color:#f0c040">🟡 钾<span class="t-sub">氯化钾 · 新手慎用</span></td>
               <td class="t-fixed">0.002</td>
@@ -597,15 +589,7 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
               <td class="t-out" id="tKHDaily">-</td>
               <td class="t-result" id="tKHResult">-</td>
             </tr>
-            <tr>
-              <td class="t-name" style="color:#4499ee">锶</td>
-              <td><input type="number" id="tSr1" value="3.2" step="0.1" oninput="tCalc()"></td>
-              <td><input type="number" id="tSr2" value="3" step="0.1" oninput="tCalc()"></td>
-              <td><input type="number" id="tSrD" value="1" min="1" oninput="tCalc()"></td>
-              <td class="t-out" id="tSrDrop">-</td>
-              <td class="t-out" id="tSrDaily">-</td>
-              <td class="t-result" id="tSrResult">-</td>
-            </tr>
+
             <tr>
               <td class="t-name" style="color:#f0c040">钾</td>
               <td><input type="number" id="tK1" value="450" oninput="tCalc()"></td>
@@ -620,24 +604,7 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
       </div>
     </div>
 
-    <!-- GFO -->
-    <div class="card anim-in anim-d3" style="padding:24px;margin-top:16px">
-      <div class="sec-label">🧹 吸磷珠用量</div>
-      <div class="input-row" style="margin-bottom:12px">
-        <div class="input-group" style="max-width:200px">
-          <label>当前 PO₄</label>
-          <input type="number" id="tPO4a" value="0.12" step="0.01" oninput="tCalc()">
-        </div>
-        <div class="input-group" style="max-width:200px">
-          <label>目标 PO₄</label>
-          <input type="number" id="tPO4b" value="0.01" step="0.01" oninput="tCalc()">
-        </div>
-        <div class="input-group" style="max-width:200px">
-          <label>吸磷珠用量</label>
-          <div class="t-gfo-result" id="tGFO">-</div>
-        </div>
-      </div>
-    </div>
+
 
     <!-- Tips -->
     <div class="card anim-in" style="padding:24px;margin-top:16px;animation-delay:.32s">
@@ -1381,7 +1348,6 @@ const T_ELEM={
   Ca:{factor:0.004, defW:1000, defG:100, defH:1020, hasH:true},
   Mg:{factor:0.009, defW:1000, defG:500, defH:1320, hasH:true},
   KH:{factor:0.03,  defW:1000, defG:50,  defH:1020, hasH:true},
-  Sr:{factor:0.003, defW:1000, defG:10,  defH:1004, hasH:true},
   K: {factor:0.002, defW:1000, defG:200, defH:null,  hasH:false},
 };
 
@@ -1389,7 +1355,7 @@ function tCalc(){
   const tank=parseFloat(document.getElementById('tTank').value)||70;
 
   // Solution table
-  const elems=['Ca','Mg','KH','Sr','K'];
+  const elems=['Ca','Mg','KH','K'];
   const solutions={};
 
   elems.forEach(e=>{
@@ -1429,20 +1395,14 @@ function tCalc(){
     else{el.textContent=titration.toFixed(2)+' ml';el.style.color='';}
   });
 
-  // GFO
-  const po4a=parseFloat(document.getElementById('tPO4a').value)||0;
-  const po4b=parseFloat(document.getElementById('tPO4b').value)||0;
-  const gfo=tank*(po4a-po4b)*2;
-  document.getElementById('tGFO').textContent=(gfo>0?gfo.toFixed(1):0)+' g';
-
   tSave();
 }
 
 function tSave(){
   const ids=['tTank','tCaW','tCaG','tCaH','tMgW','tMgG','tMgH','tKHW','tKHG','tKHH',
-    'tSrW','tSrG','tSrH','tKW','tKG',
+    'tKW','tKG',
     'tCa1','tCa2','tCaD','tMg1','tMg2','tMgD','tKH1','tKH2','tKHD',
-    'tSr1','tSr2','tSrD','tK1','tK2','tKD','tPO4a','tPO4b'];
+    'tK1','tK2','tKD'];
   const d={};ids.forEach(id=>{const el=document.getElementById(id);if(el)d[id]=el.value;});
   _s(T_SK,JSON.stringify(d));
 }

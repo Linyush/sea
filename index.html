@@ -1091,7 +1091,7 @@ function renderProfile(){
   // Header
   const hdr=document.getElementById('profileHeader');
   const daysSince=t.startDate?Math.floor((Date.now()-new Date(t.startDate+'T00:00:00').getTime())/(86400000)):-1;
-  hdr.innerHTML='<div class="profile-avatar">🐠</div><div class="profile-info"><h2>'+t.name+'</h2><div class="meta">'+t.type+(daysSince>=0?' · 开缸 '+daysSince+' 天':'')+'</div></div><button class="profile-edit-btn" onclick="TF_open(''+t.id+'')">编辑</button>';
+  hdr.innerHTML='<div class="profile-avatar">🐠</div><div class="profile-info"><h2>'+t.name+'</h2><div class="meta">'+t.type+(daysSince>=0?' · 开缸 '+daysSince+' 天':'')+'</div></div><button class="profile-edit-btn" onclick="TF_open(&#39;'+t.id+'&#39;)">编辑</button>';
   // Grid
   const grid=document.getElementById('profileGrid');
   let gh='';
@@ -1124,7 +1124,7 @@ function P_renderInvSection(prefix,items,type){
     const icon=item.icon||(P_DEF_ICONS[item.species]||P_DEF_ICONS[item.category]||'📦');
     const statusCls='s-'+(item.status||'alive');
     const statusTxt=P_STATUS_LABELS[item.status]||item.status||'';
-    h+='<div class="inv-card" onclick="P_editItem(''+type+'','+i+')">';
+    h+='<div class="inv-card" onclick="P_editItem(&#39;'+type+'&#39;,'+i+')">';
     h+='<div class="inv-icon">'+icon+'</div>';
     h+='<div class="inv-name">'+item.name+'</div>';
     if(item.breed||item.spec)h+='<div class="inv-sub">'+(item.breed||item.spec||'')+'</div>';

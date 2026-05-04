@@ -155,23 +155,20 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
 .auto-label .auto-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;animation:autoPulse 2s infinite}
 @keyframes autoPulse{0%,100%{opacity:.3}50%{opacity:1}}
 
-/* Nav */
-.top-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-.nav-right{display:flex;align-items:center;gap:2px}
-.nav-tab{padding:6px 14px;font-size:13px;font-weight:500;color:var(--text3);text-decoration:none;border-radius:6px;transition:all .2s;white-space:nowrap}
+.nav-tab{padding:5px 12px;font-size:12px;font-weight:500;color:var(--text3);text-decoration:none;border-radius:6px;transition:all .2s;white-space:nowrap}
 .nav-tab:hover{color:var(--text);background:var(--hover)}
 .nav-tab.active{color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent);font-weight:600}
-.nav-sep{width:1px;height:16px;background:var(--border);margin:0 6px;flex-shrink:0}
+.nav-sep{width:1px;height:16px;background:var(--border);margin:0 4px;flex-shrink:0;display:inline-block;vertical-align:middle}
 </style>
 </head>
 <body>
 <div class="container">
-  <div class="top-nav anim-in">
+  <div class="page-hd anim-in">
     <div class="left">
       <h1>水质记录</h1>
       <span class="badge">REEF MONITOR</span>
     </div>
-    <div class="nav-right">
+    <div style="display:flex;align-items:center;gap:4px">
       <a class="nav-tab active" href="water.html">💧 水质</a>
       <a class="nav-tab" href="light.html">🌈 光谱</a>
       <a class="nav-tab" href="change.html">🔄 换水</a>

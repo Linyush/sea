@@ -24,13 +24,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 /* === Unified Nav === */
 .top-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;gap:12px}
-.nav-left{display:flex;align-items:center;gap:20px}
 .nav-brand{font-size:15px;font-weight:700;color:var(--text);white-space:nowrap}
-.nav-tabs{display:flex;gap:2px;align-items:center}
+.nav-right{display:flex;align-items:center;gap:2px}
 .nav-tab{padding:6px 14px;font-size:13px;font-weight:500;color:var(--text3);text-decoration:none;border-radius:6px;transition:all .2s;white-space:nowrap}
 .nav-tab:hover{color:var(--text);background:var(--hover)}
 .nav-tab.active{color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent);font-weight:600}
-.nav-right{display:flex;align-items:center;gap:8px}
+.nav-sep{width:1px;height:16px;background:var(--border);margin:0 4px;flex-shrink:0}
 .theme-btn{background:none;border:1px solid var(--border);color:var(--text3);width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .3s}
 .theme-btn:hover{border-color:var(--accent);color:var(--accent)}
 
@@ -45,47 +44,52 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .card-title{font-size:14px;font-weight:600;color:var(--text2);margin-bottom:16px;display:flex;align-items:center;gap:6px}
 
 /* === Calc Layout === */
-.calc-section{margin-bottom:20px}
-.calc-section:last-child{margin-bottom:0}
-.sec-label{font-size:11px;color:var(--text4);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.sec-label{font-size:11px;color:var(--text4);font-weight:600;letter-spacing:.3px;margin-bottom:10px;display:flex;align-items:center;gap:5px}
 .input-row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
-.input-group{display:flex;flex-direction:column;gap:4px;flex:1;min-width:120px}
+.input-group{display:flex;flex-direction:column;gap:4px;flex:1;min-width:110px}
 .input-group label{font-size:12px;color:var(--text3);font-weight:500}
 .input-group label .unit{color:var(--text4);font-weight:400}
 .input-group input{background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:14px;font-weight:500;outline:none;transition:border-color .3s,box-shadow .3s;text-align:center;width:100%}
 .input-group input:focus{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 10%,transparent)}
 
+/* Config inputs - subtle */
+.config-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;padding:10px 14px;background:color-mix(in srgb,var(--border) 20%,transparent);border-radius:8px;margin-bottom:16px}
+.config-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text3)}
+.config-item label{white-space:nowrap}
+.config-item input{background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:4px 6px;border-radius:5px;font-size:13px;font-weight:600;text-align:center;width:56px;outline:none;transition:border-color .3s}
+.config-item input:focus{border-color:var(--accent)}
+.config-item .unit{color:var(--text4);font-size:11px}
+
 /* Result area */
-.result-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px;padding:14px 16px;background:color-mix(in srgb,var(--accent) 3%,transparent);border:1px dashed color-mix(in srgb,var(--accent) 20%,transparent);border-radius:10px}
-.result-item{flex:1;min-width:100px;text-align:center}
-.result-item .r-label{font-size:11px;color:var(--text4);margin-bottom:4px}
-.result-item .r-value{font-size:20px;font-weight:700;color:var(--accent)}
-.result-item .r-value .r-unit{font-size:12px;font-weight:500;color:var(--text3);margin-left:2px}
-.result-item .r-desc{font-size:10px;color:var(--text5);margin-top:2px}
+.result-row{display:flex;gap:16px;flex-wrap:wrap;margin-top:16px}
+.result-card{flex:1;min-width:100px;background:color-mix(in srgb,var(--accent) 4%,transparent);border:1px solid color-mix(in srgb,var(--accent) 12%,transparent);border-radius:10px;padding:14px 16px;text-align:center;transition:transform .2s}
+.result-card:hover{transform:translateY(-1px)}
+.result-card .r-label{font-size:11px;color:var(--text3);margin-bottom:6px;font-weight:500}
+.result-card .r-value{font-size:22px;font-weight:700;color:var(--accent);line-height:1.2}
+.result-card .r-unit{font-size:12px;font-weight:500;color:var(--text3);margin-left:2px}
+.result-card .r-desc{font-size:10px;color:var(--text5);margin-top:4px}
 
-/* Warn */
-.result-warn{color:var(--warn) !important;font-size:13px !important;font-weight:600 !important}
-
-/* Divider */
-.sep{height:1px;background:var(--border);margin:18px 0}
+.sep{height:1px;background:var(--border);margin:16px 0}
 
 /* Tip */
-.tip{font-size:11px;color:var(--text4);line-height:1.6;margin-top:12px;padding:10px 12px;background:color-mix(in srgb,var(--accent) 2%,transparent);border-radius:8px;border:1px solid color-mix(in srgb,var(--accent) 8%,transparent)}
+.tip{font-size:11px;color:var(--text4);line-height:1.6;margin-top:14px}
 .tip strong{color:var(--text3)}
 
 /* Toast */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--card);border:1px solid var(--border);color:var(--accent);padding:10px 24px;border-radius:10px;font-size:13px;opacity:0;transition:all .4s cubic-bezier(.22,1,.36,1);pointer-events:none;z-index:999;box-shadow:0 8px 32px var(--shadow)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
+/* Warn */
+.result-warn{color:var(--warn) !important;font-size:13px !important;font-weight:600 !important}
+
 @media(max-width:600px){
   .container{padding:12px}
   .top-nav{flex-wrap:wrap}
-  .nav-left{gap:12px}
-  .input-row{flex-direction:column;gap:10px}
-  .input-group{min-width:0}
-  .result-row{flex-direction:column;gap:10px}
-  .result-item{text-align:left;display:flex;align-items:center;gap:8px}
-  .result-item .r-label{margin-bottom:0;min-width:60px}
+  .input-row{gap:10px}
+  .input-group{min-width:0;flex-basis:calc(50% - 6px)}
+  .result-row{gap:10px}
+  .result-card{min-width:calc(50% - 6px)}
+  .config-row{flex-direction:column;align-items:flex-start;gap:8px}
 }
 </style>
 </head>
@@ -93,15 +97,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div class="container">
   <!-- Unified Navigation -->
   <div class="top-nav anim-in">
-    <div class="nav-left">
-      <span class="nav-brand">珊瑚监测</span>
-      <div class="nav-tabs">
-        <a class="nav-tab" href="water.html">💧 水质</a>
-        <a class="nav-tab" href="light.html">🌈 光谱</a>
-        <a class="nav-tab active" href="change.html">🔄 换水</a>
-      </div>
-    </div>
+    <span class="nav-brand">珊瑚监测</span>
     <div class="nav-right">
+      <a class="nav-tab" href="water.html">💧 水质</a>
+      <a class="nav-tab" href="light.html">🌈 光谱</a>
+      <a class="nav-tab active" href="change.html">🔄 换水</a>
+      <span class="nav-sep"></span>
       <button class="theme-btn" onclick="toggleTheme()" id="themeBtn" title="切换主题">☀️</button>
     </div>
   </div>
@@ -110,73 +111,66 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="card anim-in anim-d1">
     <div class="card-title">🔄 换水计算</div>
 
-    <!-- 输入区 -->
-    <div class="calc-section">
-      <div class="sec-label">📝 填写参数</div>
-      <div class="input-row">
-        <div class="input-group">
-          <label>换水量 <span class="unit">(L)</span></label>
-          <input type="number" id="waterVolume" value="12" step="1" oninput="calc()">
-        </div>
-        <div class="input-group">
-          <label>缸总水体 <span class="unit">(L)</span></label>
-          <input type="number" id="tankTotal" value="70" step="1" oninput="calc()">
-        </div>
-        <div class="input-group">
-          <label>盐度 <span class="unit">(‰)</span></label>
-          <input type="number" id="salinity" value="36" step="0.5" oninput="calc()">
-        </div>
+    <!-- 固定配置：总水体、盐度 -->
+    <div class="config-row">
+      <div class="config-item">
+        <label>缸总水体</label>
+        <input type="number" id="tankTotal" value="70" step="1" oninput="calc()">
+        <span class="unit">L</span>
       </div>
-      <div class="input-row" style="margin-top:12px">
-        <div class="input-group">
-          <label>室内温度 <span class="unit">(°C)</span></label>
-          <input type="number" id="roomTemp" value="25" step="0.5" oninput="calc()">
-        </div>
-        <div class="input-group">
-          <label>加热器温差 <span class="unit">(°C)</span></label>
-          <input type="number" id="heatDelta" value="2" step="0.5" oninput="calc()">
-        </div>
-        <div class="input-group">
-          <label>目标温度 <span class="unit">(°C)</span></label>
-          <input type="number" id="targetTemp" value="25" step="0.5" oninput="calc()">
-        </div>
+      <div class="config-item">
+        <label>盐度</label>
+        <input type="number" id="salinity" value="36" step="0.5" oninput="calc()">
+        <span class="unit">‰</span>
+      </div>
+    </div>
+
+    <!-- 每次换水的输入 -->
+    <div class="sec-label">📝 本次换水参数</div>
+    <div class="input-row">
+      <div class="input-group">
+        <label>换水量 <span class="unit">(L)</span></label>
+        <input type="number" id="waterVolume" value="12" step="1" oninput="calc()">
+      </div>
+      <div class="input-group">
+        <label>室内温度 <span class="unit">(°C)</span></label>
+        <input type="number" id="roomTemp" value="25" step="0.5" oninput="calc()">
+      </div>
+      <div class="input-group">
+        <label>调温水温度 <span class="unit">(°C)</span></label>
+        <input type="number" id="adjTemp" value="2" step="0.5" oninput="calc()">
+      </div>
+      <div class="input-group">
+        <label>目标温度 <span class="unit">(°C)</span></label>
+        <input type="number" id="targetTemp" value="25" step="0.5" oninput="calc()">
       </div>
     </div>
 
     <div class="sep"></div>
 
-    <!-- 结果区 -->
-    <div class="calc-section">
-      <div class="sec-label">📊 计算结果</div>
-      <div class="result-row">
-        <div class="result-item">
-          <div class="r-label">室温水</div>
-          <div class="r-value" id="rRoom">-<span class="r-unit">L</span></div>
-          <div class="r-desc">直接使用的RO水</div>
-        </div>
-        <div class="result-item">
-          <div class="r-label">加热水</div>
-          <div class="r-value" id="rHeat">-<span class="r-unit">L</span></div>
-          <div class="r-desc">需加热器加热</div>
-        </div>
-        <div class="result-item">
-          <div class="r-label">盐量</div>
-          <div class="r-value" id="rSalt">-<span class="r-unit">g</span></div>
-          <div class="r-desc">换水量 × 盐度</div>
-        </div>
-        <div class="result-item">
-          <div class="r-label">换水比例</div>
-          <div class="r-value" id="rRatio">-<span class="r-unit">%</span></div>
-          <div class="r-desc">换水量 / 总水体</div>
-        </div>
+    <!-- 计算结果 -->
+    <div class="sec-label">📊 计算结果</div>
+    <div class="result-row">
+      <div class="result-card">
+        <div class="r-label">室温水</div>
+        <div class="r-value" id="rRoom">-<span class="r-unit">L</span></div>
+      </div>
+      <div class="result-card">
+        <div class="r-label">调温水</div>
+        <div class="r-value" id="rAdj">-<span class="r-unit">L</span></div>
+      </div>
+      <div class="result-card">
+        <div class="r-label">盐量</div>
+        <div class="r-value" id="rSalt">-<span class="r-unit">g</span></div>
+      </div>
+      <div class="result-card">
+        <div class="r-label">换水比例</div>
+        <div class="r-value" id="rRatio">-<span class="r-unit">%</span></div>
       </div>
     </div>
 
     <div class="tip">
-      <strong>计算说明</strong><br>
-      · 温度混合：室温水 + 加热水(室温+温差) 混合达到目标温度<br>
-      · 盐量 = 换水量 × 盐度 ，换水比例 = 换水量 / 缸总水体<br>
-      · 当室温 = 目标温度时，无需加热，全部使用室温水
+      <strong>说明</strong>　室温水与调温水（热水/冰水）混合达到目标温度，公式：室温水 = 换水量 × (调温水温度 − 目标温度) ÷ (调温水温度 − 室温)
     </div>
   </div>
 </div>
@@ -207,34 +201,35 @@ function calc(){
   const tankTotal=parseFloat(document.getElementById('tankTotal').value)||70;
   const salinity=parseFloat(document.getElementById('salinity').value)||36;
   const roomT=parseFloat(document.getElementById('roomTemp').value)||25;
-  const heatDelta=parseFloat(document.getElementById('heatDelta').value)||0;
+  const adjT=parseFloat(document.getElementById('adjTemp').value)||0;
   const targetT=parseFloat(document.getElementById('targetTemp').value)||25;
 
-  const heatedT=roomT+heatDelta;
-  let roomW,heatW;
+  // Excel formula: roomWater = volume * (adjTemp - targetTemp) / (adjTemp - roomTemp)
+  let roomW, adjW;
+  const denom = adjT - roomT;
 
-  if(heatDelta<=0||targetT<=roomT){
-    roomW=vol;heatW=0;
-  }else if(targetT>heatedT){
-    roomW=0;heatW=vol;
-  }else{
-    roomW=vol*(heatedT-targetT)/heatDelta;
-    heatW=vol-roomW;
+  if(Math.abs(denom) < 0.01){
+    // adjTemp ≈ roomTemp → no temperature difference, all same temp
+    roomW = vol; adjW = 0;
+  } else {
+    roomW = vol * (adjT - targetT) / denom;
+    adjW = vol - roomW;
   }
-  roomW=Math.max(0,Math.min(vol,roomW));
-  heatW=Math.max(0,Math.min(vol,heatW));
 
-  const salt=vol*salinity;
-  const ratio=tankTotal>0?(vol/tankTotal*100):0;
+  // Check validity
+  const impossible = roomW < -0.01 || adjW < -0.01;
+  roomW = Math.max(0, roomW);
+  adjW = Math.max(0, adjW);
 
-  // Render
-  const impossible=targetT>heatedT&&heatDelta>0;
+  const salt = vol * salinity;
+  const ratio = tankTotal > 0 ? (vol / tankTotal * 100) : 0;
+
   if(impossible){
-    document.getElementById('rRoom').innerHTML='<span class="result-warn">⚠️ 温差不足</span>';
-    document.getElementById('rHeat').innerHTML='<span class="result-warn">无法达到目标</span>';
-  }else{
-    document.getElementById('rRoom').innerHTML=(roomW%1===0?roomW:roomW.toFixed(1))+'<span class="r-unit">L</span>';
-    document.getElementById('rHeat').innerHTML=(heatW%1===0?heatW:heatW.toFixed(1))+'<span class="r-unit">L</span>';
+    document.getElementById('rRoom').innerHTML='<span class="result-warn">⚠️ 温度无法达到</span>';
+    document.getElementById('rAdj').innerHTML='<span class="result-warn">请检查参数</span>';
+  } else {
+    document.getElementById('rRoom').innerHTML=fmt(roomW)+'<span class="r-unit">L</span>';
+    document.getElementById('rAdj').innerHTML=fmt(adjW)+'<span class="r-unit">L</span>';
   }
   document.getElementById('rSalt').innerHTML=Math.round(salt)+'<span class="r-unit">g</span>';
   document.getElementById('rRatio').innerHTML=ratio.toFixed(1)+'<span class="r-unit">%</span>';
@@ -242,8 +237,10 @@ function calc(){
   saveInputs();
 }
 
+function fmt(v){return v%1===0?String(v):v.toFixed(1);}
+
 function saveInputs(){
-  const ids=['waterVolume','tankTotal','salinity','roomTemp','heatDelta','targetTemp'];
+  const ids=['waterVolume','tankTotal','salinity','roomTemp','adjTemp','targetTemp'];
   const d={};ids.forEach(id=>{d[id]=document.getElementById(id).value;});
   _s(SK,JSON.stringify(d));
 }

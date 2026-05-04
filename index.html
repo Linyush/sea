@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>珊瑚监测</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a1628'/%3E%3Cpath d='M12 40Q20 20 32 30Q44 40 52 22' stroke='%2300d2ff' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='30' r='3' fill='%237b68ee'/%3E%3C/svg%3E">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{
+  --bg:#0a1628;--card:#131d2f;--border:#1e2d45;--border2:#2a3a52;
+  --text:#e0e6ed;--text2:#8ba3c7;--text3:#6b7a8d;--text4:#4a5a6d;--text5:#3a4a62;
+  --input-bg:#0a1628;--hover:rgba(0,210,255,.03);--accent:#00d2ff;--accent2:#7b68ee;
+  --warn:#ff6b6b;--shadow:rgba(0,0,0,.3);--card-hover-border:#1e3a5a;--card-hover-shadow:rgba(0,210,255,.04);
+  --qr-bg:#fff;--stp-bg:#1e2d45;--stp-hover:#2a3a52;--stp-active:#3b4e6d;
+  --pill-off:#2a3a52;--seg-bg:#0a1628;--seg-border:#2a3a52;--seg-text:#6b7a8d;
+  --row-border:#111b2d;--modal-hover:#172238;
+  --scrollbar:#2a3a52;--scrollbar-hover:#3a5a72;
+}
+html.light{
+  --bg:#f0f2f5;--card:#ffffff;--border:#dce0e6;--border2:#c5cbd3;
+  --text:#111827;--text2:#374151;--text3:#4b5563;--text4:#6b7280;--text5:#9ca3af;
+  --input-bg:#f7f8fa;--hover:rgba(0,120,200,.04);--accent:#0066cc;--accent2:#5b4ed4;
+  --warn:#dc2626;--shadow:rgba(0,0,0,.10);--card-hover-border:#b0bec5;--card-hover-shadow:rgba(0,120,200,.08);
+  --qr-bg:#fff;--stp-bg:#e5e7eb;--stp-hover:#d1d5db;--stp-active:#c5cbd3;
+  --pill-off:#c5cbd3;--seg-bg:#f7f8fa;--seg-border:#c5cbd3;--seg-text:#6b7280;
+  --row-border:#f0f2f5;--modal-hover:#f7f8fa;
+  --scrollbar:#c5cbd3;--scrollbar-hover:#9ca3af;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background .3s,color .3s}
+.container{max-width:1080px;margin:0 auto;padding:20px 24px}
+
+/* === Header + Nav === */
+.page-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.page-hd .left{display:flex;align-items:center;gap:10px}
+.page-hd h1{font-size:22px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.page-hd .badge{font-size:10px;color:var(--text4);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-weight:600}
+.nav-right{display:flex;align-items:center;gap:4px}
+.nav-tab{padding:5px 12px;font-size:12px;font-weight:500;color:var(--text3);text-decoration:none;border-radius:6px;transition:all .2s;white-space:nowrap;cursor:pointer;border:none;background:none}
+.nav-tab:hover{color:var(--text);background:var(--hover)}
+.nav-tab.active{color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent);font-weight:600}
+.nav-sep{width:1px;height:16px;background:var(--border);margin:0 4px;flex-shrink:0;display:inline-block;vertical-align:middle}
+.theme-btn{background:var(--card);border:1px solid var(--border);color:var(--text3);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .3s}
+.theme-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* === Page sections === */
+.page-section{display:none}
+.page-section.active{display:block}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.anim-in{animation:fadeUp .5s cubic-bezier(.22,1,.36,1) both}
+.anim-d1{animation-delay:.08s}
+.anim-d2{animation-delay:.16s}
+.anim-d3{animation-delay:.24s}
+
+/* === Water styles === */
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;position:relative;transition:border-color .4s,box-shadow .4s,background .3s}
+.card:hover{border-color:var(--card-hover-border);box-shadow:0 4px 24px var(--card-hover-shadow)}
+.card-toolbar{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.qb-date{background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:5px 8px;border-radius:7px;font-size:12px;font-weight:500;outline:none;transition:border-color .3s;width:96px;flex-shrink:0}
+.qb-date:focus{border-color:var(--accent)}
+.qb-fields{display:flex;gap:5px;align-items:center;flex:1;min-width:0}
+.qb-field{display:flex;align-items:center;gap:3px;flex:1;min-width:0}
+.qb-field .qd{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.qb-field input{background:var(--input-bg);border:1px solid var(--border);color:var(--text);width:100%;min-width:0;padding:5px 4px;border-radius:7px;font-size:12px;text-align:center;outline:none;transition:border-color .3s,box-shadow .3s}
+.qb-field input:focus{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 12%,transparent)}
+.qb-field input::placeholder{color:var(--text5);font-size:10px}
+.tb-sep{width:1px;height:20px;background:var(--border);flex-shrink:0;margin:0 2px}
+.btn-data{background:var(--card);border:1px solid var(--border2);color:var(--text3);border-radius:7px;padding:5px 12px;font-size:12px;font-weight:500;cursor:pointer;transition:all .3s;white-space:nowrap;flex-shrink:0}
+.btn-data:hover{border-color:var(--accent);color:var(--accent)}
+.chart-wrap{position:relative;height:640px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.chart-wrap::-webkit-scrollbar{display:none}
+.chart-inner{height:100%;min-width:100%}
+.chart-outer{position:relative}
+.lane-labels{position:absolute;left:0;top:0;bottom:0;z-index:10;pointer-events:none;width:0}
+.lane-lbl{position:absolute;left:8px;pointer-events:none;white-space:nowrap;font-size:13px;font-weight:800;letter-spacing:.5px;padding:3px 10px 3px 7px;border-radius:5px;background:var(--card);box-shadow:0 1px 4px var(--shadow)}
+#customTooltip{position:absolute;pointer-events:none;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:12px;box-shadow:0 4px 20px var(--shadow);z-index:20;opacity:0;transition:opacity .15s ease;white-space:nowrap}
+#customTooltip.show{opacity:1}
+#customTooltip .tt-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px}
+#customTooltip .tt-row{display:flex;align-items:center;gap:6px;padding:1px 0}
+#customTooltip .tt-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+#customTooltip .tt-name{color:var(--text3);min-width:32px}
+#customTooltip .tt-val{font-weight:600;color:var(--text)}
+#customTooltip .tt-warn{color:var(--warn)}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0);z-index:100;align-items:center;justify-content:center;transition:background .3s}
+.modal-overlay.open{display:flex;background:rgba(0,0,0,.55)}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:0;max-width:760px;width:96%;max-height:88vh;overflow:hidden;display:flex;flex-direction:column;transform:scale(.92) translateY(12px);opacity:0;transition:transform .35s cubic-bezier(.22,1,.36,1),opacity .3s,background .3s}
+.modal-overlay.open .modal{transform:scale(1) translateY(0);opacity:1}
+.modal-hd{display:flex;justify-content:space-between;align-items:center;padding:16px 20px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
+.modal-hd h3{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
+.modal-hd h3 .dot{width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2))}
+.modal-close{background:0;border:none;color:var(--text3);font-size:20px;cursor:pointer;line-height:1;transition:color .2s,transform .2s;padding:4px}
+.modal-close:hover{color:var(--warn);transform:rotate(90deg)}
+.modal-bd{overflow-y:auto;padding:0 20px 20px;flex:1}
+.sec-label{font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin:16px 0 8px;font-weight:700;display:flex;align-items:center;gap:6px}
+.tgt-grid{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.tgt-card{background:var(--input-bg);border:1px solid var(--border);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:5px;transition:border-color .3s;flex:1;min-width:105px;max-width:160px}
+.tgt-card:hover{border-color:var(--border2)}
+.tgt-card .tgt-hd{display:flex;align-items:center;gap:5px;font-size:13px;font-weight:600;justify-content:space-between}
+.tgt-card .tgt-hd .left{display:flex;align-items:center;gap:5px}
+.tgt-card .tgt-hd .sw{width:10px;height:3px;border-radius:2px;flex-shrink:0}
+.tgt-card .tgt-row{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text3)}
+.tgt-card .tgt-row span.rl{flex-shrink:0;width:24px;text-align:right}
+.tgt-card input{background:var(--bg);border:1px solid var(--border);color:var(--text);width:100%;padding:3px 4px;border-radius:5px;font-size:12px;text-align:center;outline:none;transition:border-color .3s,box-shadow .3s}
+.tgt-card input:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(0,210,255,.1)}
+.tgt-card input.tgt-v{color:var(--accent);font-weight:600}
+.del-field-btn{background:none;border:none;color:var(--text5);cursor:pointer;font-size:10px;padding:0 2px;transition:color .2s}
+.del-field-btn:hover{color:var(--warn)}
+.add-field-card{background:var(--input-bg);border:1px dashed var(--border);border-radius:10px;padding:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color .3s;min-width:50px;flex:0 0 50px}
+.add-field-card:hover{border-color:var(--accent)}
+.add-field-card span{color:var(--text4);font-size:20px;font-weight:300;transition:color .3s}
+.add-field-card:hover span{color:var(--accent)}
+.tbl-wrap{overflow-x:auto;margin-top:4px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{color:var(--text3);font-weight:600;font-size:12px;letter-spacing:.5px;padding:7px 4px;text-align:center;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--card);z-index:2}
+thead th:first-child{text-align:left;padding-left:4px;width:72px}
+thead th .th-dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:2px;vertical-align:middle;position:relative;top:-1px}
+tbody td{padding:4px 3px;text-align:center;border-bottom:1px solid color-mix(in srgb,var(--border) 60%,transparent);transition:background .2s}
+tbody tr:hover td{background:var(--hover)}
+tbody td.dc{color:var(--text2);font-size:13px;font-weight:500;white-space:nowrap;text-align:left;padding-left:4px}
+tbody td input{background:transparent;border:1px solid transparent;color:var(--text);text-align:center;width:48px;padding:3px 2px;border-radius:5px;font-size:13px;font-weight:500;transition:border-color .3s,background .3s;outline:none}
+tbody td input:hover{border-color:var(--border2)}
+tbody td input:focus{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 4%,transparent)}
+tbody td input::placeholder{color:var(--text5)}
+@keyframes numPulse{0%{text-shadow:0 0 0 transparent}50%{text-shadow:0 0 8px color-mix(in srgb,var(--accent) 50%,transparent)}100%{text-shadow:0 0 0 transparent}}
+.pulse{animation:numPulse .35s ease}
+.del-btn{background:none;border:none;color:var(--text5);cursor:pointer;font-size:11px;padding:2px 4px;border-radius:4px;transition:color .2s,background .2s}
+.del-btn:hover{color:var(--warn);background:color-mix(in srgb,var(--warn) 8%,transparent)}
+tr.add-row td{padding:5px 3px;border-bottom:2px solid var(--border)}
+tr.add-row input{background:var(--input-bg);border:1px solid var(--border);color:var(--text);text-align:center;width:48px;padding:3px 2px;border-radius:5px;font-size:13px;outline:none;transition:border-color .3s}
+tr.add-row input:focus{border-color:var(--accent)}
+tr.add-row input::placeholder{color:var(--text5);font-size:10px}
+tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
+.btn-sm{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#fff;padding:4px 10px;border-radius:5px;cursor:pointer;font-size:11px;font-weight:600;transition:opacity .3s,transform .2s;outline:none}
+.btn-sm:hover{opacity:.9;transform:translateY(-1px)}
+.btn-sm:active{transform:scale(.97)}
+.btn{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#fff;padding:6px 18px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;transition:opacity .3s,transform .2s;outline:none}
+.btn:hover{opacity:.9;transform:translateY(-1px)}
+.btn:active{transform:scale(.97)}
+.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--text2);padding:6px 16px;border-radius:8px;cursor:pointer;font-size:13px;transition:all .3s;outline:none}
+.btn-ghost:hover{border-color:var(--text4);color:var(--text)}
+.expand-bar{display:flex;justify-content:center;margin-top:6px}
+.expand-btn{background:none;border:none;color:var(--text3);cursor:pointer;font-size:12px;padding:4px 14px;transition:color .3s}
+.expand-btn:hover{color:var(--accent)}
+.expand-btn .arrow{display:inline-block;transition:transform .35s cubic-bezier(.22,1,.36,1);margin-left:4px}
+.expand-btn.open .arrow{transform:rotate(180deg)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--card);border:1px solid var(--border);color:var(--accent);padding:10px 24px;border-radius:10px;font-size:13px;opacity:0;transition:all .4s cubic-bezier(.22,1,.36,1);pointer-events:none;z-index:999;box-shadow:0 8px 32px var(--shadow)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.cfm-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0);z-index:200;align-items:center;justify-content:center;transition:background .3s}
+.cfm-overlay.open{display:flex;background:rgba(0,0,0,.5)}
+.cfm-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;max-width:340px;width:90%;transform:scale(.92);opacity:0;transition:transform .3s cubic-bezier(.22,1,.36,1),opacity .25s}
+.cfm-overlay.open .cfm-box{transform:scale(1);opacity:1}
+.cfm-box p{font-size:14px;color:var(--text2);margin-bottom:16px}
+.cfm-btns{display:flex;gap:10px;justify-content:flex-end}
+.btn-del{background:color-mix(in srgb,var(--warn) 10%,transparent);border:1px solid color-mix(in srgb,var(--warn) 30%,transparent);color:var(--warn);padding:6px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;transition:all .3s;outline:none}
+.btn-del:hover{background:color-mix(in srgb,var(--warn) 18%,transparent);border-color:var(--warn)}
+.btn-reset{background:0;border:none;color:var(--text5);font-size:15px;cursor:pointer;transition:color .3s,transform .3s;padding:4px;line-height:1;margin-left:8px}
+.btn-reset:hover{color:var(--warn);transform:rotate(-45deg)}
+.val-warn{color:var(--warn) !important;font-weight:700 !important}
+.nf-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0);z-index:300;align-items:center;justify-content:center;transition:background .3s}
+.nf-overlay.open{display:flex;background:rgba(0,0,0,.5)}
+.nf-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;max-width:360px;width:90%;transform:scale(.92);opacity:0;transition:transform .3s cubic-bezier(.22,1,.36,1),opacity .25s}
+.nf-overlay.open .nf-box{transform:scale(1);opacity:1}
+.nf-box h4{font-size:14px;margin-bottom:14px;font-weight:600}
+.nf-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.nf-row label{font-size:13px;color:var(--text2);width:48px;flex-shrink:0;text-align:right}
+.nf-row input{flex:1;background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:6px 8px;border-radius:7px;font-size:13px;outline:none;transition:border-color .3s}
+.nf-row input:focus{border-color:var(--accent)}
+.nf-row input[type="color"]{width:36px;height:30px;padding:2px;cursor:pointer;border-radius:6px}
+.nf-btns{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+.conv-hint{font-size:10px;color:var(--accent);opacity:0;transition:opacity .3s;position:absolute;bottom:-14px;white-space:nowrap}
+.conv-hint.show{opacity:1}
+.auto-label{font-size:11px;color:var(--text4);display:flex;align-items:center;gap:4px;flex-shrink:0}
+.auto-label .auto-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;animation:autoPulse 2s infinite}
+@keyframes autoPulse{0%,100%{opacity:.3}50%{opacity:1}}
+
+/* === Light styles === */
+.ptable{padding:16px 20px;margin-bottom:24px;overflow:hidden}
+.prow{display:grid;grid-template-columns:72px repeat(4,1fr);gap:8px;align-items:center;min-height:40px}
+.prow+.prow{margin-top:6px}
+.prow.header{margin-bottom:4px;min-height:auto}
+.prow.header .pcell{font-size:11px;color:var(--text4);text-transform:uppercase;letter-spacing:.5px;text-align:center;user-select:none}
+.prow.header .pcell:first-child{text-align:left}
+.pcell{display:flex;align-items:center;justify-content:center}
+.pcell:first-child{justify-content:flex-start}
+.rlabel{display:flex;align-items:center;gap:5px;font-size:13px;font-weight:600;white-space:nowrap;cursor:default}
+.top-bar{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:14px}
+.seg{display:inline-flex;background:var(--seg-bg);border:1px solid var(--seg-border);border-radius:8px;position:relative;overflow:hidden;padding:2px;transition:border-color .3s}
+.seg:hover{border-color:var(--text4)}
+.seg-item{position:relative;z-index:1;padding:5px 18px;font-size:13px;font-weight:600;color:var(--seg-text);cursor:pointer;user-select:none;transition:color .3s;border:none;background:0;outline:none}
+.seg-item.active{color:#fff}
+.seg-slider{position:absolute;top:2px;bottom:2px;left:2px;width:calc(50% - 2px);background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:6px;transition:transform .35s cubic-bezier(.4,.2,.2,1);pointer-events:none}
+.seg.right .seg-slider{transform:translateX(100%)}
+.stp{display:inline-flex;border:1px solid var(--border2);border-radius:8px;overflow:hidden;background:var(--input-bg);transition:border-color .3s,box-shadow .3s}
+.stp:focus-within{border-color:color-mix(in srgb,var(--accent) 40%,transparent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 8%,transparent)}
+.stp button{background:var(--stp-bg);border:none;color:var(--accent);font-size:15px;font-weight:bold;width:28px;height:30px;cursor:pointer;transition:background .2s,transform .1s;outline:none;line-height:1}
+.stp button:hover{background:var(--stp-hover)}
+.stp button:active{background:var(--stp-active);transform:scale(.9)}
+.stp input{width:38px;background:0;border:none;border-left:1px solid var(--border2);border-right:1px solid var(--border2);color:var(--accent);font-size:15px;font-weight:700;text-align:center;padding:4px 0;outline:none;-moz-appearance:textfield;transition:color .2s}
+.stp input::-webkit-inner-spin-button,.stp input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.stp input.pulse{animation:numPulse .35s ease}
+.pill{position:relative;width:28px;height:16px;cursor:pointer;flex-shrink:0}
+.pill input{display:none}
+.pill-bg{position:absolute;inset:0;border-radius:8px;transition:background .3s cubic-bezier(.4,.2,.2,1)}
+.pill input:not(:checked)~.pill-bg{background:var(--pill-off)}
+.pill input:checked~.pill-bg{background:var(--ch-color)}
+.pill-dot{position:absolute;top:2px;left:2px;width:12px;height:12px;background:#fff;border-radius:50%;transition:transform .3s cubic-bezier(.34,1.56,.64,1);box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.pill input:checked~.pill-dot{transform:translateX(12px)}
+.prow.ch-row{transition:opacity .35s}
+.prow.ch-row.off{opacity:1}
+.prow.ch-row.off .stp{opacity:.18;pointer-events:none;transition:opacity .35s}
+.prow.ch-row.off .rlabel span:last-child{opacity:.3;transition:opacity .35s}
+.prow.ch-row:not(.off) .stp{opacity:1;transition:opacity .35s}
+.prow.ch-row:not(.off) .rlabel span:last-child{opacity:1;transition:opacity .35s}
+.mode-content{position:relative;overflow:hidden}
+.mode-panel{transition:opacity .35s cubic-bezier(.22,1,.36,1),max-height .4s cubic-bezier(.22,1,.36,1);overflow:hidden}
+.mode-panel.quick{max-height:60px;opacity:1}
+.mode-panel.quick.hidden{max-height:0;opacity:0;pointer-events:none}
+.mode-panel.adv{max-height:0;opacity:0;pointer-events:none}
+.mode-panel.adv.visible{max-height:500px;opacity:1;pointer-events:auto}
+.prow.ch-row+.prow.ch-row{border-top:1px solid var(--row-border)}
+.chart-sec{padding:20px;margin-bottom:24px;position:relative}
+.chart-sec .chart-wrap{height:380px;overflow:visible}
+.qr-sec{padding:20px;margin-bottom:24px;display:flex;flex-direction:column;align-items:center}
+.qr-head{display:flex;align-items:center;gap:12px;margin-bottom:16px;justify-content:center}
+.qr-head h3{font-size:16px;color:var(--text3);margin:0}
+.qr-sel{background:var(--input-bg);border:1px solid var(--border2);color:var(--text);padding:6px 12px;border-radius:6px;outline:none;font-size:14px;cursor:pointer;transition:border-color .3s}
+.qr-sel:hover{border-color:var(--text4)}
+.qr-sel:focus{border-color:var(--accent)}
+#qrcode{background:var(--qr-bg);padding:10px;border-radius:8px;margin-bottom:12px;min-width:276px;min-height:276px;display:flex;align-items:center;justify-content:center;transition:transform .3s,box-shadow .3s}
+#qrcode:hover{transform:scale(1.02);box-shadow:0 6px 20px var(--shadow)}
+
+/* === Change styles === */
+.config-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;padding:10px 14px;background:color-mix(in srgb,var(--border) 20%,transparent);border-radius:8px;margin-bottom:16px}
+.config-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text3)}
+.config-item label{white-space:nowrap}
+.config-item input{background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:4px 6px;border-radius:5px;font-size:13px;font-weight:600;text-align:center;width:56px;outline:none;transition:border-color .3s}
+.config-item input:focus{border-color:var(--accent)}
+.config-item .unit{color:var(--text4);font-size:11px}
+.input-row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+.input-group{display:flex;flex-direction:column;gap:4px;flex:1;min-width:110px}
+.input-group label{font-size:12px;color:var(--text3);font-weight:500}
+.input-group label .unit{color:var(--text4);font-weight:400}
+.input-group input{background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:14px;font-weight:500;outline:none;transition:border-color .3s,box-shadow .3s;text-align:center;width:100%}
+.input-group input:focus{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 10%,transparent)}
+.sep{height:1px;background:var(--border);margin:16px 0}
+.tip{font-size:11px;color:var(--text4);line-height:1.6;margin-top:14px}
+.tip strong{color:var(--text3)}
+.result-warn{color:var(--warn) !important;font-size:13px !important;font-weight:600 !important}
+
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--scrollbar);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--scrollbar-hover)}
+
+@media(max-width:600px){
+  .container{padding:12px}
+  .page-hd{flex-wrap:wrap;gap:8px}
+  .page-hd h1{font-size:18px}
+  .nav-right{flex-wrap:wrap}
+  .prow{grid-template-columns:60px repeat(4,1fr);gap:4px}
+  .stp button{width:24px;font-size:14px}
+  .stp input{width:32px;font-size:14px}
+  .chart-sec .chart-wrap{height:300px}
+  .chart-sec{padding:10px}
+  .rlabel{font-size:11px}
+  #qrcode{min-width:200px;min-height:200px}
+  .qr-sec{padding:12px}
+  .seg-item{padding:4px 12px;font-size:12px}
+  .input-row{gap:10px}
+  .input-group{min-width:0;flex-basis:calc(50% - 6px)}
+  .result-row{gap:10px}
+  .result-card{min-width:calc(50% - 6px)}
+  .config-row{flex-direction:column;align-items:flex-start;gap:8px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <!-- ========== Shared Header ========== -->
+  <div class="page-hd anim-in">
+    <div class="left">
+      <h1 id="pageTitle">水质记录</h1>
+      <span class="badge" id="pageBadge">REEF MONITOR</span>
+    </div>
+    <div class="nav-right">
+      <button class="nav-tab active" data-page="water" onclick="switchPage('water')">💧 水质</button>
+      <button class="nav-tab" data-page="light" onclick="switchPage('light')">🌈 光谱</button>
+      <button class="nav-tab" data-page="change" onclick="switchPage('change')">🔄 换水</button>
+      <span class="nav-sep"></span>
+      <button class="theme-btn" onclick="toggleTheme()" id="themeBtn" title="切换主题">🌙</button>
+    </div>
+  </div>
+
+  <!-- ========== PAGE: Water ========== -->
+  <section class="page-section active" id="page-water">
+    <div class="card anim-in anim-d1">
+      <div class="card-toolbar">
+        <input type="text" id="qDate" class="qb-date" placeholder="YYYY-MM-DD">
+        <div class="qb-fields" id="qbFields"></div>
+        <span class="tb-sep"></span>
+        <button class="btn-data" onclick="openModal()">📋 数据</button>
+        <button class="btn-data" onclick="doExport()">📤 导出</button>
+        <button class="btn-data" onclick="document.getElementById('importFile').click()">📥 导入</button>
+        <span class="auto-label" id="autoBackLabel" style="display:none"><span class="auto-dot"></span>自动备份</span>
+      </div>
+      <div class="chart-outer" id="chartOuter">
+        <div class="lane-labels" id="laneLabels"></div>
+        <div class="chart-wrap" id="chartWrap">
+          <div class="chart-inner" id="chartInner"><canvas id="mainChart"></canvas></div>
+        </div>
+        <div id="customTooltip"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== PAGE: Light ========== -->
+  <section class="page-section" id="page-light">
+    <div class="card ptable anim-in anim-d1">
+      <div class="top-bar">
+        <div class="seg" id="seg">
+          <div class="seg-slider"></div>
+          <button class="seg-item active" id="segQ" onclick="L_setMode('quick')">快速设置</button>
+          <button class="seg-item" id="segA" onclick="L_setMode('adv')">高级设置</button>
+        </div>
+        <button class="btn-reset" onclick="L_resetAll()" title="重置默认">↺</button>
+      </div>
+      <div class="prow header">
+        <div class="pcell"></div>
+        <div class="pcell">开灯时间</div>
+        <div class="pcell">总时长</div>
+        <div class="pcell">高峰时长</div>
+        <div class="pcell">高峰功率</div>
+      </div>
+      <div class="mode-content">
+        <div class="mode-panel quick" id="quickPanel">
+          <div class="prow" id="globalRow">
+            <div class="pcell"></div>
+            <div class="pcell" id="g0"></div>
+            <div class="pcell" id="g1"></div>
+            <div class="pcell" id="g2"></div>
+            <div class="pcell" id="g3"></div>
+          </div>
+        </div>
+        <div class="mode-panel adv" id="advPanel">
+          <div id="chBody"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card chart-sec anim-in anim-d2">
+      <button class="btn-data" onclick="L_openDataModal()">📊 强度数据</button>
+      <div class="chart-wrap" style="height:380px;overflow:visible"><canvas id="lightChart"></canvas></div>
+    </div>
+    <div class="modal-overlay" id="lightDataModal">
+      <div class="modal" style="max-width:90vw;max-height:80vh;padding:20px;overflow:auto">
+        <h3 style="font-size:16px;margin-bottom:12px">📊 光照强度数据</h3>
+        <button class="modal-close" onclick="L_closeDataModal()" style="position:absolute;top:12px;right:16px">✕</button>
+        <div style="overflow-x:auto"><table id="dataTable"></table></div>
+      </div>
+    </div>
+    <div class="card qr-sec anim-in anim-d3">
+      <div class="qr-head">
+        <h3>光谱二维码导出</h3>
+        <select id="qrBrand" class="qr-sel"><option value="aipai">艾派 (AiPai)</option></select>
+      </div>
+      <div id="qrcode"></div>
+      <p style="font-size:12px;color:var(--text3);text-align:center">💡 长按或右键二维码保存图片</p>
+    </div>
+  </section>
+
+  <!-- ========== PAGE: Change ========== -->
+  <section class="page-section" id="page-change">
+    <div class="card anim-in anim-d1">
+      <div class="config-row">
+        <div class="config-item">
+          <label>缸总水体</label>
+          <input type="number" id="tankTotal" value="70" step="1" oninput="calc()">
+          <span class="unit">L</span>
+        </div>
+        <div class="config-item">
+          <label>盐度</label>
+          <input type="number" id="salinity" value="36" step="0.5" oninput="calc()">
+          <span class="unit">‰</span>
+        </div>
+      </div>
+      <div class="sec-label">📝 本次换水参数</div>
+      <div class="input-row">
+        <div class="input-group">
+          <label>换水量 <span class="unit">(L)</span></label>
+          <input type="number" id="waterVolume" value="12" step="1" oninput="calc()">
+        </div>
+        <div class="input-group">
+          <label>室内温度 <span class="unit">(°C)</span></label>
+          <input type="number" id="roomTemp" value="25" step="0.5" oninput="calc()">
+        </div>
+        <div class="input-group">
+          <label>调温水温度 <span class="unit">(°C)</span></label>
+          <input type="number" id="adjTemp" value="2" step="0.5" oninput="calc()">
+        </div>
+        <div class="input-group">
+          <label>目标温度 <span class="unit">(°C)</span></label>
+          <input type="number" id="targetTemp" value="25" step="0.5" oninput="calc()">
+        </div>
+      </div>
+      <div class="sep"></div>
+      <div class="sec-label">📊 计算结果</div>
+      <div class="result-row">
+        <div class="result-card">
+          <div class="r-label">室温水</div>
+          <div class="r-value" id="rRoom">-<span class="r-unit">L</span></div>
+        </div>
+        <div class="result-card">
+          <div class="r-label">调温水</div>
+          <div class="r-value" id="rAdj">-<span class="r-unit">L</span></div>
+        </div>
+        <div class="result-card">
+          <div class="r-label">盐量</div>
+          <div class="r-value" id="rSalt">-<span class="r-unit">g</span></div>
+        </div>
+        <div class="result-card">
+          <div class="r-label">换水比例</div>
+          <div class="r-value" id="rRatio">-<span class="r-unit">%</span></div>
+        </div>
+      </div>
+      <div class="tip">
+        <strong>说明</strong>　室温水与调温水（热水/冰水）混合达到目标温度，公式：室温水 = 换水量 × (调温水温度 − 目标温度) ÷ (调温水温度 − 室温)
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Shared toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Water: hidden file input -->
+<input type="file" id="importFile" accept=".json" style="display:none" onchange="doImport(this)">
+
+<!-- Water: data modal -->
+<div class="modal-overlay" id="dataModal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-hd">
+      <h3><span class="dot"></span>水质数据<button class="btn-reset" onclick="resetAll()" title="重置">↻</button></h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-bd">
+      <div class="sec-label">🎯 目标与范围</div>
+      <div class="tgt-grid" id="tgtGrid"></div>
+      <div class="sec-label">📊 水质记录</div>
+      <div class="tbl-wrap"><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+      <div class="expand-bar" id="expandBar" style="display:none">
+        <button class="expand-btn" id="expandBtn" onclick="toggleExpand()">查看更早数据 <span class="arrow">▼</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Water: delete confirm -->
+<div class="cfm-overlay" id="delCfm">
+  <div class="cfm-box"><p id="delMsg"></p>
+    <div class="cfm-btns"><button class="btn-ghost" onclick="closeDel()">取消</button><button class="btn-del" id="delOk">删除</button></div>
+  </div>
+</div>
+
+<!-- Water: new field modal -->
+<div class="nf-overlay" id="nfModal" onclick="if(event.target===this)closeNf()">
+  <div class="nf-box">
+    <h4>添加水质指标</h4>
+    <div class="nf-row"><label>标识</label><input id="nfKey" placeholder="英文小写, 如 sal"></div>
+    <div class="nf-row"><label>名称</label><input id="nfName" placeholder="如 盐度"></div>
+    <div class="nf-row"><label>颜色</label><input id="nfColor" type="color" value="#66ccff"></div>
+    <div class="nf-row"><label>目标</label><input id="nfTgt" type="text" inputmode="decimal" placeholder="目标值"></div>
+    <div class="nf-row"><label>下限</label><input id="nfLo" type="text" inputmode="decimal"></div>
+    <div class="nf-row"><label>上限</label><input id="nfHi" type="text" inputmode="decimal"></div>
+    <div class="nf-btns"><button class="btn-ghost" onclick="closeNf()">取消</button><button class="btn" onclick="doAddField()">添加</button></div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   SHARED UTILITIES
+   ============================================================ */
+let darkMode=false;
+function _g(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function _s(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function _r(k){try{localStorage.removeItem(k)}catch(e){}}
+function getCS(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+function loadTheme(){
+  const t=_g('reef_theme');
+  if(t==='dark'){darkMode=true;document.documentElement.classList.remove('light');}
+  else{darkMode=false;document.documentElement.classList.add('light');}
+  document.getElementById('themeBtn').textContent=darkMode?'🌙':'☀️';
+}
+function toggleTheme(){
+  darkMode=!darkMode;
+  document.documentElement.classList.toggle('light',!darkMode);
+  document.getElementById('themeBtn').textContent=darkMode?'🌙':'☀️';
+  _s('reef_theme',darkMode?'dark':'light');
+  // Update water chart
+  if(W_chart) renderChart();
+  // Update light chart
+  if(L_chart){L_chart.options.scales.x.ticks.color=getCS('--text3');L_chart.options.scales.y.ticks.color=getCS('--text3');L_chart.options.scales.x.grid.color=getCS('--border')+'40';L_chart.options.scales.y.grid.color=getCS('--border')+'40';L_chart.options.plugins.legend.labels.color=getCS('--text3');L_chart.update();}
+}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+
+/* ============================================================
+   SPA ROUTER
+   ============================================================ */
+const PAGE_META={
+  water:{title:'水质记录',badge:'REEF MONITOR'},
+  light:{title:'光谱生成器',badge:'SPECTRUM'},
+  change:{title:'换水计算',badge:'WATER CHANGE'}
+};
+let _currentPage='water';
+let _pageInited={water:false,light:false,change:false};
+
+function switchPage(page){
+  if(!PAGE_META[page])return;
+  _currentPage=page;
+  // Update tabs
+  document.querySelectorAll('.nav-tab').forEach(b=>{
+    b.classList.toggle('active',b.dataset.page===page);
+  });
+  // Update title/badge
+  document.getElementById('pageTitle').textContent=PAGE_META[page].title;
+  document.getElementById('pageBadge').textContent=PAGE_META[page].badge;
+  // Toggle sections
+  document.querySelectorAll('.page-section').forEach(s=>{
+    s.classList.toggle('active',s.id==='page-'+page);
+  });
+  // Update hash
+  history.replaceState(null,null,'#'+page);
+  // Lazy init
+  if(!_pageInited[page]){
+    _pageInited[page]=true;
+    if(page==='water') initWater();
+    else if(page==='light') initLight();
+    else if(page==='change') initChange();
+  }
+  // Resize charts
+  if(page==='water'&&W_chart){setTimeout(()=>{W_chart.resize();updateLaneLabels();},50);}
+  if(page==='light'&&L_chart){setTimeout(()=>{L_chart.resize();},50);}
+}
+
+/* ============================================================
+   WATER QUALITY MODULE
+   ============================================================ */
+const CA_TABLE=[[0,500],[.02,490],[.04,480],[.06,470],[.08,460],[.10,450],[.12,440],[.14,430],[.16,420],[.18,410],[.20,400],[.22,390],[.24,380],[.26,370],[.28,360],[.30,350],[.32,340],[.34,330],[.36,320],[.38,310],[.40,300],[.42,290],[.44,280],[.46,270],[.48,260],[.50,250]];
+const MG_TABLE=[[0,1500],[.02,1470],[.04,1440],[.06,1410],[.08,1380],[.10,1350],[.12,1320],[.14,1290],[.16,1260],[.18,1230],[.20,1200],[.22,1170],[.24,1140],[.26,1110],[.28,1080],[.30,1050],[.32,1020],[.34,990],[.36,960],[.38,930],[.40,900],[.42,870],[.44,840],[.46,810],[.48,780],[.50,750]];
+function lookupTable(tbl,v){
+  if(v<=tbl[0][0])return tbl[0][1];if(v>=tbl[tbl.length-1][0])return tbl[tbl.length-1][1];
+  for(let i=0;i<tbl.length-1;i++){if(v>=tbl[i][0]&&v<=tbl[i+1][0]){const t=(v-tbl[i][0])/(tbl[i+1][0]-tbl[i][0]);return Math.round(tbl[i][1]+(tbl[i+1][1]-tbl[i][1])*t);}}
+  return tbl[tbl.length-1][1];
+}
+const W_SK='reef_water_v10';
+const DEF_FIELDS=[
+  {key:'no3',name:'NO₃',color:'#f0c040',tgt:5,lo:0,hi:10},
+  {key:'po4',name:'PO₄',color:'#4499ee',tgt:0.05,lo:0,hi:0.1},
+  {key:'kh', name:'KH', color:'#aa66dd',tgt:8.2,lo:7,hi:9},
+  {key:'ca', name:'Ca', color:'#ff5588',tgt:450,lo:400,hi:480},
+  {key:'mg', name:'Mg', color:'#22bbaa',tgt:1350,lo:1250,hi:1450},
+];
+const SEED=[
+  {date:'2025-08-31',no3:5,po4:0.04,kh:8.8,ca:400,mg:1350},
+  {date:'2025-09-07',no3:3,po4:0.03,kh:9.8,ca:390,mg:1350},
+  {date:'2025-09-13',no3:10,po4:0.04,kh:10.4,ca:370,mg:1350},
+  {date:'2025-09-20',no3:10,po4:0.05,kh:10,ca:440,mg:1350},
+  {date:'2025-09-27',no3:5,po4:0.04,kh:9.8,ca:475,mg:1410},
+  {date:'2025-10-04',no3:5,po4:0.06,kh:9,ca:450,mg:1350},
+  {date:'2025-10-11',no3:5,po4:0.12,kh:9,ca:430,mg:1320},
+  {date:'2025-10-18',no3:2,po4:0.12,kh:8.2,ca:435,mg:1200},
+  {date:'2025-10-25',no3:2,po4:0.08,kh:9.4,ca:450,mg:1380},
+  {date:'2025-11-01',no3:2,po4:0.04,kh:9.7,ca:450,mg:1410},
+  {date:'2025-11-08',no3:5,po4:0.06,kh:9.1,ca:420,mg:1320},
+  {date:'2025-11-15',no3:2,po4:0.04,kh:8.8,ca:430,mg:1305},
+  {date:'2025-11-22',no3:2,po4:0.03,kh:8.8,ca:430,mg:1310},
+  {date:'2025-11-29',no3:null,po4:null,kh:8.4,ca:null,mg:null},
+  {date:'2025-12-06',no3:2,po4:0.02,kh:8,ca:435,mg:1365},
+  {date:'2025-12-13',no3:null,po4:null,kh:8.4,ca:null,mg:null},
+  {date:'2025-12-20',no3:2,po4:0.04,kh:8,ca:445,mg:1410},
+  {date:'2025-12-27',no3:2,po4:0.04,kh:8.4,ca:430,mg:1350},
+  {date:'2026-01-03',no3:null,po4:null,kh:8.3,ca:425,mg:1275},
+  {date:'2026-01-10',no3:2,po4:0.04,kh:7.6,ca:425,mg:1290},
+  {date:'2026-01-17',no3:null,po4:null,kh:7.6,ca:415,mg:1305},
+  {date:'2026-01-24',no3:2,po4:0.04,kh:7.8,ca:420,mg:1305},
+  {date:'2026-01-31',no3:null,po4:null,kh:7.8,ca:null,mg:null},
+  {date:'2026-02-07',no3:1,po4:0.04,kh:8.3,ca:420,mg:1320},
+  {date:'2026-02-14',no3:null,po4:null,kh:null,ca:null,mg:null},
+  {date:'2026-02-21',no3:0.5,po4:0.02,kh:8.1,ca:465,mg:1440},
+  {date:'2026-02-28',no3:1,po4:0.03,kh:8.4,ca:450,mg:1415},
+  {date:'2026-03-07',no3:2,po4:0.04,kh:7.9,ca:430,mg:1380},
+  {date:'2026-03-14',no3:2,po4:0.06,kh:8.2,ca:450,mg:1350},
+  {date:'2026-03-21',no3:2,po4:0.08,kh:8.1,ca:450,mg:1350},
+  {date:'2026-03-28',no3:2,po4:0.1,kh:8.1,ca:435,mg:1260},
+  {date:'2026-04-04',no3:5,po4:0.08,kh:8.1,ca:465,mg:1305},
+  {date:'2026-04-11',no3:8,po4:0.12,kh:8.1,ca:450,mg:1350},
+  {date:'2026-04-18',no3:5,po4:0.18,kh:8.2,ca:470,mg:1380},
+];
+let fields=[],rows=[],expanded=false,W_chart=null;
+let _dateMap={};
+
+function _param(k){try{return new URLSearchParams(window.location.search).get(k)}catch(e){return null}}
+function _hasAutoBack(){return _param('autoBack')==='1';}
+function localDate(){const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
+function pd(s){return new Date(s+'T00:00:00')}
+function fd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function fs(s){const d=pd(s);return(d.getMonth()+1)+'/'+d.getDate();}
+function calcBands(){
+  const n=fields.length;if(!n)return{};
+  const gap=0.04,totalGap=gap*(n-1),bandH=(1-totalGap)/n,bands={};
+  fields.forEach((f,i)=>{bands[f.key]={top:i*(bandH+gap),bot:i*(bandH+gap)+bandH};});
+  return bands;
+}
+function load(){
+  const s=_g(W_SK);
+  if(s){try{const o=JSON.parse(s);
+    fields=(o.fields||[]).length?o.fields:DEF_FIELDS.map(f=>({...f}));
+    fields=fields.map(f=>{const d=DEF_FIELDS.find(x=>x.key===f.key);if(d){if(f.lo==null||isNaN(f.lo))f.lo=d.lo;if(f.hi==null||isNaN(f.hi))f.hi=d.hi;if(f.tgt==null||isNaN(f.tgt))f.tgt=d.tgt;}return f;});
+    rows=o.rows||[];
+  }catch(e){_init();}}
+  else{_init();}
+  rows.sort((a,b)=>a.date.localeCompare(b.date));
+}
+function _init(){fields=DEF_FIELDS.map(f=>({...f}));rows=SEED.map(r=>({...r}));}
+function save(){_s(W_SK,JSON.stringify({fields,rows}));}
+function cutoff(){if(!rows.length)return new Date();const l=pd(rows[rows.length-1].date);return new Date(l.getFullYear(),l.getMonth()-3,l.getDate());}
+function isOOR(fk,v){if(v==null)return false;const fi=fields.find(x=>x.key===fk);if(!fi)return false;return v<fi.lo||v>fi.hi;}
+function buildLabels(){
+  if(!rows.length)return[];
+  const first=pd(rows[0].date),last=pd(rows[rows.length-1].date);
+  const start=new Date(first.getFullYear(),first.getMonth(),first.getDate()-7);
+  const end=new Date(last.getFullYear(),last.getMonth()+1,last.getDate());
+  const d=new Date(start);d.setDate(d.getDate()+(7-d.getDay())%7);
+  const labels=[];
+  while(d<=end){labels.push(fd(d));d.setDate(d.getDate()+7);}
+  return labels;
+}
+function mapToLabel(labels,dateStr){
+  const t=pd(dateStr).getTime();let bi=0,bd=Infinity;
+  labels.forEach((l,i)=>{const d=Math.abs(pd(l).getTime()-t);if(d<bd){bd=d;bi=i;}});
+  return bi;
+}
+function calcAxisRange(fi){
+  const k=fi.key,vals=rows.filter(r=>r[k]!=null).map(r=>r[k]);
+  const tgt=isFinite(fi.tgt)?fi.tgt:0,lo=isFinite(fi.lo)?fi.lo:tgt,hi=isFinite(fi.hi)?fi.hi:tgt;
+  vals.push(tgt,lo,hi);if(!vals.length)return{min:0,max:1};
+  let mn=Math.min(...vals),mx=Math.max(...vals);
+  const rng=mx-mn||mx*0.1||1;mn-=rng*0.15;mx+=rng*0.25;
+  const bandSize=hi-lo;
+  if(bandSize>0){const needed=bandSize/0.4,center=(lo+hi)/2,half=needed/2;mn=Math.min(mn,center-half);mx=Math.max(mx,center+half);}
+  return{min:mn,max:mx};
+}
+function bandAxisRange(fi,bands){
+  const{min:dMin,max:dMax}=calcAxisRange(fi),dRange=dMax-dMin,b=bands[fi.key],bH=b.bot-b.top;
+  return{min:dMin-dRange*(1-b.bot)/bH,max:dMax+dRange*b.top/bH};
+}
+function valToY(fi,v,area,bands){
+  const ar=bandAxisRange(fi,bands),h=area.bottom-area.top;
+  return area.bottom-(v-ar.min)/(ar.max-ar.min)*h;
+}
+
+const lanePlugin={
+  id:'lanes',
+  beforeDatasetsDraw(c){
+    const ctx=c.ctx,area=c.chartArea,h=area.bottom-area.top,bands=calcBands(),n=fields.length;
+    ctx.save();
+    fields.forEach(fi=>{
+      const yHi=valToY(fi,fi.hi,area,bands),yLo=valToY(fi,fi.lo,area,bands);
+      ctx.fillStyle=fi.color+'0D';ctx.fillRect(area.left,yHi,area.right-area.left,yLo-yHi);
+      [yHi,yLo].forEach(y=>{ctx.beginPath();ctx.moveTo(area.left,y);ctx.lineTo(area.right,y);ctx.strokeStyle=fi.color+'20';ctx.lineWidth=1;ctx.setLineDash([3,4]);ctx.stroke();ctx.setLineDash([]);});
+    });
+    if(n>1){const gap=0.04,bandH=(1-gap*(n-1))/n;
+      for(let i=1;i<n;i++){const y=area.top+h*(i*(bandH+gap)-gap/2);ctx.beginPath();ctx.moveTo(area.left,y);ctx.lineTo(area.right,y);ctx.strokeStyle=getCS('--border');ctx.lineWidth=1;ctx.setLineDash([4,4]);ctx.stroke();ctx.setLineDash([]);}
+    }
+    ctx.restore();
+  }
+};
+const dlPlugin={
+  id:'dl',
+  afterDatasetsDraw(c){
+    const ctx=c.ctx;
+    c.data.datasets.forEach((ds,di)=>{
+      if(ds._isTgt)return;const fk=ds._field;if(!fk)return;
+      const meta=c.getDatasetMeta(di);if(meta.hidden)return;
+      ctx.save();
+      meta.data.forEach((pt,i)=>{
+        const v=ds.data[i].y,oor=isOOR(fk,v);
+        ctx.font=(oor?'bold ':'')+'11px -apple-system,sans-serif';
+        ctx.fillStyle=oor?getCS('--warn'):ds.borderColor;
+        ctx.textAlign='center';ctx.fillText(v,pt.x,pt.y-10);
+        if(oor){const tw2=ctx.measureText(String(v)).width,tx=pt.x+tw2/2+6,ty=pt.y-14;
+          ctx.beginPath();ctx.moveTo(tx,ty-5);ctx.lineTo(tx-3.5,ty+2);ctx.lineTo(tx+3.5,ty+2);ctx.closePath();
+          ctx.fillStyle=getCS('--warn');ctx.fill();
+          ctx.font='bold 6px sans-serif';ctx.fillStyle=getCS('--card');ctx.textAlign='center';ctx.fillText('!',tx,ty+1);
+        }
+      });
+      ctx.restore();
+    });
+  }
+};
+
+let _hoverX=null;
+const crosshairPlugin={
+  id:'crosshair',
+  afterDraw(c){
+    if(_hoverX==null)return;
+    const ctx=c.ctx,area=c.chartArea;
+    ctx.save();ctx.beginPath();ctx.moveTo(_hoverX,area.top);ctx.lineTo(_hoverX,area.bottom);
+    ctx.strokeStyle=getCS('--text4');ctx.lineWidth=1;ctx.setLineDash([4,3]);ctx.stroke();ctx.setLineDash([]);ctx.restore();
+  }
+};
+
+function findNearestLabelIndex(chartInstance,mouseX){
+  const area=chartInstance.chartArea;
+  if(!area||mouseX<area.left||mouseX>area.right)return -1;
+  const xScale=chartInstance.scales.x;
+  let bestIdx=-1,bestDist=Infinity;
+  for(let i=0;i<xScale.ticks.length;i++){const px=xScale.getPixelForTick(i);const d=Math.abs(px-mouseX);if(d<bestDist){bestDist=d;bestIdx=i;}}
+  return bestIdx;
+}
+
+function showCustomTooltip(chartInstance,labelIdx,mouseX,mouseY){
+  const tt=document.getElementById('customTooltip');
+  if(labelIdx<0){tt.classList.remove('show');_hoverX=null;chartInstance.draw();return;}
+  const xScale=chartInstance.scales.x;
+  const labelPx=xScale.getPixelForTick(labelIdx);
+  const labelText=xScale.getLabelForValue(labelIdx);
+  const origDates=_dateMap[labelText];
+  if(!origDates||!origDates.length){tt.classList.remove('show');_hoverX=null;chartInstance.draw();return;}
+  let html='';
+  origDates.forEach(dateStr=>{
+    const row=rows.find(r=>r.date===dateStr);if(!row)return;
+    html+='<div class="tt-title">'+fs(dateStr)+'</div>';
+    fields.forEach(fi=>{const v=row[fi.key];if(v==null)return;const oor=isOOR(fi.key,v);
+      html+='<div class="tt-row"><span class="tt-dot" style="background:'+fi.color+'"></span><span class="tt-name">'+fi.name+'</span><span class="tt-val'+(oor?' tt-warn':'')+'">'+(oor?'⚠ ':'')+v+'</span></div>';
+    });
+  });
+  if(!html){tt.classList.remove('show');_hoverX=null;chartInstance.draw();return;}
+  tt.innerHTML=html;tt.classList.add('show');
+  const outer=document.getElementById('chartOuter'),wrap=document.getElementById('chartWrap');
+  const outerRect=outer.getBoundingClientRect(),scrollLeft=wrap.scrollLeft;
+  const ttLeft=labelPx-scrollLeft+16,ttTop=mouseY-outerRect.top;
+  const ttW=tt.offsetWidth;
+  tt.style.left=(ttLeft+ttW>outer.clientWidth-10?(labelPx-scrollLeft-ttW-16):ttLeft)+'px';
+  tt.style.top=Math.max(10,Math.min(ttTop-20,outer.clientHeight-tt.offsetHeight-10))+'px';
+  _hoverX=labelPx;chartInstance.draw();
+}
+
+function updateLaneLabels(){
+  if(!W_chart)return;const area=W_chart.chartArea;if(!area)return;
+  const h=area.bottom-area.top,bands=calcBands(),el=document.getElementById('laneLabels');
+  el.innerHTML='';
+  fields.forEach(fi=>{
+    const b=bands[fi.key],yTop=area.top+h*b.top+4;
+    const lbl=document.createElement('div');lbl.className='lane-lbl';
+    lbl.style.top=yTop+'px';lbl.style.color=fi.color;lbl.textContent=fi.name;
+    el.appendChild(lbl);
+  });
+}
+
+function renderChart(){
+  const labels=buildLabels();if(!labels.length)return;
+  const lbls=labels.map(l=>fs(l)),bands=calcBands(),ds=[],cs=getComputedStyle(document.documentElement);
+  _dateMap={};
+  rows.forEach(r=>{const li=mapToLabel(labels,r.date);const lbl=lbls[li];if(!_dateMap[lbl])_dateMap[lbl]=[];if(!_dateMap[lbl].includes(r.date))_dateMap[lbl].push(r.date);});
+  const scales={x:{type:'category',labels:lbls,ticks:{color:cs.getPropertyValue('--text3').trim(),font:{size:11,weight:'500'},maxRotation:45,autoSkip:false},grid:{color:cs.getPropertyValue('--border').trim()+'40'}}};
+  fields.forEach(fi=>{
+    const k=fi.key,c=fi.color,yId='y_'+k,ar=bandAxisRange(fi,bands);
+    const pts=rows.filter(r=>r[k]!=null).map(r=>({x:lbls[mapToLabel(labels,r.date)],y:r[k],_date:r.date,_dateLabel:fs(r.date)}));
+    ds.push({label:fi.name,data:pts,borderColor:c,backgroundColor:c+'22',borderWidth:2.5,pointRadius:4.5,pointBackgroundColor:c,pointBorderColor:cs.getPropertyValue('--card').trim(),pointBorderWidth:2,pointHoverRadius:7,pointHitRadius:12,tension:.3,yAxisID:yId,spanGaps:true,_field:k});
+    if(fi.tgt!=null&&lbls.length>=2)ds.push({label:fi.name+' tgt',data:[{x:lbls[0],y:fi.tgt},{x:lbls[lbls.length-1],y:fi.tgt}],borderColor:c+'55',borderWidth:1.5,borderDash:[6,4],pointRadius:0,pointHitRadius:0,tension:0,yAxisID:yId,_isTgt:true});
+    scales[yId]={type:'linear',display:false,min:ar.min,max:ar.max};
+  });
+  const innerEl=document.getElementById('chartInner');
+  const wrapW=document.getElementById('chartWrap').clientWidth;
+  const now=new Date(),vis3m=new Date(now.getFullYear(),now.getMonth()-3,now.getDate()),vis1m=new Date(now.getFullYear(),now.getMonth()+1,now.getDate());
+  let visCount=0;labels.forEach(l=>{const d=pd(l);if(d>=vis3m&&d<=vis1m)visCount++;});visCount=Math.max(visCount,8);
+  const perLabel=wrapW/visCount;
+  innerEl.style.width=Math.round(Math.max(lbls.length*perLabel,wrapW))+'px';
+  if(W_chart)W_chart.destroy();
+  _hoverX=null;
+  W_chart=new Chart(document.getElementById('mainChart'),{type:'line',data:{datasets:ds},options:{
+    responsive:true,maintainAspectRatio:false,
+    animation:{duration:600,easing:'easeOutQuart',onComplete:()=>updateLaneLabels()},
+    interaction:{mode:'nearest',intersect:false,axis:'x'},
+    plugins:{legend:{display:false},tooltip:{enabled:false}},
+    scales:scales,onHover:function(){}
+  },plugins:[lanePlugin,dlPlugin,crosshairPlugin]});
+  const canvas=document.getElementById('mainChart');
+  canvas.onmousemove=function(e){if(!W_chart)return;const rect=canvas.getBoundingClientRect();const mouseX=e.clientX-rect.left;const mouseY=e.clientY;const li=findNearestLabelIndex(W_chart,mouseX);showCustomTooltip(W_chart,li,mouseX,mouseY);};
+  canvas.onmouseleave=function(){document.getElementById('customTooltip').classList.remove('show');_hoverX=null;if(W_chart)W_chart.draw();};
+}
+
+/* Import / Export */
+function _ts(){const n=new Date();return n.getFullYear()+String(n.getMonth()+1).padStart(2,'0')+String(n.getDate()).padStart(2,'0')+'_'+String(n.getHours()).padStart(2,'0')+String(n.getMinutes()).padStart(2,'0')+String(n.getSeconds()).padStart(2,'0');}
+function doExport(){
+  const data=JSON.stringify({fields,rows},null,2);const blob=new Blob([data],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='reef_water_'+_ts()+'.json';a.click();URL.revokeObjectURL(a.href);toast('已导出 '+a.download);
+}
+function doImport(input){
+  const file=input.files[0];if(!file)return;
+  if(!confirm('导入将覆盖当前所有数据（包括目标值和记录），确定继续？')){input.value='';return;}
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{const o=JSON.parse(e.target.result);
+      if(!o.fields||!Array.isArray(o.fields)||!o.rows||!Array.isArray(o.rows)){toast('文件格式不正确');input.value='';return;}
+      fields=o.fields;rows=o.rows;rows.sort((a,b)=>a.date.localeCompare(b.date));
+      save();renderModal();renderChart();renderQuickBar();toast('已导入 '+rows.length+' 条记录');
+    }catch(err){toast('解析失败: '+err.message);}
+    input.value='';
+  };reader.readAsText(file);
+}
+function autoBackup(){if(!_hasAutoBack())return;doExport();}
+
+function openModal(){const m=document.getElementById('dataModal');m.style.display='flex';requestAnimationFrame(()=>m.classList.add('open'));renderModal();}
+function closeModal(){const m=document.getElementById('dataModal');m.classList.remove('open');setTimeout(()=>{m.style.display='none';},350);}
+function renderTgtGrid(){
+  let h='';
+  fields.forEach((fi,i)=>{
+    const custom=!DEF_FIELDS.some(d=>d.key===fi.key);
+    h+='<div class="tgt-card"><div class="tgt-hd"><div class="left"><span class="sw" style="background:'+fi.color+'"></span><span style="color:'+fi.color+'">'+fi.name+'</span></div>'+(custom?'<button class="del-field-btn" onclick="delField('+i+')" title="删除">✕</button>':'')+'</div><div class="tgt-row"><span class="rl">目标</span><input class="tgt-v" type="text" inputmode="decimal" value="'+fi.tgt+'" onchange="chgField('+i+',\'tgt\',this.value)"></div><div class="tgt-row"><span class="rl">下限</span><input type="text" inputmode="decimal" value="'+fi.lo+'" onchange="chgField('+i+',\'lo\',this.value)"></div><div class="tgt-row"><span class="rl">上限</span><input type="text" inputmode="decimal" value="'+fi.hi+'" onchange="chgField('+i+',\'hi\',this.value)"></div></div>';
+  });
+  h+='<div class="add-field-card" onclick="openNf()"><span>+</span></div>';
+  document.getElementById('tgtGrid').innerHTML=h;
+}
+function chgField(i,prop,v){const n=parseFloat(v);if(!isNaN(n)){fields[i][prop]=n;save();renderChart();if(prop!=='tgt')renderTable();toast(fields[i].name+' 已更新');}}
+function renderThead(){document.getElementById('thead').innerHTML='<tr><th style="width:96px">日期</th>'+fields.map(fi=>'<th><span class="th-dot" style="background:'+fi.color+'"></span>'+fi.name+'</th>').join('')+'<th style="width:30px"></th></tr>';}
+function renderTable(){
+  const tb=document.getElementById('tbody'),co=cutoff(),rev=rows.slice().reverse(),dd=localDate();
+  let h='<tr class="add-row"><td><input type="text" id="iDate" value="'+dd+'" placeholder="YYYY-MM-DD"></td>';
+  fields.forEach(fi=>{
+    const isCaMg=(fi.key==='ca'||fi.key==='mg');
+    h+='<td style="position:relative"><input type="text" id="i'+fi.key+'" placeholder="'+fi.name+'"'+(isCaMg?' onblur="autoConvert(\''+fi.key+'\',this)"':'')+'>';
+    if(isCaMg)h+='<span class="conv-hint" id="hint_'+fi.key+'"></span>';h+='</td>';
+  });
+  h+='<td style="text-align:center"><button class="btn-sm" onclick="addRow()">+</button></td></tr>';
+  rev.forEach((r,ri)=>{
+    const idx=rows.length-1-ri,old=pd(r.date)<co,hide=old&&!expanded;
+    h+='<tr'+(old?' class="old-row"':'')+(hide?' style="display:none"':'')+'><td class="dc">'+fs(r.date)+'</td>'+fields.map(fi=>{const v=r[fi.key],oor=isOOR(fi.key,v);return '<td><input class="'+(oor?'val-warn':'')+'" value="'+(v!=null?v:'')+'" placeholder="-" onchange="editCell('+idx+',\''+fi.key+'\',this)" onfocus="this.select()"></td>';}).join('')+'<td><button class="del-btn" onclick="askDel('+idx+')">✕</button></td></tr>';
+  });
+  tb.innerHTML=h;
+  document.getElementById('expandBar').style.display=rows.some(r=>pd(r.date)<co)?'':'none';
+}
+function autoConvert(fk,el){
+  const v=parseFloat(el.value);if(isNaN(v)||v>=1)return;
+  const tbl=fk==='ca'?CA_TABLE:MG_TABLE;const ppm=lookupTable(tbl,v);el.value=ppm;
+  const hint=document.getElementById('hint_'+fk);
+  if(hint){hint.textContent='读数 '+v+' → '+ppm+'ppm';hint.classList.add('show');setTimeout(()=>hint.classList.remove('show'),3000);}
+}
+function toggleExpand(){
+  expanded=!expanded;const b=document.getElementById('expandBtn');
+  b.classList.toggle('open',expanded);b.querySelector('.arrow').style.transform=expanded?'rotate(180deg)':'';
+  b.childNodes[0].textContent=expanded?'收起旧数据 ':'查看更早数据 ';
+  document.querySelectorAll('.old-row').forEach(tr=>{tr.style.display=expanded?'':'none';});
+}
+function editCell(idx,fk,el){
+  const v=el.value.trim();rows[idx][fk]=v===''?null:parseFloat(v);
+  el.classList.add('pulse');setTimeout(()=>el.classList.remove('pulse'),400);
+  el.classList.toggle('val-warn',isOOR(fk,rows[idx][fk]));save();renderChart();
+}
+function parseDate(s){
+  let m;
+  if((m=s.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})$/)))return m[1]+'-'+m[2].padStart(2,'0')+'-'+m[3].padStart(2,'0');
+  if((m=s.match(/^(\d{4})(\d{2})(\d{2})$/)))return m[1]+'-'+m[2]+'-'+m[3];
+  if((m=s.match(/^(\d{1,2})[-\/.](\d{1,2})$/)))return new Date().getFullYear()+'-'+m[1].padStart(2,'0')+'-'+m[2].padStart(2,'0');
+  return null;
+}
+function addRow(){
+  const raw=document.getElementById('iDate').value.trim(),dv=parseDate(raw);
+  if(!dv){toast('日期格式不正确');return;}
+  if(rows.some(r=>r.date===dv)){toast('该日期已存在');return;}
+  const r={date:dv};
+  fields.forEach(fi=>{const el=document.getElementById('i'+fi.key);const v=el.value.trim();r[fi.key]=v===''?null:parseFloat(v);});
+  rows.push(r);rows.sort((a,b)=>a.date.localeCompare(b.date));save();
+  fields.forEach(fi=>{document.getElementById('i'+fi.key).value='';});
+  renderTable();renderChart();toast('已添加 '+fs(dv));autoBackup();
+}
+let _di=-1;
+function askDel(i){
+  _di=i;document.getElementById('delMsg').textContent='确定删除 '+fs(rows[i].date)+' 的记录？';
+  const m=document.getElementById('delCfm');m.style.display='flex';requestAnimationFrame(()=>m.classList.add('open'));
+  document.getElementById('delOk').onclick=()=>{rows.splice(_di,1);save();renderTable();renderChart();closeDel();toast('已删除');};
+}
+function closeDel(){const m=document.getElementById('delCfm');m.classList.remove('open');setTimeout(()=>{m.style.display='none';},300);}
+function resetAll(){if(!confirm('确定恢复默认数据和目标值？'))return;_r(W_SK);load();renderModal();renderChart();toast('已重置');}
+function openNf(){const m=document.getElementById('nfModal');m.style.display='flex';requestAnimationFrame(()=>m.classList.add('open'));}
+function closeNf(){const m=document.getElementById('nfModal');m.classList.remove('open');setTimeout(()=>{m.style.display='none';},300);}
+function doAddField(){
+  const key=document.getElementById('nfKey').value.trim().toLowerCase(),name=document.getElementById('nfName').value.trim(),color=document.getElementById('nfColor').value;
+  const tgtV=parseFloat(document.getElementById('nfTgt').value),lo=parseFloat(document.getElementById('nfLo').value),hi=parseFloat(document.getElementById('nfHi').value);
+  if(!key||!name){toast('请填写标识和名称');return;}
+  if(!/^[a-z][a-z0-9_]*$/.test(key)){toast('标识需英文小写字母开头');return;}
+  if(fields.some(f=>f.key===key)){toast('标识已存在');return;}
+  fields.push({key,name,color,tgt:isNaN(tgtV)?0:tgtV,lo:isNaN(lo)?0:lo,hi:isNaN(hi)?0:hi});
+  save();closeNf();renderModal();renderChart();renderQuickBar();toast(name+' 已添加');
+  ['nfKey','nfName','nfTgt','nfLo','nfHi'].forEach(id=>{document.getElementById(id).value='';});
+}
+function delField(i){
+  if(!confirm('确定删除指标 '+fields[i].name+'？'))return;
+  const key=fields[i].key;fields.splice(i,1);rows.forEach(r=>{delete r[key];});
+  save();renderModal();renderChart();renderQuickBar();toast('已删除');
+}
+function renderModal(){renderTgtGrid();renderThead();renderTable();}
+function renderQuickBar(){
+  const el=document.getElementById('qbFields');
+  el.innerHTML=fields.map(fi=>{
+    const isCaMg=(fi.key==='ca'||fi.key==='mg');
+    return '<div class="qb-field"><span class="qd" style="background:'+fi.color+'"></span><input type="text" id="q'+fi.key+'" placeholder="'+fi.name+'"'+(isCaMg?' onblur="autoConvert(\''+fi.key+'\',this)"':'')+' onkeydown="if(event.key===\'Enter\')quickAdd()"></div>';
+  }).join('');
+  document.getElementById('qDate').value=localDate();
+}
+function quickAdd(){
+  const raw=document.getElementById('qDate').value.trim(),dv=parseDate(raw);
+  if(!dv){toast('日期格式不正确');return;}
+  if(rows.some(r=>r.date===dv)){toast('该日期已存在');return;}
+  const r={date:dv};let hasVal=false;
+  fields.forEach(fi=>{const el=document.getElementById('q'+fi.key);const v=el.value.trim();r[fi.key]=v===''?null:parseFloat(v);if(v!=='')hasVal=true;});
+  if(!hasVal){toast('请至少填写一项数据');return;}
+  rows.push(r);rows.sort((a,b)=>a.date.localeCompare(b.date));save();
+  fields.forEach(fi=>{document.getElementById('q'+fi.key).value='';});
+  renderChart();toast('已添加 '+fs(dv));autoBackup();
+}
+
+function initWater(){
+  load();renderChart();renderQuickBar();
+  document.getElementById('qDate').addEventListener('keydown',function(e){if(e.key==='Enter')quickAdd();});
+  if(_hasAutoBack()){const lbl=document.getElementById('autoBackLabel');if(lbl)lbl.style.display='flex';}
+  setTimeout(()=>{const w=document.getElementById('chartWrap');if(w)w.scrollLeft=w.scrollWidth;updateLaneLabels();},700);
+}
+
+/* ============================================================
+   LIGHT / SPECTRUM MODULE (prefixed L_)
+   ============================================================ */
+const L_CH=[
+  {key:'white',name:'白色',color:'#f0c040',dS:16,dT:6,dP:4,dW:5,dOn:true},
+  {key:'blue',name:'蓝色',color:'#4488ff',dS:14,dT:10,dP:4,dW:60,dOn:true},
+  {key:'red',name:'红色',color:'#ff4444',dS:16,dT:6,dP:4,dW:2,dOn:true},
+  {key:'green',name:'绿色',color:'#44cc44',dS:16,dT:6,dP:4,dW:2,dOn:true},
+  {key:'deep',name:'深蓝',color:'#2244cc',dS:14,dT:10,dP:4,dW:60,dOn:true},
+  {key:'purple',name:'紫色',color:'#aa44ff',dS:14,dT:10,dP:4,dW:30,dOn:true},
+];
+const L_SK='reef_spectrum_v8',L_dc=o=>JSON.parse(JSON.stringify(o));
+const L_DEF={mode:'quick',g:{s:14,t:10,p:4,w:60},ch:{},qr:'aipai'};
+L_CH.forEach(c=>{L_DEF.ch[c.key]={s:c.dS,t:c.dT,p:c.dP,w:c.dW,on:c.dOn}});
+
+function L_ld(){try{const r=localStorage.getItem(L_SK);if(!r)return L_dc(L_DEF);const s=JSON.parse(r),c=L_dc(L_DEF);if(s.mode)c.mode=s.mode;if(s.g)Object.assign(c.g,s.g);if(s.ch)for(const k in c.ch)if(s.ch[k])Object.assign(c.ch[k],s.ch[k]);if(s.qr)c.qr=s.qr;return c}catch(e){return L_dc(L_DEF)}}
+function L_sv(c){try{localStorage.setItem(L_SK,JSON.stringify(c))}catch(e){}}
+let L_cfg=L_ld(),L_chart=null;
+
+function L_mkStp(id,val,min,max,step){
+  return '<div class="stp"><button type="button" onclick="L_stp(\''+id+'\','+(-step)+')">−</button><input type="number" id="'+id+'" value="'+val+'" min="'+min+'" max="'+max+'"><button type="button" onclick="L_stp(\''+id+'\','+step+')">+</button></div>';
+}
+window.L_stp=function(id,s){
+  const e=document.getElementById(id);let v=parseInt(e.value,10)+s;
+  v=Math.max(+e.min,Math.min(+e.max,v));e.value=v;
+  e.classList.remove('pulse');void e.offsetWidth;e.classList.add('pulse');
+  e.dispatchEvent(new Event('change'));
+};
+function L_bindInput(id){const e=document.getElementById(id);e.addEventListener('change',L_gen);e.addEventListener('keyup',function(ev){if(ev.key==='ArrowUp'||ev.key==='ArrowDown')L_gen()})}
+
+function L_buildGlobal(){
+  document.getElementById('g0').innerHTML=L_mkStp('g_s',L_cfg.g.s,0,23,1);
+  document.getElementById('g1').innerHTML=L_mkStp('g_t',L_cfg.g.t,2,24,1);
+  document.getElementById('g2').innerHTML=L_mkStp('g_p',L_cfg.g.p,0,24,1);
+  document.getElementById('g3').innerHTML=L_mkStp('g_w',L_cfg.g.w,0,100,5);
+  ['g_s','g_t','g_p','g_w'].forEach(L_bindInput);
+}
+
+function L_buildChannels(){
+  const box=document.getElementById('chBody');box.innerHTML='';
+  L_CH.forEach(c=>{
+    const v=L_cfg.ch[c.key],on=v.on!==false;
+    const row=document.createElement('div');
+    row.className='prow ch-row'+(on?'':' off');row.id='row_'+c.key;
+    row.innerHTML='<div class="pcell"><span class="rlabel"><label class="pill" style="--ch-color:'+c.color+'"><input type="checkbox" id="sw_'+c.key+'"'+(on?' checked':'')+' onchange="L_toggleCh(\''+c.key+'\')"><span class="pill-bg"></span><span class="pill-dot"></span></label><span style="color:'+c.color+'">'+c.name+'</span></span></div><div class="pcell">'+L_mkStp('c_'+c.key+'_s',v.s,0,23,1)+'</div><div class="pcell">'+L_mkStp('c_'+c.key+'_t',v.t,1,24,1)+'</div><div class="pcell">'+L_mkStp('c_'+c.key+'_p',v.p,0,24,1)+'</div><div class="pcell">'+L_mkStp('c_'+c.key+'_w',v.w,0,100,1)+'</div>';
+    box.appendChild(row);
+    ['s','t','p','w'].forEach(p=>L_bindInput('c_'+c.key+'_'+p));
+  });
+}
+
+window.L_toggleCh=function(key){
+  const row=document.getElementById('row_'+key),cb=document.getElementById('sw_'+key);
+  if(cb.checked)row.classList.remove('off');else row.classList.add('off');
+  L_gen();
+};
+
+window.L_setMode=function(m){L_cfg.mode=m;L_applyMode();L_gen()};
+
+function L_applyMode(){
+  const qp=document.getElementById('quickPanel'),ap=document.getElementById('advPanel');
+  const seg=document.getElementById('seg'),sQ=document.getElementById('segQ'),sA=document.getElementById('segA');
+  if(L_cfg.mode==='adv'){qp.classList.add('hidden');ap.classList.add('visible');seg.classList.add('right');sQ.classList.remove('active');sA.classList.add('active');}
+  else{qp.classList.remove('hidden');ap.classList.remove('visible');seg.classList.remove('right');sQ.classList.add('active');sA.classList.remove('active');}
+}
+
+function L_readG(){return{s:+document.getElementById('g_s').value,t:+document.getElementById('g_t').value,p:+document.getElementById('g_p').value,w:+document.getElementById('g_w').value}}
+function L_readCh(k){return{s:+document.getElementById('c_'+k+'_s').value,t:+document.getElementById('c_'+k+'_t').value,p:+document.getElementById('c_'+k+'_p').value,w:+document.getElementById('c_'+k+'_w').value,on:document.getElementById('sw_'+k).checked}}
+
+window.L_openDataModal=function(){
+  const m=document.getElementById('lightDataModal');m.style.display='flex';requestAnimationFrame(()=>m.classList.add('open'));
+};
+window.L_closeDataModal=function(){
+  const m=document.getElementById('lightDataModal');m.classList.remove('open');setTimeout(()=>{m.style.display='none'},350);
+};
+
+function L_genCh(total,pd,pv,ramp){
+  const n=total+1,ctr=total/2,ps=ctr-pd/2,pe=ctr+pd/2,v=[];
+  for(let t=0;t<n;t++){
+    if(t>=ps&&t<=pe)v.push(pv);
+    else if(ramp&&t<ps)v.push(Math.round(pv*t/ps));
+    else if(ramp&&t>pe)v.push(Math.round(pv*(total-t)/(total-pe)));
+    else v.push(0);
+  }
+  v[0]=0;v[n-1]=0;return v;
+}
+
+function L_getParams(){
+  if(L_cfg.mode==='quick'){
+    const g=L_readG(),ramp=Math.floor((g.t-g.p)/2);
+    return L_CH.map(c=>{
+      const isR=c.key==='blue'||c.key==='deep'||c.key==='purple';
+      let pw;if(c.key==='white')pw=5;else if(c.key==='red')pw=2;else if(c.key==='green')pw=2;else if(c.key==='purple')pw=Math.round(g.w/2);else pw=g.w;
+      if(isR){return{s:g.s,t:g.t,p:g.p,w:pw,ramp:true,on:true};}
+      const nrPad=1,nrT=g.p+nrPad*2;return{s:(g.s+ramp-nrPad+24)%24,t:nrT,p:g.p,w:pw,ramp:true,on:true};
+    });
+  }else{
+    return L_CH.map(c=>{const v=L_readCh(c.key);return{s:v.s,t:v.t,p:Math.min(v.p,v.t),w:v.w,ramp:v.t>v.p,on:v.on}});
+  }
+}
+
+function L_gen(){
+  if(typeof Chart==='undefined'||typeof QRCode==='undefined'){setTimeout(L_gen,100);return}
+  const params=L_getParams(),labels=Array.from({length:25},(_,i)=>i),absDS=[];
+  const tc=getCS('--text3'),gc=getCS('--border')+'40',lc=getCS('--text3');
+  const mob=window.innerWidth<600;
+  const datasets=L_CH.map((c,i)=>{
+    const p=params[i],d24=new Array(24).fill(0);
+    if(p.on){const rel=L_genCh(p.t,p.p,p.w,p.ramp);for(let t=0;t<=p.t;t++){const h=(p.s+t)%24;d24[h]=Math.max(d24[h],rel[t]||0)}}
+    absDS.push(d24);
+    return{label:c.name,data:[...d24,d24[0]],borderColor:c.color,backgroundColor:c.color+'18',borderWidth:2.5,pointRadius:4,pointBackgroundColor:c.color,fill:true,tension:0};
+  });
+  if(L_chart)L_chart.destroy();
+  L_chart=new Chart(document.getElementById('lightChart'),{type:'line',data:{labels,datasets},options:{
+    responsive:true,maintainAspectRatio:false,animation:{duration:600,easing:'easeOutQuart'},
+    plugins:{legend:{labels:{color:lc,usePointStyle:true,padding:mob?10:20,boxWidth:mob?8:12,font:{size:mob?10:12}}},tooltip:{mode:'index',intersect:false,animation:{duration:150}}},
+    scales:{x:{title:{display:!mob,text:'时间点（0-24点）',color:tc},ticks:{color:tc},grid:{color:gc},min:0,max:24},y:{title:{display:!mob,text:'光照强度（%）',color:tc},ticks:{color:tc},grid:{color:gc},min:0,max:100}},
+    interaction:{mode:'nearest',axis:'x',intersect:false}
+  }});
+  const tbl=document.getElementById('dataTable');
+  let h='<tr><th>时间</th>';labels.forEach(t=>h+='<th>'+t+'</th>');h+='</tr>';
+  datasets.forEach((ds,i)=>{h+='<tr><td style="color:'+L_CH[i].color+'">'+ds.label+'</td>';ds.data.forEach(v=>h+='<td>'+v+'</td>');h+='</tr>'});
+  tbl.innerHTML=h;
+  const qrC=document.getElementById('qrcode');qrC.innerHTML='';
+  new QRCode(qrC,{text:absDS.map(d=>d.join(',')).join('|'),width:256,height:256,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.L});
+  setTimeout(()=>{const cv=qrC.querySelector('canvas'),im=qrC.querySelector('img');if(cv&&im){im.src=cv.toDataURL('image/png');im.style.display='block';im.style.maxWidth='100%';im.style.height='auto';cv.style.display='none'}},50);
+  L_persist();
+}
+
+function L_persist(){
+  L_cfg.g=L_readG();
+  L_CH.forEach(c=>{try{L_cfg.ch[c.key]=L_readCh(c.key)}catch(e){}});
+  L_cfg.qr=document.getElementById('qrBrand').value;L_sv(L_cfg);
+}
+
+window.L_resetAll=function(){
+  L_cfg=L_dc(L_DEF);L_buildGlobal();L_buildChannels();L_applyMode();
+  document.getElementById('qrBrand').value=L_cfg.qr;L_gen();
+};
+
+function initLight(){
+  L_buildGlobal();L_buildChannels();L_applyMode();
+  document.getElementById('qrBrand').value=L_cfg.qr;
+  document.getElementById('qrBrand').addEventListener('change',L_gen);
+  document.getElementById('lightDataModal').addEventListener('click',function(e){if(e.target===this)L_closeDataModal()});
+  window.addEventListener('resize',function(){clearTimeout(window._lrt);window._lrt=setTimeout(()=>{if(_currentPage==='light')L_gen();},200)});
+  (function init(){if(typeof Chart!=='undefined'&&typeof QRCode!=='undefined')L_gen();else setTimeout(init,100)})();
+}
+
+/* ============================================================
+   WATER CHANGE MODULE
+   ============================================================ */
+const C_SK='reef_change_v1';
+
+function calc(){
+  const vol=parseFloat(document.getElementById('waterVolume').value)||0;
+  const tankTotal=parseFloat(document.getElementById('tankTotal').value)||70;
+  const salinity=parseFloat(document.getElementById('salinity').value)||36;
+  const roomT=parseFloat(document.getElementById('roomTemp').value)||25;
+  const adjT=parseFloat(document.getElementById('adjTemp').value)||0;
+  const targetT=parseFloat(document.getElementById('targetTemp').value)||25;
+
+  let roomW,adjW;
+  const denom=adjT-roomT;
+  if(Math.abs(denom)<0.01){roomW=vol;adjW=0;}
+  else{roomW=vol*(adjT-targetT)/denom;adjW=vol-roomW;}
+
+  const impossible=roomW<-0.01||adjW<-0.01;
+  roomW=Math.max(0,roomW);adjW=Math.max(0,adjW);
+
+  const salt=vol*salinity;
+  const ratio=tankTotal>0?(vol/tankTotal*100):0;
+
+  if(impossible){
+    document.getElementById('rRoom').innerHTML='<span class="result-warn">⚠️ 温度无法达到</span>';
+    document.getElementById('rAdj').innerHTML='<span class="result-warn">请检查参数</span>';
+  }else{
+    document.getElementById('rRoom').innerHTML=C_fmt(roomW)+'<span class="r-unit">L</span>';
+    document.getElementById('rAdj').innerHTML=C_fmt(adjW)+'<span class="r-unit">L</span>';
+  }
+  document.getElementById('rSalt').innerHTML=Math.round(salt)+'<span class="r-unit">g</span>';
+  document.getElementById('rRatio').innerHTML=ratio.toFixed(1)+'<span class="r-unit">%</span>';
+  C_saveInputs();
+}
+
+function C_fmt(v){return v%1===0?String(v):v.toFixed(1);}
+
+function C_saveInputs(){
+  const ids=['waterVolume','tankTotal','salinity','roomTemp','adjTemp','targetTemp'];
+  const d={};ids.forEach(id=>{d[id]=document.getElementById(id).value;});
+  _s(C_SK,JSON.stringify(d));
+}
+function C_loadInputs(){
+  const s=_g(C_SK);if(!s)return;
+  try{const d=JSON.parse(s);for(const k in d){const el=document.getElementById(k);if(el)el.value=d[k];}}catch(e){}
+}
+
+function initChange(){
+  C_loadInputs();calc();
+}
+
+/* ============================================================
+   GLOBAL KEYBOARD + INIT
+   ============================================================ */
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){
+    if(document.getElementById('nfModal').classList.contains('open'))closeNf();
+    else if(document.getElementById('delCfm').classList.contains('open'))closeDel();
+    else if(document.getElementById('dataModal').classList.contains('open'))closeModal();
+    else if(document.getElementById('lightDataModal').classList.contains('open'))L_closeDataModal();
+  }
+});
+
+document.addEventListener('DOMContentLoaded',function(){
+  loadTheme();
+  // Read hash to determine initial page
+  const hash=window.location.hash.replace('#','');
+  const startPage=PAGE_META[hash]?hash:'water';
+  // Init the starting page
+  _pageInited[startPage]=true;
+  switchPage(startPage);
+  if(startPage==='water') initWater();
+  else if(startPage==='light') initLight();
+  else if(startPage==='change') initChange();
+});
+</script>
+</body>
+</html>

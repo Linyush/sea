@@ -1410,7 +1410,7 @@ function load(){
   const s=_g(W_SK());
   if(s){try{const o=JSON.parse(s);
     fields=(o.fields||[]).length?o.fields:DEF_FIELDS.map(f=>({...f}));
-    fields=fields.map(f=>{const d=DEF_FIELDS.find(x=>x.key===f.key);if(d){if(f.lo==null||isNaN(f.lo))f.lo=d.lo;if(f.hi==null||isNaN(f.hi))f.hi=d.hi;if(f.tgt==null||isNaN(f.tgt))f.tgt=d.tgt;}return f;});
+    fields=fields.map(f=>{const d=DEF_FIELDS.find(x=>x.key===f.key);if(d){if(f.lo==null||isNaN(f.lo))f.lo=d.lo;if(f.hi==null||isNaN(f.hi))f.hi=d.hi;if(f.tgt==null||isNaN(f.tgt))f.tgt=d.tgt;f.color=d.color;}return f;});
     rows=o.rows||[];
   }catch(e){_init();}}
   else{_init();}

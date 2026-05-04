@@ -316,7 +316,7 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
       </div>
       <div class="chart-outer" id="chartOuter">
         <div class="lane-labels" id="laneLabels"></div>
-        <div class="chart-wrap" id="chartWrap" style="opacity:0;transition:opacity .4s">
+        <div class="chart-wrap" id="chartWrap">
           <div class="chart-inner" id="chartInner"><canvas id="mainChart"></canvas></div>
         </div>
         <div id="customTooltip"></div>
@@ -788,9 +788,10 @@ function renderChart(){
   innerEl.style.width=Math.round(Math.max(lbls.length*perLabel,wrapW))+'px';
   if(W_chart)W_chart.destroy();
   _hoverX=null;
+  const _cw=document.getElementById('chartWrap');if(_cw)_cw.scrollLeft=_cw.scrollWidth;
   W_chart=new Chart(document.getElementById('mainChart'),{type:'line',data:{datasets:ds},options:{
     responsive:true,maintainAspectRatio:false,
-    animation:{duration:600,easing:'easeOutQuart',onComplete:()=>{updateLaneLabels();const cw=document.getElementById('chartWrap');if(cw){cw.scrollLeft=cw.scrollWidth;cw.style.opacity='1';}}},
+    animation:{duration:600,easing:'easeOutQuart',onComplete:()=>updateLaneLabels()},
     interaction:{mode:'nearest',intersect:false,axis:'x'},
     plugins:{legend:{display:false},tooltip:{enabled:false}},
     scales:scales,onHover:function(){}
@@ -934,7 +935,7 @@ function initWater(){
   load();renderChart();renderQuickBar();
   document.getElementById('qDate').addEventListener('keydown',function(e){if(e.key==='Enter')quickAdd();});
   if(_hasAutoBack()){const lbl=document.getElementById('autoBackLabel');if(lbl)lbl.style.display='flex';}
-  // scroll handled in chart onComplete
+
 }
 
 /* ============================================================
@@ -1039,7 +1040,6 @@ function L_getParams(){
 
 function L_gen(){
   if(typeof Chart==='undefined'||typeof QRCode==='undefined'){setTimeout(L_gen,100);return}
-  const _scrollY=window.scrollY;
   const params=L_getParams(),labels=Array.from({length:25},(_,i)=>i),absDS=[];
   const tc=getCS('--text3'),gc=getCS('--border')+'40',lc=getCS('--text3');
   const mob=window.innerWidth<600;
@@ -1060,10 +1060,9 @@ function L_gen(){
   let h='<tr><th>时间</th>';labels.forEach(t=>h+='<th>'+t+'</th>');h+='</tr>';
   datasets.forEach((ds,i)=>{h+='<tr><td style="color:'+L_CH[i].color+'">'+ds.label+'</td>';ds.data.forEach(v=>h+='<td>'+v+'</td>');h+='</tr>'});
   tbl.innerHTML=h;
-  const qrC=document.getElementById('qrcode');qrC.innerHTML='';
+  const qrC=document.getElementById('qrcode');const _qrH=qrC.offsetHeight;if(_qrH)qrC.style.minHeight=_qrH+'px';qrC.innerHTML='';
   new QRCode(qrC,{text:absDS.map(d=>d.join(',')).join('|'),width:256,height:256,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.L});
   setTimeout(()=>{const cv=qrC.querySelector('canvas'),im=qrC.querySelector('img');if(cv&&im){im.src=cv.toDataURL('image/png');im.style.display='block';im.style.maxWidth='100%';im.style.height='auto';cv.style.display='none'}},50);
-  requestAnimationFrame(()=>window.scrollTo(0,_scrollY));
   L_persist();
 }
 

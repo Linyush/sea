@@ -12,7 +12,7 @@
   --bg:#0a1628;--card:#131d2f;--border:#1e2d45;--border2:#2a3a52;
   --text:#e0e6ed;--text2:#8ba3c7;--text3:#6b7a8d;--text4:#4a5a6d;--text5:#3a4a62;
   --input-bg:#0a1628;--hover:rgba(0,210,255,.03);--accent:#00d2ff;--accent2:#7b68ee;
-  --warn:#ff6b6b;--shadow:rgba(0,0,0,.3);--card-hover-border:#1e3a5a;--card-hover-shadow:rgba(0,210,255,.04);
+  --warn:#ff4444;--shadow:rgba(0,0,0,.3);--card-hover-border:#1e3a5a;--card-hover-shadow:rgba(0,210,255,.04);
   --qr-bg:#fff;--stp-bg:#1e2d45;--stp-hover:#2a3a52;--stp-active:#3b4e6d;
   --pill-off:#2a3a52;--seg-bg:#0a1628;--seg-border:#2a3a52;--seg-text:#6b7a8d;
   --row-border:#111b2d;--modal-hover:#172238;
@@ -22,7 +22,7 @@ html.light{
   --bg:#f0f2f5;--card:#ffffff;--border:#dce0e6;--border2:#c5cbd3;
   --text:#111827;--text2:#374151;--text3:#4b5563;--text4:#6b7280;--text5:#9ca3af;
   --input-bg:#f7f8fa;--hover:rgba(0,120,200,.04);--accent:#0066cc;--accent2:#5b4ed4;
-  --warn:#dc2626;--shadow:rgba(0,0,0,.10);--card-hover-border:#b0bec5;--card-hover-shadow:rgba(0,120,200,.08);
+  --warn:#e02020;--shadow:rgba(0,0,0,.10);--card-hover-border:#b0bec5;--card-hover-shadow:rgba(0,120,200,.08);
   --qr-bg:#fff;--stp-bg:#e5e7eb;--stp-hover:#d1d5db;--stp-active:#c5cbd3;
   --pill-off:#c5cbd3;--seg-bg:#f7f8fa;--seg-border:#c5cbd3;--seg-text:#6b7280;
   --row-border:#f0f2f5;--modal-hover:#f7f8fa;
@@ -76,6 +76,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .chart-wrap::-webkit-scrollbar{display:none}
 .chart-inner{height:100%;min-width:100%}
 .chart-outer{position:relative}
+.overview-btn{position:absolute;top:8px;left:8px;z-index:10;background:var(--card);border:1px solid var(--border);color:var(--text3);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:500;transition:all .2s;display:flex;align-items:center;gap:4px}
+.overview-btn:hover{border-color:var(--accent);color:var(--accent)}
+.overview-btn.active{color:var(--accent);border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent)}
 .lane-labels{position:absolute;right:0;top:0;bottom:0;z-index:10;pointer-events:none;width:100px}
 .lane-lbl{position:absolute;right:8px;pointer-events:none;white-space:nowrap;font-size:12px;font-weight:700;letter-spacing:.3px;padding:2px 8px;border-radius:4px;background:color-mix(in srgb,var(--card) 90%,transparent);backdrop-filter:blur(4px)}
 #customTooltip{position:absolute;pointer-events:none;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:12px;box-shadow:0 4px 20px var(--shadow);z-index:20;opacity:0;transition:opacity .15s ease;white-space:nowrap}
@@ -354,6 +357,14 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
 .inv-card .inv-status{font-size:10px;margin-top:2px}
 .inv-card .inv-status.s-alive,.inv-card .inv-status.s-active,.inv-card .inv-status.s-inuse{color:#22bb88}
 .inv-card .inv-status.s-dead,.inv-card .inv-status.s-broken{color:var(--warn)}
+.pf-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:16px 0 20px}
+.pf-stat-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 12px;text-align:center;transition:all .2s}
+.pf-stat-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.pf-stat-val{font-size:22px;font-weight:700;color:var(--text);line-height:1.2}
+.pf-stat-unit{font-size:13px;font-weight:400;color:var(--text4)}
+.pf-stat-lbl{font-size:11px;color:var(--text3);margin-top:4px;font-weight:500}
+.pf-stat-rate{font-size:12px;font-weight:600;color:#22bb88;margin-top:2px}
+.pf-stat-rate.low{color:var(--warn)}
 .inv-card .inv-status.s-sold,.inv-card .inv-status.s-standby,.inv-card .inv-status.s-sealed{color:var(--text4)}
 .inv-empty{padding:24px;text-align:center;color:var(--text4);font-size:13px;border:1px dashed var(--border);border-radius:10px}
 /* Item form modal */
@@ -448,6 +459,7 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
         <span class="auto-label" id="autoBackLabel" style="display:none"><span class="auto-dot"></span>自动备份</span>
       </div>
       <div class="chart-outer" id="chartOuter">
+        <button class="overview-btn" id="overviewBtn" onclick="toggleOverview()" title="全览所有数据">📊 全览</button>
         <div class="lane-labels" id="laneLabels"></div>
         <div class="chart-wrap" id="chartWrap">
           <div class="chart-inner" id="chartInner"><canvas id="mainChart"></canvas></div>
@@ -608,7 +620,7 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
           </thead>
           <tbody>
             <tr>
-              <td class="t-name" style="color:#ff5588">钙<span class="t-sub">无水氯化钙</span></td>
+              <td class="t-name" style="color:#e8599a">钙<span class="t-sub">无水氯化钙</span></td>
               <td class="t-fixed">0.004</td>
               <td><input type="number" id="tCaW" value="1000" oninput="tCalc()"></td>
               <td><input type="number" id="tCaG" value="100" oninput="tCalc()"></td>
@@ -668,7 +680,7 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
           </thead>
           <tbody>
             <tr>
-              <td class="t-name" style="color:#ff5588">钙</td>
+              <td class="t-name" style="color:#e8599a">钙</td>
               <td><input type="number" id="tCa1" value="465" oninput="tCalc()"></td>
               <td><input type="number" id="tCa2" value="435" oninput="tCalc()"></td>
               <td><input type="number" id="tCaD" value="7" min="1" oninput="tCalc()"></td>
@@ -825,10 +837,11 @@ function toggleTheme(){
   document.documentElement.classList.toggle('light',!darkMode);
   document.getElementById('themeBtn').textContent=darkMode?'🌙':'☀️';
   _s('reef_theme',darkMode?'dark':'light');
-  // Update water chart
-  if(W_chart) renderChart();
-  // Update light chart
-  if(L_chart){L_chart.options.scales.x.ticks.color=getCS('--text3');L_chart.options.scales.y.ticks.color=getCS('--text3');L_chart.options.scales.x.grid.color=getCS('--border')+'40';L_chart.options.scales.y.grid.color=getCS('--border')+'40';L_chart.options.plugins.legend.labels.color=getCS('--text3');L_chart.update();}
+  // Delay chart re-render to let CSS vars settle
+  setTimeout(()=>{
+    if(W_chart) renderChart();
+    if(L_chart){L_chart.options.scales.x.ticks.color=getCS('--text3');L_chart.options.scales.y.ticks.color=getCS('--text3');L_chart.options.scales.x.grid.color=getCS('--border')+'40';L_chart.options.scales.y.grid.color=getCS('--border')+'40';L_chart.options.plugins.legend.labels.color=getCS('--text3');L_chart.update();}
+  },80);
 }
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
 
@@ -1104,6 +1117,51 @@ function renderProfile(){
   P_renderInvSection('cm',inv.consumables||[],'consumable');
 }
 
+
+function P_renderStats(){
+  const inv=JSON.parse(localStorage.getItem(P_INV_KEY())||'{}');
+  const livestock=inv.livestock||[], equipment=inv.equipment||[], consumables=inv.consumables||[];
+  
+  /* Count livestock stats */
+  const totalLive=livestock.length;
+  const alive=livestock.filter(x=>x.status==='alive').length;
+  const dead=livestock.filter(x=>x.status==='dead').length;
+  const survivalRate=totalLive>0?Math.round(alive/totalLive*100):0;
+  
+  /* Count equipment */
+  const totalEquip=equipment.length;
+  const activeEquip=equipment.filter(x=>x.status==='active').length;
+  
+  /* Cost calculation */
+  let totalCost=0;
+  livestock.forEach(x=>{if(x.price)totalCost+=parseFloat(x.price)||0;});
+  equipment.forEach(x=>{if(x.price)totalCost+=parseFloat(x.price)||0;});
+  consumables.forEach(x=>{if(x.price)totalCost+=parseFloat(x.price)||0;});
+  
+  /* Water records count */
+  let waterCount=0;
+  try{const wd=JSON.parse(localStorage.getItem(W_SK())||'{}');waterCount=(wd.rows||[]).length;}catch(e){}
+  
+  /* Format cost */
+  const fmtCost=totalCost>=10000?(totalCost/10000).toFixed(1)+'万':totalCost.toFixed(0);
+  
+  const statsHtml='<div class="pf-stats">'+
+    '<div class="pf-stat-card"><div class="pf-stat-val">'+alive+'<span class="pf-stat-unit">/'+totalLive+'</span></div><div class="pf-stat-lbl">生物存活</div>'+(totalLive>0?'<div class="pf-stat-rate'+(survivalRate<70?' low':'')+'">'+survivalRate+'%</div>':'')+'</div>'+
+    '<div class="pf-stat-card"><div class="pf-stat-val">'+activeEquip+'<span class="pf-stat-unit">/'+totalEquip+'</span></div><div class="pf-stat-lbl">设备运行</div></div>'+
+    '<div class="pf-stat-card"><div class="pf-stat-val">'+consumables.length+'</div><div class="pf-stat-lbl">耗材种类</div></div>'+
+    '<div class="pf-stat-card"><div class="pf-stat-val">¥'+fmtCost+'</div><div class="pf-stat-lbl">累计投入</div></div>'+
+    '<div class="pf-stat-card"><div class="pf-stat-val">'+waterCount+'</div><div class="pf-stat-lbl">水质记录</div></div>'+
+  '</div>';
+  
+  /* Insert stats at top of profile page, after the tank info section */
+  const pfEl=document.getElementById('profilePage');
+  if(!pfEl)return;
+  const firstInvSec=pfEl.querySelector('.inv-section');
+  if(firstInvSec){
+    const d=document.createElement('div');d.innerHTML=statsHtml;
+    pfEl.insertBefore(d.firstElementChild,firstInvSec);
+  }
+}
 function P_renderInvSection(prefix,items,type){
   const countEl=document.getElementById(prefix+'Count');
   const gridEl=document.getElementById(prefix+'Grid');
@@ -1329,7 +1387,7 @@ const DEF_FIELDS=[
   {key:'no3',name:'NO₃',color:'#f0c040',tgt:5,lo:0,hi:10},
   {key:'po4',name:'PO₄',color:'#4499ee',tgt:0.05,lo:0,hi:0.1},
   {key:'kh', name:'KH', color:'#aa66dd',tgt:8.2,lo:7,hi:9},
-  {key:'ca', name:'Ca', color:'#ff5588',tgt:450,lo:400,hi:480},
+  {key:'ca', name:'Ca', color:'#e8599a',tgt:450,lo:400,hi:480},
   {key:'mg', name:'Mg', color:'#22bbaa',tgt:1350,lo:1250,hi:1450},
 ];
 const SEED=[];
@@ -1423,12 +1481,22 @@ const dlPlugin={
       meta.data.forEach((pt,i)=>{
         const v=ds.data[i].y,oor=isOOR(fk,v);
         ctx.font=(oor?'bold ':'')+'11px -apple-system,sans-serif';
-        ctx.fillStyle=oor?getCS('--warn'):ds.borderColor;
-        ctx.textAlign='center';ctx.fillText(v,pt.x,pt.y-10);
-        if(oor){const tw2=ctx.measureText(String(v)).width,tx=pt.x+tw2/2+6,ty=pt.y-14;
-          ctx.beginPath();ctx.moveTo(tx,ty-5);ctx.lineTo(tx-3.5,ty+2);ctx.lineTo(tx+3.5,ty+2);ctx.closePath();
-          ctx.fillStyle=getCS('--warn');ctx.fill();
-          ctx.font='bold 6px sans-serif';ctx.fillStyle=getCS('--card');ctx.textAlign='center';ctx.fillText('!',tx,ty+1);
+        ctx.textAlign='center';
+        if(oor){
+          /* OOR: value in warn color with contrast outline */
+          const warnC='#ff4444';
+          ctx.strokeStyle=getCS('--card');ctx.lineWidth=3;ctx.strokeText(v,pt.x,pt.y-10);
+          ctx.fillStyle=warnC;ctx.fillText(v,pt.x,pt.y-10);
+          /* Triangle marker with white outline */
+          const tw2=ctx.measureText(String(v)).width,tx=pt.x+tw2/2+6,ty=pt.y-14;
+          ctx.beginPath();ctx.moveTo(tx,ty-6);ctx.lineTo(tx-4,ty+2.5);ctx.lineTo(tx+4,ty+2.5);ctx.closePath();
+          ctx.strokeStyle=getCS('--card');ctx.lineWidth=2;ctx.stroke();
+          ctx.fillStyle=warnC;ctx.fill();
+          ctx.font='bold 6px sans-serif';ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText('!',tx,ty+1);
+          /* OOR point ring */
+          ctx.beginPath();ctx.arc(pt.x,pt.y,7,0,Math.PI*2);ctx.strokeStyle=warnC;ctx.lineWidth=2;ctx.stroke();
+        } else {
+          ctx.fillStyle=ds.borderColor;ctx.fillText(v,pt.x,pt.y-10);
         }
       });
       ctx.restore();
@@ -1495,6 +1563,12 @@ function updateLaneLabels(){
   });
 }
 
+let _overviewMode=false;
+function toggleOverview(){
+  _overviewMode=!_overviewMode;
+  document.getElementById('overviewBtn').classList.toggle('active',_overviewMode);
+  renderChart();
+}
 function renderChart(){
   const labels=buildLabels();
   const outer=document.getElementById("chartOuter");
@@ -1514,13 +1588,17 @@ function renderChart(){
   });
   const innerEl=document.getElementById('chartInner');
   const wrapW=document.getElementById('chartWrap').clientWidth;
-  const now=new Date(),vis3m=new Date(now.getFullYear(),now.getMonth()-3,now.getDate()),vis1m=new Date(now.getFullYear(),now.getMonth()+1,now.getDate());
-  let visCount=0;labels.forEach(l=>{const d=pd(l);if(d>=vis3m&&d<=vis1m)visCount++;});visCount=Math.max(visCount,8);
-  const perLabel=wrapW/visCount;
-  innerEl.style.width=Math.round(Math.max(lbls.length*perLabel,wrapW))+'px';
+  if(_overviewMode){
+    innerEl.style.width=wrapW+'px';
+  } else {
+    const now=new Date(),vis3m=new Date(now.getFullYear(),now.getMonth()-3,now.getDate()),vis1m=new Date(now.getFullYear(),now.getMonth()+1,now.getDate());
+    let visCount=0;labels.forEach(l=>{const d=pd(l);if(d>=vis3m&&d<=vis1m)visCount++;});visCount=Math.max(visCount,8);
+    const perLabel=wrapW/visCount;
+    innerEl.style.width=Math.round(Math.max(lbls.length*perLabel,wrapW))+'px';
+  }
   if(W_chart)W_chart.destroy();
   _hoverX=null;
-  const _cw=document.getElementById('chartWrap');if(_cw)_cw.scrollLeft=_cw.scrollWidth;
+  const _cw=document.getElementById('chartWrap');if(_cw&&!_overviewMode)_cw.scrollLeft=_cw.scrollWidth;
   W_chart=new Chart(document.getElementById('mainChart'),{type:'line',data:{datasets:ds},options:{
     responsive:true,maintainAspectRatio:false,
     animation:{duration:600,easing:'easeOutQuart',onComplete:()=>updateLaneLabels()},

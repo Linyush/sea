@@ -399,8 +399,13 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
         </div>
         <div class="config-item">
           <label>🧂 盐度</label>
-          <input type="number" id="salinity" value="36" step="0.5" oninput="calc()">
+          <input type="number" id="salinity" value="36" step="0.5" oninput="salFromPPT()">
           <span class="unit">‰</span>
+        </div>
+        <div class="config-item">
+          <label>比重</label>
+          <input type="number" id="sg" value="1.027" step="0.001" oninput="salFromSG()">
+          <span class="unit">SG</span>
         </div>
       </div>
       <div class="sec-label" style="margin-top:20px">📝 本次换水参数</div>
@@ -756,7 +761,7 @@ function showCustomTooltip(chartInstance,labelIdx,mouseX,mouseY){
     const row=rows.find(r=>r.date===dateStr);if(!row)return;
     html+='<div class="tt-title">'+fs(dateStr)+'</div>';
     fields.forEach(fi=>{const v=row[fi.key];if(v==null)return;const oor=isOOR(fi.key,v);
-      html+='<div class="tt-row"><span class="tt-dot" style="background:'+fi.color+'"></span><span class="tt-name">'+fi.name+'</span><span class="tt-val'+(oor?' tt-warn':'')+'>'+v+(oor?' ⚠':'')+'</span></div>';
+      html+='<div class="tt-row"><span class="tt-dot" style="background:'+fi.color+'"></span><span class="tt-name">'+fi.name+'</span><span class="tt-val'+(oor?' tt-warn':'')+'">'+ v+(oor?' ⚠':'')+'</span></div>';
     });
   });
   if(!html){tt.classList.remove('show');_hoverX=null;chartInstance.draw();return;}
@@ -811,6 +816,7 @@ function renderChart(){
     plugins:{legend:{display:false},tooltip:{enabled:false}},
     scales:scales,onHover:function(){}
   },plugins:[lanePlugin,dlPlugin,crosshairPlugin]});
+  updateLaneLabels();
   const canvas=document.getElementById('mainChart');
   canvas.onmousemove=function(e){if(!W_chart)return;const rect=canvas.getBoundingClientRect();const mouseX=e.clientX-rect.left;const mouseY=e.clientY;const li=findNearestLabelIndex(W_chart,mouseX);showCustomTooltip(W_chart,li,mouseX,mouseY);};
   canvas.onmouseleave=function(){document.getElementById('customTooltip').classList.remove('show');_hoverX=null;if(W_chart)W_chart.draw();};
@@ -1109,6 +1115,16 @@ function initLight(){
    ============================================================ */
 const C_SK='reef_change_v1';
 
+function salFromPPT(){
+  const ppt=parseFloat(document.getElementById('salinity').value)||0;
+  document.getElementById('sg').value=(1+ppt*0.000753).toFixed(3);
+  calc();
+}
+function salFromSG(){
+  const sg=parseFloat(document.getElementById('sg').value)||1;
+  document.getElementById('salinity').value=Math.round((sg-1)/0.000753*10)/10;
+  calc();
+}
 function calc(){
   const vol=parseFloat(document.getElementById('waterVolume').value)||0;
   const tankTotal=parseFloat(document.getElementById('tankTotal').value)||70;
@@ -1143,7 +1159,7 @@ function calc(){
 function C_fmt(v){return v%1===0?String(v):v.toFixed(1);}
 
 function C_saveInputs(){
-  const ids=['waterVolume','tankTotal','salinity','roomTemp','adjTemp','targetTemp'];
+  const ids=['waterVolume','tankTotal','salinity','sg','roomTemp','adjTemp','targetTemp'];
   const d={};ids.forEach(id=>{d[id]=document.getElementById(id).value;});
   _s(C_SK,JSON.stringify(d));
 }
@@ -1153,7 +1169,7 @@ function C_loadInputs(){
 }
 
 function initChange(){
-  C_loadInputs();calc();
+  C_loadInputs();salFromPPT();
 }
 
 /* ============================================================

@@ -311,10 +311,81 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
   .result-card{min-width:calc(50% - 6px)}
   .config-row{flex-direction:column;align-items:flex-start;gap:8px}
 }
+
+/* === Tank Bar === */
+.tank-bar{display:flex;align-items:center;gap:6px;margin-bottom:14px;padding:6px 0;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.tank-bar::-webkit-scrollbar{display:none}
+.tank-tab{padding:6px 14px;font-size:12px;font-weight:500;color:var(--text3);background:var(--card);border:1px solid var(--border);border-radius:8px;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0;position:relative}
+.tank-tab:hover{border-color:var(--accent);color:var(--text)}
+.tank-tab.active{color:var(--accent);border-color:var(--accent);background:color-mix(in srgb,var(--accent) 6%,transparent);font-weight:600}
+.tank-add{padding:6px 10px;font-size:14px;color:var(--text4);background:none;border:1px dashed var(--border);border-radius:8px;cursor:pointer;transition:all .2s;flex-shrink:0}
+.tank-add:hover{border-color:var(--accent);color:var(--accent)}
+.tank-ctx{position:fixed;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:4px;box-shadow:0 4px 16px var(--shadow);z-index:500;min-width:100px}
+.tank-ctx button{display:block;width:100%;text-align:left;background:none;border:none;color:var(--text2);font-size:12px;padding:6px 10px;border-radius:4px;cursor:pointer;transition:background .2s}
+.tank-ctx button:hover{background:var(--hover);color:var(--text)}
+.tank-ctx button.danger{color:var(--warn)}
+.tank-ctx button.danger:hover{background:color-mix(in srgb,var(--warn) 8%,transparent)}
+.tank-bar-single .tank-bar{display:none}
+/* === Profile page === */
+.profile-header{display:flex;align-items:center;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+.profile-avatar{width:48px;height:48px;border-radius:12px;background:color-mix(in srgb,var(--accent) 10%,transparent);border:1px solid color-mix(in srgb,var(--accent) 20%,transparent);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.profile-info{flex:1;min-width:0}
+.profile-info h2{font-size:18px;font-weight:700;color:var(--text);margin-bottom:2px}
+.profile-info .meta{font-size:12px;color:var(--text3)}
+.profile-edit-btn{background:none;border:1px solid var(--border2);color:var(--text3);padding:5px 12px;border-radius:6px;font-size:11px;cursor:pointer;transition:all .2s}
+.profile-edit-btn:hover{border-color:var(--accent);color:var(--accent)}
+.profile-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:20px}
+.profile-field{background:var(--input-bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;transition:border-color .3s}
+.profile-field:hover{border-color:var(--border2)}
+.profile-field .pf-label{font-size:11px;color:var(--text4);margin-bottom:4px;font-weight:500}
+.profile-field .pf-value{font-size:14px;font-weight:600;color:var(--text)}
+.profile-field .pf-value.accent{color:var(--accent)}
+.inv-section{margin-top:16px}
+.inv-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.inv-header h3{font-size:14px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:6px}
+.inv-header .count{font-size:11px;color:var(--text4);font-weight:400}
+.inv-add-btn{background:none;border:1px dashed var(--border);color:var(--text4);padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;transition:all .2s}
+.inv-add-btn:hover{border-color:var(--accent);color:var(--accent)}
+.inv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
+.inv-card{background:var(--input-bg);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+.inv-card:hover{border-color:var(--accent);transform:translateY(-1px)}
+.inv-card .inv-icon{font-size:28px;margin-bottom:4px;line-height:1.2}
+.inv-card .inv-name{font-size:12px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.inv-card .inv-sub{font-size:10px;color:var(--text4);margin-top:2px}
+.inv-card .inv-status{font-size:10px;margin-top:2px}
+.inv-card .inv-status.s-alive,.inv-card .inv-status.s-active,.inv-card .inv-status.s-inuse{color:#22bb88}
+.inv-card .inv-status.s-dead,.inv-card .inv-status.s-broken{color:var(--warn)}
+.inv-card .inv-status.s-sold,.inv-card .inv-status.s-standby,.inv-card .inv-status.s-sealed{color:var(--text4)}
+.inv-empty{padding:24px;text-align:center;color:var(--text4);font-size:13px;border:1px dashed var(--border);border-radius:10px}
+/* Item form modal */
+.if-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0);z-index:400;align-items:center;justify-content:center;transition:background .3s}
+.if-overlay.open{display:flex;background:rgba(0,0,0,.55)}
+.if-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;max-width:420px;width:94%;max-height:80vh;overflow-y:auto;transform:scale(.92);opacity:0;transition:transform .3s cubic-bezier(.22,1,.36,1),opacity .25s}
+.if-overlay.open .if-box{transform:scale(1);opacity:1}
+.if-box h4{font-size:15px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.if-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.if-row label{font-size:12px;color:var(--text3);width:64px;flex-shrink:0;text-align:right}
+.if-row input,.if-row select,.if-row textarea{flex:1;background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:7px;font-size:13px;outline:none;transition:border-color .3s;font-family:inherit}
+.if-row input:focus,.if-row select:focus,.if-row textarea:focus{border-color:var(--accent)}
+.if-row textarea{resize:vertical;min-height:48px}
+.if-row .req::after{content:' *';color:var(--warn)}
+.if-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}
+/* Tank form */
+.tf-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0);z-index:350;align-items:center;justify-content:center;transition:background .3s}
+.tf-overlay.open{display:flex;background:rgba(0,0,0,.55)}
+.tf-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;max-width:380px;width:94%;transform:scale(.92);opacity:0;transition:transform .3s cubic-bezier(.22,1,.36,1),opacity .25s}
+.tf-overlay.open .tf-box{transform:scale(1);opacity:1}
+
 </style>
 </head>
 <body>
 <div class="container">
+
+  <!-- ========== Tank Bar ========== -->
+  <div id="tankBarWrap">
+    <div class="tank-bar" id="tankBar"></div>
+  </div>
+
   <!-- ========== Shared Header ========== -->
   <div class="page-hd anim-in">
     <div class="left">
@@ -322,6 +393,7 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
       <span class="badge" id="pageBadge">REEF MONITOR</span>
     </div>
     <div class="nav-right">
+      <button class="nav-tab" data-page="profile" onclick="switchPage('profile')">📋 档案</button>
       <button class="nav-tab active" data-page="water" onclick="switchPage('water')">💧 水质</button>
       <button class="nav-tab" data-page="change" onclick="switchPage('change')">🔄 换水</button>
       <button class="nav-tab" data-page="titrate" onclick="switchPage('titrate')">🧪 滴定</button>
@@ -330,6 +402,42 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
       <button class="theme-btn" onclick="toggleTheme()" id="themeBtn" title="切换主题">🌙</button>
     </div>
   </div>
+
+
+  <!-- ========== PAGE: Profile ========== -->
+  <section class="page-section" id="page-profile">
+    <div class="card anim-in anim-d1" style="padding:24px">
+      <div class="profile-header" id="profileHeader"></div>
+      <div class="profile-grid" id="profileGrid"></div>
+    </div>
+    <div class="card anim-in anim-d2" style="padding:24px;margin-top:16px">
+      <div class="inv-section" id="invLivestock">
+        <div class="inv-header">
+          <h3>🐠 生物 <span class="count" id="lsCount"></span></h3>
+          <button class="inv-add-btn" onclick="P_openForm('livestock')">+ 添加</button>
+        </div>
+        <div id="lsGrid"></div>
+      </div>
+    </div>
+    <div class="card anim-in anim-d3" style="padding:24px;margin-top:16px">
+      <div class="inv-section" id="invEquipment">
+        <div class="inv-header">
+          <h3>⚙️ 设备 <span class="count" id="eqCount"></span></h3>
+          <button class="inv-add-btn" onclick="P_openForm('equipment')">+ 添加</button>
+        </div>
+        <div id="eqGrid"></div>
+      </div>
+    </div>
+    <div class="card anim-in" style="padding:24px;margin-top:16px;animation-delay:.32s">
+      <div class="inv-section" id="invConsumable">
+        <div class="inv-header">
+          <h3>📦 耗材 <span class="count" id="cmCount"></span></h3>
+          <button class="inv-add-btn" onclick="P_openForm('consumable')">+ 添加</button>
+        </div>
+        <div id="cmGrid"></div>
+      </div>
+    </div>
+  </section>
 
   <!-- ========== PAGE: Water ========== -->
   <section class="page-section active" id="page-water">
@@ -623,6 +731,38 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
 
 </div>
 
+
+<!-- Tank form modal -->
+<div class="tf-overlay" id="tankFormOverlay" onclick="if(event.target===this)TF_close()">
+  <div class="tf-box">
+    <h4 id="tfTitle" style="font-size:15px;font-weight:600;margin-bottom:14px">新建鱼缸</h4>
+    <div class="if-row"><label class="req">名称</label><input id="tfName" placeholder="如 客厅海缸"></div>
+    <div class="if-row"><label class="req">类型</label><select id="tfType"><option value="LPS">LPS</option><option value="SPS">SPS</option><option value="FOT">FOT</option><option value="NPS">NPS</option><option value="其他">其他</option></select></div>
+    <div class="if-row"><label class="req">水体</label><input type="number" id="tfVolume" placeholder="升" step="1"><span style="color:var(--text4);font-size:12px;margin-left:-4px">L</span></div>
+    <div class="if-row"><label>开缸日期</label><input type="date" id="tfStart"></div>
+    <div class="if-row"><label>购入渠道</label><input id="tfSource" placeholder="选填"></div>
+    <div class="if-row"><label>价格</label><input type="number" id="tfPrice" placeholder="¥"></div>
+    <div class="if-row"><label>备注</label><textarea id="tfNotes" rows="2" placeholder="选填"></textarea></div>
+    <div class="if-actions"><button class="btn-ghost" onclick="TF_close()">取消</button><button class="btn" id="tfSubmit" onclick="TF_save()">创建</button></div>
+  </div>
+</div>
+
+<!-- Item form modal (livestock/equipment/consumable) -->
+<div class="if-overlay" id="itemFormOverlay" onclick="if(event.target===this)IF_close()">
+  <div class="if-box">
+    <h4 id="ifTitle">添加生物</h4>
+    <div id="ifFields"></div>
+    <div class="if-actions"><button class="btn-ghost" onclick="IF_close()">取消</button><button class="btn-del" id="ifDelBtn" style="display:none" onclick="IF_del()">删除</button><button class="btn" onclick="IF_save()">保存</button></div>
+  </div>
+</div>
+
+<!-- Tank context menu -->
+<div class="tank-ctx" id="tankCtx" style="display:none">
+  <button onclick="TK_rename()">重命名</button>
+  <button onclick="TK_edit()">编辑档案</button>
+  <button class="danger" onclick="TK_del()">删除鱼缸</button>
+</div>
+
 <!-- Shared toast -->
 <div class="toast" id="toast"></div>
 
@@ -697,42 +837,485 @@ function toggleTheme(){
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
 
 /* ============================================================
+   MULTI-TANK MANAGEMENT
+   ============================================================ */
+const TK_LIST_KEY='reef_tanks';
+const TK_ACTIVE_KEY='reef_active';
+let _tanks=[];
+let _activeTank='';
+
+// --- Migration from old single-tank format ---
+function TK_migrate(){
+  const existing=_g(TK_LIST_KEY);
+  if(existing)return false; // already migrated
+  // Check for old data
+  const oldW=_g('reef_water_v10');
+  const oldL=_g('reef_spectrum_v8');
+  const oldC=_g('reef_change_v1');
+  const oldT=_g('reef_titrate_v1');
+  const hasOld=oldW||oldL||oldC||oldT;
+  // Create default tank
+  const id='t'+Date.now();
+  const tank={id:id,name:'我的鱼缸',type:'LPS',volume:70,startDate:'',source:'',price:'',notes:'',order:0};
+  _s(TK_LIST_KEY,JSON.stringify([tank]));
+  _s(TK_ACTIVE_KEY,id);
+  // Copy old data to new keys
+  if(oldW) _s('reef_'+id+'_water_v10',oldW);
+  if(oldL) _s('reef_'+id+'_spectrum_v8',oldL);
+  if(oldC) _s('reef_'+id+'_change_v1',oldC);
+  if(oldT) _s('reef_'+id+'_titrate_v1',oldT);
+  // Save profile from old change data (extract tankTotal)
+  if(oldC){
+    try{const cd=JSON.parse(oldC);if(cd.tankTotal)tank.volume=parseFloat(cd.tankTotal)||70;}catch(e){}
+  }
+  _s(TK_LIST_KEY,JSON.stringify([tank]));
+  // Init empty inventory
+  _s('reef_'+id+'_inventory',JSON.stringify({livestock:[],equipment:[],consumables:[]}));
+  return true;
+}
+
+function TK_load(){
+  const s=_g(TK_LIST_KEY);
+  _tanks=s?JSON.parse(s):[];
+  if(!_tanks.length){
+    const id='t'+Date.now();
+    _tanks=[{id:id,name:'我的鱼缸',type:'LPS',volume:70,startDate:'',source:'',price:'',notes:'',order:0}];
+    _s(TK_LIST_KEY,JSON.stringify(_tanks));
+    _s('reef_'+id+'_inventory',JSON.stringify({livestock:[],equipment:[],consumables:[]}));
+  }
+  _tanks.sort((a,b)=>(a.order||0)-(b.order||0));
+  const active=_g(TK_ACTIVE_KEY);
+  _activeTank=(active&&_tanks.some(t=>t.id===active))?active:_tanks[0].id;
+  _s(TK_ACTIVE_KEY,_activeTank);
+}
+
+function TK_save(){
+  _s(TK_LIST_KEY,JSON.stringify(_tanks));
+}
+
+function TK_current(){
+  return _tanks.find(t=>t.id===_activeTank)||_tanks[0];
+}
+
+function TK_switchTo(id){
+  if(id===_activeTank)return;
+  _activeTank=id;
+  _s(TK_ACTIVE_KEY,id);
+  // Reset init flags for data pages
+  _pageInited.water=false;_pageInited.light=false;_pageInited.change=false;_pageInited.titrate=false;_pageInited.profile=false;
+  // Destroy charts
+  if(W_chart){W_chart.destroy();W_chart=null;}
+  if(L_chart){L_chart.destroy();L_chart=null;}
+  // Reset module state
+  fields=[];rows=[];
+  L_cfg=L_ld();
+  // Re-render
+  TK_renderBar();
+  // Re-init current page
+  const page=_currentPage;
+  _pageInited[page]=true;
+  if(page==='profile') initProfile();
+  else if(page==='water') initWater();
+  else if(page==='light') initLight();
+  else if(page==='change') initChange();
+  else if(page==='titrate') initTitrate();
+  if(page==='profile') renderProfile();
+}
+
+function TK_renderBar(){
+  const bar=document.getElementById('tankBar');
+  const wrap=document.getElementById('tankBarWrap');
+  // Only show bar if >1 tank (always show for discoverability)
+  bar.innerHTML='';
+  _tanks.forEach(t=>{
+    const btn=document.createElement('button');
+    btn.className='tank-tab'+(t.id===_activeTank?' active':'');
+    btn.textContent=t.name;
+    btn.onclick=()=>TK_switchTo(t.id);
+    btn.oncontextmenu=(e)=>{e.preventDefault();TK_showCtx(t.id,e);};
+    // Long press for mobile
+    let _lp;
+    btn.ontouchstart=(e)=>{_lp=setTimeout(()=>{e.preventDefault();TK_showCtx(t.id,e.touches[0]);},500);};
+    btn.ontouchend=()=>clearTimeout(_lp);
+    btn.ontouchmove=()=>clearTimeout(_lp);
+    bar.appendChild(btn);
+  });
+  const addBtn=document.createElement('button');
+  addBtn.className='tank-add';
+  addBtn.textContent='+';
+  addBtn.title='新建鱼缸';
+  addBtn.onclick=()=>TF_open();
+  bar.appendChild(addBtn);
+}
+
+let _ctxTankId='';
+function TK_showCtx(id,e){
+  _ctxTankId=id;
+  const ctx=document.getElementById('tankCtx');
+  ctx.style.display='block';
+  ctx.style.left=Math.min((e.clientX||e.pageX),window.innerWidth-120)+'px';
+  ctx.style.top=Math.min((e.clientY||e.pageY),window.innerHeight-100)+'px';
+  setTimeout(()=>{document.addEventListener('click',TK_hideCtx,{once:true});},0);
+}
+function TK_hideCtx(){document.getElementById('tankCtx').style.display='none';}
+
+function TK_rename(){
+  TK_hideCtx();
+  const t=_tanks.find(x=>x.id===_ctxTankId);if(!t)return;
+  const n=prompt('鱼缸名称',t.name);
+  if(n&&n.trim()){t.name=n.trim();TK_save();TK_renderBar();if(_currentPage==='profile')renderProfile();}
+}
+function TK_edit(){
+  TK_hideCtx();
+  // Switch to that tank's profile
+  if(_ctxTankId!==_activeTank)TK_switchTo(_ctxTankId);
+  switchPage('profile');
+}
+function TK_del(){
+  TK_hideCtx();
+  if(_tanks.length<=1){toast('至少保留一个鱼缸');return;}
+  const t=_tanks.find(x=>x.id===_ctxTankId);if(!t)return;
+  if(!confirm('确定删除鱼缸「'+t.name+'」及其所有数据？'))return;
+  // Remove data
+  ['_water_v10','_spectrum_v8','_change_v1','_titrate_v1','_inventory'].forEach(suffix=>{
+    _r('reef_'+t.id+suffix);
+  });
+  _tanks=_tanks.filter(x=>x.id!==t.id);
+  TK_save();
+  if(_activeTank===t.id){TK_switchTo(_tanks[0].id);}
+  else{TK_renderBar();}
+  toast('已删除 '+t.name);
+}
+
+// --- Tank Form ---
+let _tfEditId='';
+function TF_open(editId){
+  _tfEditId=editId||'';
+  const ov=document.getElementById('tankFormOverlay');
+  document.getElementById('tfTitle').textContent=editId?'编辑鱼缸':'新建鱼缸';
+  document.getElementById('tfSubmit').textContent=editId?'保存':'创建';
+  if(editId){
+    const t=_tanks.find(x=>x.id===editId);
+    if(t){
+      document.getElementById('tfName').value=t.name;
+      document.getElementById('tfType').value=t.type||'LPS';
+      document.getElementById('tfVolume').value=t.volume||'';
+      document.getElementById('tfStart').value=t.startDate||'';
+      document.getElementById('tfSource').value=t.source||'';
+      document.getElementById('tfPrice').value=t.price||'';
+      document.getElementById('tfNotes').value=t.notes||'';
+    }
+  }else{
+    ['tfName','tfVolume','tfStart','tfSource','tfPrice','tfNotes'].forEach(id=>{document.getElementById(id).value='';});
+    document.getElementById('tfType').value='LPS';
+  }
+  ov.style.display='flex';requestAnimationFrame(()=>ov.classList.add('open'));
+}
+function TF_close(){
+  const ov=document.getElementById('tankFormOverlay');ov.classList.remove('open');setTimeout(()=>{ov.style.display='none';},300);
+}
+function TF_save(){
+  const name=document.getElementById('tfName').value.trim();
+  const type=document.getElementById('tfType').value;
+  const volume=parseFloat(document.getElementById('tfVolume').value)||0;
+  if(!name){toast('请输入鱼缸名称');return;}
+  if(!volume){toast('请输入水体体积');return;}
+  if(_tfEditId){
+    // Edit existing
+    const t=_tanks.find(x=>x.id===_tfEditId);
+    if(t){
+      t.name=name;t.type=type;t.volume=volume;
+      t.startDate=document.getElementById('tfStart').value;
+      t.source=document.getElementById('tfSource').value.trim();
+      t.price=document.getElementById('tfPrice').value;
+      t.notes=document.getElementById('tfNotes').value.trim();
+      TK_save();TK_renderBar();
+      if(_currentPage==='profile')renderProfile();
+      toast('已更新 '+name);
+    }
+  }else{
+    // Create new
+    const id='t'+Date.now();
+    const tank={id,name,type,volume,
+      startDate:document.getElementById('tfStart').value,
+      source:document.getElementById('tfSource').value.trim(),
+      price:document.getElementById('tfPrice').value,
+      notes:document.getElementById('tfNotes').value.trim(),
+      order:_tanks.length
+    };
+    _tanks.push(tank);
+    TK_save();
+    _s('reef_'+id+'_inventory',JSON.stringify({livestock:[],equipment:[],consumables:[]}));
+    TK_switchTo(id);
+    toast('已创建 '+name);
+  }
+  TF_close();
+}
+
+/* ============================================================
+   PROFILE / INVENTORY MODULE
+   ============================================================ */
+const P_INV_KEY=()=>'reef_'+_activeTank+'_inventory';
+const P_STATUS_LABELS={
+  alive:'存活',dead:'死亡',sold:'售出',moved:'转缸',
+  active:'使用中',standby:'闲置',broken:'损坏',
+  sealed:'未开封',inuse:'使用中',empty:'已用完'
+};
+const P_SPECIES_OPTS=['鱼','珊瑚','无脊椎','藻','其他'];
+const P_EQ_CATS=['水泵','灯','造浪','蛋分','加热棒','冷水机','温度计','滴定','钙反','煮豆机','补水器','杀菌灯','滤布机','喂食器','检测设备','插座','其他'];
+const P_CM_CATS=['盐','食物','添加剂','试剂','药品','其他'];
+
+// Default icons per category
+const P_DEF_ICONS={
+  // Species
+  '鱼':'🐠','珊瑚':'🪸','无脊椎':'🦐','藻':'🌿','其他':'🔵',
+  // Equipment
+  '水泵':'💧','灯':'💡','造浪':'🌊','蛋分':'🫧','加热棒':'🌡️','冷水机':'❄️',
+  '温度计':'🌡️','滴定':'🧪','钙反':'⚗️','煮豆机':'♨️','补水器':'🚰',
+  '杀菌灯':'🔦','滤布机':'🧻','喂食器':'🍽️','检测设备':'📊','插座':'🔌',
+  // Consumable
+  '盐':'🧂','食物':'🐟','添加剂':'💊','试剂':'🧪','药品':'💉',
+};
+
+function P_loadInv(){
+  const s=_g(P_INV_KEY());
+  if(s){try{return JSON.parse(s);}catch(e){}}
+  return{livestock:[],equipment:[],consumables:[]};
+}
+function P_saveInv(inv){
+  _s(P_INV_KEY(),JSON.stringify(inv));
+}
+
+function renderProfile(){
+  const t=TK_current();
+  // Header
+  const hdr=document.getElementById('profileHeader');
+  const daysSince=t.startDate?Math.floor((Date.now()-new Date(t.startDate+'T00:00:00').getTime())/(86400000)):-1;
+  hdr.innerHTML='<div class="profile-avatar">🐠</div><div class="profile-info"><h2>'+t.name+'</h2><div class="meta">'+t.type+(daysSince>=0?' · 开缸 '+daysSince+' 天':'')+'</div></div><button class="profile-edit-btn" onclick="TF_open(''+t.id+'')">编辑</button>';
+  // Grid
+  const grid=document.getElementById('profileGrid');
+  let gh='';
+  gh+='<div class="profile-field"><div class="pf-label">类型</div><div class="pf-value">'+t.type+'</div></div>';
+  gh+='<div class="profile-field"><div class="pf-label">水体</div><div class="pf-value accent">'+t.volume+' L</div></div>';
+  if(t.startDate)gh+='<div class="profile-field"><div class="pf-label">开缸日期</div><div class="pf-value">'+t.startDate+'</div></div>';
+  if(daysSince>=0)gh+='<div class="profile-field"><div class="pf-label">开缸天数</div><div class="pf-value accent">'+daysSince+' 天</div></div>';
+  if(t.source)gh+='<div class="profile-field"><div class="pf-label">购入渠道</div><div class="pf-value">'+t.source+'</div></div>';
+  if(t.price)gh+='<div class="profile-field"><div class="pf-label">价格</div><div class="pf-value">¥'+t.price+'</div></div>';
+  if(t.notes)gh+='<div class="profile-field" style="grid-column:1/-1"><div class="pf-label">备注</div><div class="pf-value" style="font-size:13px;font-weight:400">'+t.notes+'</div></div>';
+  grid.innerHTML=gh;
+  // Inventory
+  const inv=P_loadInv();
+  P_renderInvSection('ls',inv.livestock||[],'livestock');
+  P_renderInvSection('eq',inv.equipment||[],'equipment');
+  P_renderInvSection('cm',inv.consumables||[],'consumable');
+}
+
+function P_renderInvSection(prefix,items,type){
+  const countEl=document.getElementById(prefix+'Count');
+  const gridEl=document.getElementById(prefix+'Grid');
+  const activeItems=items.filter(x=>x.status!=='sold'&&x.status!=='dead'&&x.status!=='moved'&&x.status!=='empty');
+  countEl.textContent='('+activeItems.length+'/'+items.length+')';
+  if(!items.length){
+    gridEl.innerHTML='<div class="inv-empty">暂无'+({livestock:'生物',equipment:'设备',consumable:'耗材'}[type])+'，点击上方添加</div>';
+    return;
+  }
+  let h='<div class="inv-grid">';
+  items.forEach((item,i)=>{
+    const icon=item.icon||(P_DEF_ICONS[item.species]||P_DEF_ICONS[item.category]||'📦');
+    const statusCls='s-'+(item.status||'alive');
+    const statusTxt=P_STATUS_LABELS[item.status]||item.status||'';
+    h+='<div class="inv-card" onclick="P_editItem(''+type+'','+i+')">';
+    h+='<div class="inv-icon">'+icon+'</div>';
+    h+='<div class="inv-name">'+item.name+'</div>';
+    if(item.breed||item.spec)h+='<div class="inv-sub">'+(item.breed||item.spec||'')+'</div>';
+    h+='<div class="inv-status '+statusCls+'">'+statusTxt+'</div>';
+    h+='</div>';
+  });
+  h+='</div>';
+  gridEl.innerHTML=h;
+}
+
+// --- Item Form ---
+let _ifType='',_ifIdx=-1;
+const IF_FIELDS={
+  livestock:[
+    {key:'name',label:'名称',type:'text',required:true},
+    {key:'species',label:'物种',type:'select',opts:P_SPECIES_OPTS,required:true},
+    {key:'breed',label:'品种',type:'text'},
+    {key:'size',label:'尺寸',type:'text',placeholder:'如 5cm'},
+    {key:'icon',label:'图标',type:'text',placeholder:'emoji 如 🤡'},
+    {key:'addDate',label:'购入日期',type:'date'},
+    {key:'source',label:'购入渠道',type:'text'},
+    {key:'price',label:'价格',type:'number',placeholder:'¥'},
+    {key:'status',label:'状态',type:'select',opts:['alive','dead','sold','moved'],labels:['存活','死亡','售出','转缸'],required:true,default:'alive'},
+    {key:'statusDate',label:'状态日期',type:'date'},
+    {key:'sellPrice',label:'售价',type:'number',placeholder:'¥'},
+    {key:'notes',label:'备注',type:'textarea'},
+  ],
+  equipment:[
+    {key:'name',label:'名称',type:'text',required:true},
+    {key:'category',label:'类型',type:'select',opts:P_EQ_CATS,required:true},
+    {key:'icon',label:'图标',type:'text',placeholder:'emoji'},
+    {key:'brand',label:'品牌',type:'text'},
+    {key:'spec',label:'规格',type:'text'},
+    {key:'addDate',label:'购入日期',type:'date'},
+    {key:'source',label:'购入渠道',type:'text'},
+    {key:'price',label:'价格',type:'number',placeholder:'¥'},
+    {key:'status',label:'状态',type:'select',opts:['active','standby','broken','sold'],labels:['使用中','闲置','损坏','售出'],required:true,default:'active'},
+    {key:'statusDate',label:'状态日期',type:'date'},
+    {key:'sellPrice',label:'售价',type:'number',placeholder:'¥'},
+    {key:'notes',label:'备注',type:'textarea'},
+  ],
+  consumable:[
+    {key:'name',label:'名称',type:'text',required:true},
+    {key:'category',label:'类型',type:'select',opts:P_CM_CATS,required:true},
+    {key:'icon',label:'图标',type:'text',placeholder:'emoji'},
+    {key:'brand',label:'品牌',type:'text'},
+    {key:'spec',label:'规格',type:'text',placeholder:'如 22kg'},
+    {key:'addDate',label:'购入日期',type:'date'},
+    {key:'source',label:'购入渠道',type:'text'},
+    {key:'price',label:'价格',type:'number',placeholder:'¥'},
+    {key:'status',label:'状态',type:'select',opts:['sealed','inuse','empty','sold'],labels:['未开封','使用中','已用完','售出'],required:true,default:'inuse'},
+    {key:'statusDate',label:'状态日期',type:'date'},
+    {key:'sellPrice',label:'售价',type:'number',placeholder:'¥'},
+    {key:'replaceInterval',label:'更换周期',type:'number',placeholder:'天'},
+    {key:'notes',label:'备注',type:'textarea'},
+  ]
+};
+const IF_TITLES={livestock:'生物',equipment:'设备',consumable:'耗材'};
+const IF_INV_KEYS={livestock:'livestock',equipment:'equipment',consumable:'consumables'};
+
+function P_openForm(type){
+  _ifType=type;_ifIdx=-1;
+  document.getElementById('ifTitle').textContent='添加'+IF_TITLES[type];
+  document.getElementById('ifDelBtn').style.display='none';
+  const box=document.getElementById('ifFields');
+  box.innerHTML=IF_FIELDS[type].map(f=>{
+    let inp='';
+    if(f.type==='select'){
+      const opts=f.opts.map((o,i)=>{
+        const val=f.labels?f.opts[i]:o;
+        const txt=f.labels?f.labels[i]:o;
+        const sel=(f.default===val)?' selected':'';
+        return '<option value="'+val+'"'+sel+'>'+txt+'</option>';
+      }).join('');
+      inp='<select id="if_'+f.key+'">'+opts+'</select>';
+    }else if(f.type==='textarea'){
+      inp='<textarea id="if_'+f.key+'" rows="2" placeholder="'+(f.placeholder||'')+'"></textarea>';
+    }else{
+      inp='<input type="'+(f.type||'text')+'" id="if_'+f.key+'" placeholder="'+(f.placeholder||'')+'">';
+    }
+    return '<div class="if-row"><label'+(f.required?' class="req"':'')+'>'+ f.label+'</label>'+inp+'</div>';
+  }).join('');
+  const ov=document.getElementById('itemFormOverlay');
+  ov.style.display='flex';requestAnimationFrame(()=>ov.classList.add('open'));
+}
+
+function P_editItem(type,idx){
+  _ifType=type;_ifIdx=idx;
+  const inv=P_loadInv();
+  const arr=inv[IF_INV_KEYS[type]]||[];
+  const item=arr[idx];if(!item)return;
+  document.getElementById('ifTitle').textContent='编辑'+IF_TITLES[type];
+  document.getElementById('ifDelBtn').style.display='';
+  const box=document.getElementById('ifFields');
+  box.innerHTML=IF_FIELDS[type].map(f=>{
+    const val=item[f.key]!=null?item[f.key]:'';
+    let inp='';
+    if(f.type==='select'){
+      const opts=f.opts.map((o,i)=>{
+        const optVal=f.labels?f.opts[i]:o;
+        const txt=f.labels?f.labels[i]:o;
+        const sel=(val===optVal)?' selected':'';
+        return '<option value="'+optVal+'"'+sel+'>'+txt+'</option>';
+      }).join('');
+      inp='<select id="if_'+f.key+'">'+opts+'</select>';
+    }else if(f.type==='textarea'){
+      inp='<textarea id="if_'+f.key+'" rows="2" placeholder="'+(f.placeholder||'')+'">'+val+'</textarea>';
+    }else{
+      inp='<input type="'+(f.type||'text')+'" id="if_'+f.key+'" value="'+val+'" placeholder="'+(f.placeholder||'')+'">';
+    }
+    return '<div class="if-row"><label'+(f.required?' class="req"':'')+'>'+ f.label+'</label>'+inp+'</div>';
+  }).join('');
+  const ov=document.getElementById('itemFormOverlay');
+  ov.style.display='flex';requestAnimationFrame(()=>ov.classList.add('open'));
+}
+
+function IF_close(){
+  const ov=document.getElementById('itemFormOverlay');ov.classList.remove('open');setTimeout(()=>{ov.style.display='none';},300);
+}
+
+function IF_save(){
+  const flds=IF_FIELDS[_ifType];
+  const item={};
+  for(const f of flds){
+    const el=document.getElementById('if_'+f.key);
+    let v=el?el.value.trim():'';
+    if(f.required&&!v){toast('请填写'+f.label);return;}
+    if(f.type==='number'&&v)v=parseFloat(v);
+    item[f.key]=v||'';
+  }
+  const inv=P_loadInv();
+  const arrKey=IF_INV_KEYS[_ifType];
+  if(!inv[arrKey])inv[arrKey]=[];
+  if(_ifIdx>=0){inv[arrKey][_ifIdx]=item;}
+  else{inv[arrKey].push(item);}
+  P_saveInv(inv);
+  IF_close();
+  renderProfile();
+  toast('已保存');
+}
+
+function IF_del(){
+  if(!confirm('确定删除？'))return;
+  const inv=P_loadInv();
+  const arrKey=IF_INV_KEYS[_ifType];
+  if(inv[arrKey])inv[arrKey].splice(_ifIdx,1);
+  P_saveInv(inv);
+  IF_close();
+  renderProfile();
+  toast('已删除');
+}
+
+function initProfile(){
+  // Profile page is render-only, no special init needed
+}
+
+
+/* ============================================================
    SPA ROUTER
    ============================================================ */
 const PAGE_META={
+  profile:{title:'鱼缸档案',badge:'PROFILE'},
   water:{title:'水质记录',badge:'REEF MONITOR'},
-  light:{title:'光谱生成器',badge:'SPECTRUM'},
   change:{title:'换水计算',badge:'WATER CHANGE'},
-  titrate:{title:'滴定计算',badge:'TITRATION'}
+  titrate:{title:'滴定计算',badge:'TITRATION'},
+  light:{title:'光谱生成器',badge:'SPECTRUM'}
 };
 let _currentPage='water';
-let _pageInited={water:false,light:false,change:false,titrate:false};
+let _pageInited={profile:false,water:false,light:false,change:false,titrate:false};
 
 function switchPage(page){
   if(!PAGE_META[page])return;
   _currentPage=page;
-  // Update tabs
   document.querySelectorAll('.nav-tab').forEach(b=>{
     b.classList.toggle('active',b.dataset.page===page);
   });
-  // Update title/badge
   document.getElementById('pageTitle').textContent=PAGE_META[page].title;
   document.getElementById('pageBadge').textContent=PAGE_META[page].badge;
-  // Toggle sections
   document.querySelectorAll('.page-section').forEach(s=>{
     s.classList.toggle('active',s.id==='page-'+page);
   });
-  // Update hash
   history.replaceState(null,null,'#'+page);
-  // Lazy init
   if(!_pageInited[page]){
     _pageInited[page]=true;
-    if(page==='water') initWater();
+    if(page==='profile') initProfile();
+    else if(page==='water') initWater();
     else if(page==='light') initLight();
     else if(page==='change') initChange();
     else if(page==='titrate') initTitrate();
   }
-  // Resize charts
+  if(page==='profile') renderProfile();
   if(page==='water'&&W_chart){setTimeout(()=>{W_chart.resize();updateLaneLabels();},50);}
   if(page==='light'&&L_chart){setTimeout(()=>{L_chart.resize();},50);}
 }
@@ -747,7 +1330,7 @@ function lookupTable(tbl,v){
   for(let i=0;i<tbl.length-1;i++){if(v>=tbl[i][0]&&v<=tbl[i+1][0]){const t=(v-tbl[i][0])/(tbl[i+1][0]-tbl[i][0]);return Math.round(tbl[i][1]+(tbl[i+1][1]-tbl[i][1])*t);}}
   return tbl[tbl.length-1][1];
 }
-const W_SK='reef_water_v10';
+function W_SK(){return 'reef_'+_activeTank+'_water_v10';}
 const DEF_FIELDS=[
   {key:'no3',name:'NO₃',color:'#f0c040',tgt:5,lo:0,hi:10},
   {key:'po4',name:'PO₄',color:'#4499ee',tgt:0.05,lo:0,hi:0.1},
@@ -772,7 +1355,7 @@ function calcBands(){
   return bands;
 }
 function load(){
-  const s=_g(W_SK);
+  const s=_g(W_SK());
   if(s){try{const o=JSON.parse(s);
     fields=(o.fields||[]).length?o.fields:DEF_FIELDS.map(f=>({...f}));
     fields=fields.map(f=>{const d=DEF_FIELDS.find(x=>x.key===f.key);if(d){if(f.lo==null||isNaN(f.lo))f.lo=d.lo;if(f.hi==null||isNaN(f.hi))f.hi=d.hi;if(f.tgt==null||isNaN(f.tgt))f.tgt=d.tgt;}return f;});
@@ -782,7 +1365,7 @@ function load(){
   rows.sort((a,b)=>a.date.localeCompare(b.date));
 }
 function _init(){fields=DEF_FIELDS.map(f=>({...f}));rows=[];}
-function save(){_s(W_SK,JSON.stringify({fields,rows}));}
+function save(){_s(W_SK(),JSON.stringify({fields,rows}));}
 function cutoff(){if(!rows.length)return new Date();const l=pd(rows[rows.length-1].date);return new Date(l.getFullYear(),l.getMonth()-3,l.getDate());}
 function isOOR(fk,v){if(v==null)return false;const fi=fields.find(x=>x.key===fk);if(!fi)return false;return v<fi.lo||v>fi.hi;}
 function buildLabels(){
@@ -1048,7 +1631,7 @@ function askDel(i){
   document.getElementById('delOk').onclick=()=>{rows.splice(_di,1);save();renderTable();renderChart();closeDel();toast('已删除');};
 }
 function closeDel(){const m=document.getElementById('delCfm');m.classList.remove('open');setTimeout(()=>{m.style.display='none';},300);}
-function resetAll(){if(!confirm('确定恢复默认目标值并清空所有数据？'))return;_r(W_SK);load();renderModal();renderChart();toast('已重置');}
+function resetAll(){if(!confirm('确定恢复默认目标值并清空所有数据？'))return;_r(W_SK());load();renderModal();renderChart();toast('已重置');}
 function openNf(){const m=document.getElementById('nfModal');m.style.display='flex';requestAnimationFrame(()=>m.classList.add('open'));}
 function closeNf(){const m=document.getElementById('nfModal');m.classList.remove('open');setTimeout(()=>{m.style.display='none';},300);}
 function doAddField(){
@@ -1105,12 +1688,13 @@ const L_CH=[
   {key:'deep',name:'深蓝',color:'#2244cc',dS:14,dT:10,dP:4,dW:60,dOn:true},
   {key:'purple',name:'紫色',color:'#aa44ff',dS:14,dT:10,dP:4,dW:30,dOn:true},
 ];
-const L_SK='reef_spectrum_v8',L_dc=o=>JSON.parse(JSON.stringify(o));
+function L_SK(){return 'reef_'+_activeTank+'_spectrum_v8';}
+const L_dc=o=>JSON.parse(JSON.stringify(o));
 const L_DEF={mode:'quick',g:{s:14,t:10,p:4,w:60},ch:{},qr:'aipai'};
 L_CH.forEach(c=>{L_DEF.ch[c.key]={s:c.dS,t:c.dT,p:c.dP,w:c.dW,on:c.dOn}});
 
-function L_ld(){try{const r=localStorage.getItem(L_SK);if(!r)return L_dc(L_DEF);const s=JSON.parse(r),c=L_dc(L_DEF);if(s.mode)c.mode=s.mode;if(s.g)Object.assign(c.g,s.g);if(s.ch)for(const k in c.ch)if(s.ch[k])Object.assign(c.ch[k],s.ch[k]);if(s.qr)c.qr=s.qr;return c}catch(e){return L_dc(L_DEF)}}
-function L_sv(c){try{localStorage.setItem(L_SK,JSON.stringify(c))}catch(e){}}
+function L_ld(){try{const r=localStorage.getItem(L_SK());if(!r)return L_dc(L_DEF);const s=JSON.parse(r),c=L_dc(L_DEF);if(s.mode)c.mode=s.mode;if(s.g)Object.assign(c.g,s.g);if(s.ch)for(const k in c.ch)if(s.ch[k])Object.assign(c.ch[k],s.ch[k]);if(s.qr)c.qr=s.qr;return c}catch(e){return L_dc(L_DEF)}}
+function L_sv(c){try{localStorage.setItem(L_SK(),JSON.stringify(c))}catch(e){}}
 let L_cfg=L_ld(),L_chart=null;
 
 function L_mkStp(id,val,min,max,step){
@@ -1248,7 +1832,7 @@ function initLight(){
 /* ============================================================
    WATER CHANGE MODULE
    ============================================================ */
-const C_SK='reef_change_v1';
+function C_SK(){return 'reef_'+_activeTank+'_change_v1';}
 
 function salFromPPT(){
   const ppt=parseFloat(document.getElementById('salinity').value)||0;
@@ -1296,22 +1880,26 @@ function C_fmt(v){return v%1===0?String(v):v.toFixed(1);}
 function C_saveInputs(){
   const ids=['waterVolume','tankTotal','salinity','sg','roomTemp','adjTemp','targetTemp'];
   const d={};ids.forEach(id=>{d[id]=document.getElementById(id).value;});
-  _s(C_SK,JSON.stringify(d));
+  _s(C_SK(),JSON.stringify(d));
 }
 function C_loadInputs(){
-  const s=_g(C_SK);if(!s)return;
+  const s=_g(C_SK());if(!s)return;
   try{const d=JSON.parse(s);for(const k in d){const el=document.getElementById(k);if(el)el.value=d[k];}}catch(e){}
 }
 
 function initChange(){
-  C_loadInputs();salFromPPT();
+  C_loadInputs();
+  // If no saved change data, use tank volume
+  const s=_g(C_SK());
+  if(!s){const t=TK_current();document.getElementById('tankTotal').value=t.volume||70;}
+  salFromPPT();
 }
 
 
 /* ============================================================
    TITRATION MODULE
    ============================================================ */
-const T_SK='reef_titrate_v1';
+function T_SK(){return 'reef_'+_activeTank+'_titrate_v1';}
 
 // Fixed conversion factors (g needed per L of tank per ppm)
 const T_ELEM={
@@ -1374,16 +1962,19 @@ function tSave(){
     'tCa1','tCa2','tCaD','tMg1','tMg2','tMgD','tKH1','tKH2','tKHD',
     'tK1','tK2','tKD'];
   const d={};ids.forEach(id=>{const el=document.getElementById(id);if(el)d[id]=el.value;});
-  _s(T_SK,JSON.stringify(d));
+  _s(T_SK(),JSON.stringify(d));
 }
 
 function tLoad(){
-  const s=_g(T_SK);if(!s)return;
+  const s=_g(T_SK());if(!s)return;
   try{const d=JSON.parse(s);for(const k in d){const el=document.getElementById(k);if(el)el.value=d[k];}}catch(e){}
 }
 
 function initTitrate(){
-  tLoad();tCalc();
+  tLoad();
+  const s=_g(T_SK());
+  if(!s){const t=TK_current();document.getElementById('tTank').value=t.volume||70;}
+  tCalc();
 }
 
 /* ============================================================
@@ -1391,7 +1982,9 @@ function initTitrate(){
    ============================================================ */
 document.addEventListener('keydown',function(e){
   if(e.key==='Escape'){
-    if(document.getElementById('nfModal').classList.contains('open'))closeNf();
+    if(document.getElementById('itemFormOverlay').classList.contains('open'))IF_close();
+    else if(document.getElementById('tankFormOverlay').classList.contains('open'))TF_close();
+    else if(document.getElementById('nfModal').classList.contains('open'))closeNf();
     else if(document.getElementById('delCfm').classList.contains('open'))closeDel();
     else if(document.getElementById('dataModal').classList.contains('open'))closeModal();
     else if(document.getElementById('lightDataModal').classList.contains('open'))L_closeDataModal();
@@ -1400,16 +1993,21 @@ document.addEventListener('keydown',function(e){
 
 document.addEventListener('DOMContentLoaded',function(){
   loadTheme();
+  // Multi-tank init
+  TK_migrate();
+  TK_load();
+  TK_renderBar();
   // Read hash to determine initial page
   const hash=window.location.hash.replace('#','');
   const startPage=PAGE_META[hash]?hash:'water';
-  // Init the starting page
   _pageInited[startPage]=true;
   switchPage(startPage);
-  if(startPage==='water') initWater();
+  if(startPage==='profile') initProfile();
+  else if(startPage==='water') initWater();
   else if(startPage==='light') initLight();
   else if(startPage==='change') initChange();
   else if(startPage==='titrate') initTitrate();
+  if(startPage==='profile') renderProfile();
 });
 </script>
 </body>

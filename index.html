@@ -74,8 +74,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .chart-wrap::-webkit-scrollbar{display:none}
 .chart-inner{height:100%;min-width:100%}
 .chart-outer{position:relative}
-.lane-labels{position:absolute;left:0;top:0;bottom:0;z-index:10;pointer-events:none;width:0}
-.lane-lbl{position:absolute;left:8px;pointer-events:none;white-space:nowrap;font-size:13px;font-weight:800;letter-spacing:.5px;padding:3px 10px 3px 7px;border-radius:5px;background:var(--card);box-shadow:0 1px 4px var(--shadow)}
+.lane-labels{position:absolute;right:0;top:0;bottom:0;z-index:10;pointer-events:none;width:100px}
+.lane-lbl{position:absolute;right:8px;pointer-events:none;white-space:nowrap;font-size:12px;font-weight:700;letter-spacing:.3px;padding:2px 8px;border-radius:4px;background:color-mix(in srgb,var(--card) 90%,transparent);backdrop-filter:blur(4px)}
 #customTooltip{position:absolute;pointer-events:none;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:12px;box-shadow:0 4px 20px var(--shadow);z-index:20;opacity:0;transition:opacity .15s ease;white-space:nowrap}
 #customTooltip.show{opacity:1}
 #customTooltip .tt-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px}
@@ -258,6 +258,16 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
 .tip strong{color:var(--text3)}
 .result-warn{color:var(--warn) !important;font-size:13px !important;font-weight:600 !important}
 
+
+.r-icon{font-size:20px;margin-bottom:4px}
+.rc-blue{background:color-mix(in srgb,#4488ff 6%,transparent);border-color:color-mix(in srgb,#4488ff 15%,transparent)}
+.rc-blue .r-value{color:#4488ff}
+.rc-orange{background:color-mix(in srgb,#ff8844 6%,transparent);border-color:color-mix(in srgb,#ff8844 15%,transparent)}
+.rc-orange .r-value{color:#ff8844}
+.rc-green{background:color-mix(in srgb,#22bb88 6%,transparent);border-color:color-mix(in srgb,#22bb88 15%,transparent)}
+.rc-green .r-value{color:#22bb88}
+.rc-purple{background:color-mix(in srgb,var(--accent2) 6%,transparent);border-color:color-mix(in srgb,var(--accent2) 15%,transparent)}
+.rc-purple .r-value{color:var(--accent2)}
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--scrollbar);border-radius:3px}
@@ -380,20 +390,20 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
 
   <!-- ========== PAGE: Change ========== -->
   <section class="page-section" id="page-change">
-    <div class="card anim-in anim-d1">
+    <div class="card anim-in anim-d1" style="padding:24px">
       <div class="config-row">
         <div class="config-item">
-          <label>缸总水体</label>
+          <label>🐠 缸总水体</label>
           <input type="number" id="tankTotal" value="70" step="1" oninput="calc()">
           <span class="unit">L</span>
         </div>
         <div class="config-item">
-          <label>盐度</label>
+          <label>🧂 盐度</label>
           <input type="number" id="salinity" value="36" step="0.5" oninput="calc()">
           <span class="unit">‰</span>
         </div>
       </div>
-      <div class="sec-label">📝 本次换水参数</div>
+      <div class="sec-label" style="margin-top:20px">📝 本次换水参数</div>
       <div class="input-row">
         <div class="input-group">
           <label>换水量 <span class="unit">(L)</span></label>
@@ -415,25 +425,30 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
       <div class="sep"></div>
       <div class="sec-label">📊 计算结果</div>
       <div class="result-row">
-        <div class="result-card">
+        <div class="result-card rc-blue">
+          <div class="r-icon">🚰</div>
           <div class="r-label">室温水</div>
           <div class="r-value" id="rRoom">-<span class="r-unit">L</span></div>
         </div>
-        <div class="result-card">
+        <div class="result-card rc-orange">
+          <div class="r-icon">🌡️</div>
           <div class="r-label">调温水</div>
           <div class="r-value" id="rAdj">-<span class="r-unit">L</span></div>
         </div>
-        <div class="result-card">
+        <div class="result-card rc-green">
+          <div class="r-icon">🧂</div>
           <div class="r-label">盐量</div>
           <div class="r-value" id="rSalt">-<span class="r-unit">g</span></div>
         </div>
-        <div class="result-card">
+        <div class="result-card rc-purple">
+          <div class="r-icon">📐</div>
           <div class="r-label">换水比例</div>
           <div class="r-value" id="rRatio">-<span class="r-unit">%</span></div>
         </div>
       </div>
       <div class="tip">
-        <strong>说明</strong>　室温水与调温水（热水/冰水）混合达到目标温度，公式：室温水 = 换水量 × (调温水温度 − 目标温度) ÷ (调温水温度 − 室温)
+        <strong>💡 说明</strong>　室温水与调温水（热水/冰水）混合达到目标温度<br>
+        公式：室温水 = 换水量 × (调温水温度 − 目标温度) ÷ (调温水温度 − 室温)
       </div>
     </div>
   </section>
@@ -741,7 +756,7 @@ function showCustomTooltip(chartInstance,labelIdx,mouseX,mouseY){
     const row=rows.find(r=>r.date===dateStr);if(!row)return;
     html+='<div class="tt-title">'+fs(dateStr)+'</div>';
     fields.forEach(fi=>{const v=row[fi.key];if(v==null)return;const oor=isOOR(fi.key,v);
-      html+='<div class="tt-row"><span class="tt-dot" style="background:'+fi.color+'"></span><span class="tt-name">'+fi.name+'</span><span class="tt-val'+(oor?' tt-warn':'')+'">'+(oor?'⚠ ':'')+v+'</span></div>';
+      html+='<div class="tt-row"><span class="tt-dot" style="background:'+fi.color+'"></span><span class="tt-name">'+fi.name+'</span><span class="tt-val'+(oor?' tt-warn':'')+'>'+v+(oor?' ⚠':'')+'</span></div>';
     });
   });
   if(!html){tt.classList.remove('show');_hoverX=null;chartInstance.draw();return;}
@@ -1040,6 +1055,7 @@ function L_getParams(){
 
 function L_gen(){
   if(typeof Chart==='undefined'||typeof QRCode==='undefined'){setTimeout(L_gen,100);return}
+  const _lScrollY=window.scrollY;
   const params=L_getParams(),labels=Array.from({length:25},(_,i)=>i),absDS=[];
   const tc=getCS('--text3'),gc=getCS('--border')+'40',lc=getCS('--text3');
   const mob=window.innerWidth<600;
@@ -1063,6 +1079,7 @@ function L_gen(){
   const qrC=document.getElementById('qrcode');const _qrH=qrC.offsetHeight;if(_qrH)qrC.style.minHeight=_qrH+'px';qrC.innerHTML='';
   new QRCode(qrC,{text:absDS.map(d=>d.join(',')).join('|'),width:256,height:256,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.L});
   setTimeout(()=>{const cv=qrC.querySelector('canvas'),im=qrC.querySelector('img');if(cv&&im){im.src=cv.toDataURL('image/png');im.style.display='block';im.style.maxWidth='100%';im.style.height='auto';cv.style.display='none'}},50);
+  setTimeout(()=>window.scrollTo(0,_lScrollY),0);
   L_persist();
 }
 

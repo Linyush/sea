@@ -350,6 +350,7 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
         </div>
         <div id="customTooltip"></div>
       </div>
+      <div id="chartEmpty" style="display:none;text-align:center;padding:48px 16px;color:var(--text3);font-size:15px">暂无数据，请在下方表格中添加水质记录</div>
     </div>
   </section>
 
@@ -754,42 +755,7 @@ const DEF_FIELDS=[
   {key:'ca', name:'Ca', color:'#ff5588',tgt:450,lo:400,hi:480},
   {key:'mg', name:'Mg', color:'#22bbaa',tgt:1350,lo:1250,hi:1450},
 ];
-const SEED=[
-  {date:'2025-08-31',no3:5,po4:0.04,kh:8.8,ca:400,mg:1350},
-  {date:'2025-09-07',no3:3,po4:0.03,kh:9.8,ca:390,mg:1350},
-  {date:'2025-09-13',no3:10,po4:0.04,kh:10.4,ca:370,mg:1350},
-  {date:'2025-09-20',no3:10,po4:0.05,kh:10,ca:440,mg:1350},
-  {date:'2025-09-27',no3:5,po4:0.04,kh:9.8,ca:475,mg:1410},
-  {date:'2025-10-04',no3:5,po4:0.06,kh:9,ca:450,mg:1350},
-  {date:'2025-10-11',no3:5,po4:0.12,kh:9,ca:430,mg:1320},
-  {date:'2025-10-18',no3:2,po4:0.12,kh:8.2,ca:435,mg:1200},
-  {date:'2025-10-25',no3:2,po4:0.08,kh:9.4,ca:450,mg:1380},
-  {date:'2025-11-01',no3:2,po4:0.04,kh:9.7,ca:450,mg:1410},
-  {date:'2025-11-08',no3:5,po4:0.06,kh:9.1,ca:420,mg:1320},
-  {date:'2025-11-15',no3:2,po4:0.04,kh:8.8,ca:430,mg:1305},
-  {date:'2025-11-22',no3:2,po4:0.03,kh:8.8,ca:430,mg:1310},
-  {date:'2025-11-29',no3:null,po4:null,kh:8.4,ca:null,mg:null},
-  {date:'2025-12-06',no3:2,po4:0.02,kh:8,ca:435,mg:1365},
-  {date:'2025-12-13',no3:null,po4:null,kh:8.4,ca:null,mg:null},
-  {date:'2025-12-20',no3:2,po4:0.04,kh:8,ca:445,mg:1410},
-  {date:'2025-12-27',no3:2,po4:0.04,kh:8.4,ca:430,mg:1350},
-  {date:'2026-01-03',no3:null,po4:null,kh:8.3,ca:425,mg:1275},
-  {date:'2026-01-10',no3:2,po4:0.04,kh:7.6,ca:425,mg:1290},
-  {date:'2026-01-17',no3:null,po4:null,kh:7.6,ca:415,mg:1305},
-  {date:'2026-01-24',no3:2,po4:0.04,kh:7.8,ca:420,mg:1305},
-  {date:'2026-01-31',no3:null,po4:null,kh:7.8,ca:null,mg:null},
-  {date:'2026-02-07',no3:1,po4:0.04,kh:8.3,ca:420,mg:1320},
-  {date:'2026-02-14',no3:null,po4:null,kh:null,ca:null,mg:null},
-  {date:'2026-02-21',no3:0.5,po4:0.02,kh:8.1,ca:465,mg:1440},
-  {date:'2026-02-28',no3:1,po4:0.03,kh:8.4,ca:450,mg:1415},
-  {date:'2026-03-07',no3:2,po4:0.04,kh:7.9,ca:430,mg:1380},
-  {date:'2026-03-14',no3:2,po4:0.06,kh:8.2,ca:450,mg:1350},
-  {date:'2026-03-21',no3:2,po4:0.08,kh:8.1,ca:450,mg:1350},
-  {date:'2026-03-28',no3:2,po4:0.1,kh:8.1,ca:435,mg:1260},
-  {date:'2026-04-04',no3:5,po4:0.08,kh:8.1,ca:465,mg:1305},
-  {date:'2026-04-11',no3:8,po4:0.12,kh:8.1,ca:450,mg:1350},
-  {date:'2026-04-18',no3:5,po4:0.18,kh:8.2,ca:470,mg:1380},
-];
+const SEED=[];
 let fields=[],rows=[],expanded=false,W_chart=null;
 let _dateMap={};
 
@@ -815,7 +781,7 @@ function load(){
   else{_init();}
   rows.sort((a,b)=>a.date.localeCompare(b.date));
 }
-function _init(){fields=DEF_FIELDS.map(f=>({...f}));rows=SEED.map(r=>({...r}));}
+function _init(){fields=DEF_FIELDS.map(f=>({...f}));rows=[];}
 function save(){_s(W_SK,JSON.stringify({fields,rows}));}
 function cutoff(){if(!rows.length)return new Date();const l=pd(rows[rows.length-1].date);return new Date(l.getFullYear(),l.getMonth()-3,l.getDate());}
 function isOOR(fk,v){if(v==null)return false;const fi=fields.find(x=>x.key===fk);if(!fi)return false;return v<fi.lo||v>fi.hi;}
@@ -953,7 +919,11 @@ function updateLaneLabels(){
 }
 
 function renderChart(){
-  const labels=buildLabels();if(!labels.length)return;
+  const labels=buildLabels();
+  const outer=document.getElementById("chartOuter");
+  const emptyEl=document.getElementById("chartEmpty");
+  if(!rows.length||!labels.length){if(outer)outer.style.display="none";if(emptyEl)emptyEl.style.display="";return;}
+  if(outer)outer.style.display="";if(emptyEl)emptyEl.style.display="none";
   const lbls=labels.map(l=>fs(l)),bands=calcBands(),ds=[],cs=getComputedStyle(document.documentElement);
   _dateMap={};
   rows.forEach(r=>{const li=mapToLabel(labels,r.date);const lbl=lbls[li];if(!_dateMap[lbl])_dateMap[lbl]=[];if(!_dateMap[lbl].includes(r.date))_dateMap[lbl].push(r.date);});
@@ -1078,7 +1048,7 @@ function askDel(i){
   document.getElementById('delOk').onclick=()=>{rows.splice(_di,1);save();renderTable();renderChart();closeDel();toast('已删除');};
 }
 function closeDel(){const m=document.getElementById('delCfm');m.classList.remove('open');setTimeout(()=>{m.style.display='none';},300);}
-function resetAll(){if(!confirm('确定恢复默认数据和目标值？'))return;_r(W_SK);load();renderModal();renderChart();toast('已重置');}
+function resetAll(){if(!confirm('确定恢复默认目标值并清空所有数据？'))return;_r(W_SK);load();renderModal();renderChart();toast('已重置');}
 function openNf(){const m=document.getElementById('nfModal');m.style.display='flex';requestAnimationFrame(()=>m.classList.add('open'));}
 function closeNf(){const m=document.getElementById('nfModal');m.classList.remove('open');setTimeout(()=>{m.style.display='none';},300);}
 function doAddField(){

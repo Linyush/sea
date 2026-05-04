@@ -620,7 +620,7 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
           </thead>
           <tbody>
             <tr>
-              <td class="t-name" style="color:#e8599a">钙<span class="t-sub">无水氯化钙</span></td>
+              <td class="t-name" style="color:#ec4899">钙<span class="t-sub">无水氯化钙</span></td>
               <td class="t-fixed">0.004</td>
               <td><input type="number" id="tCaW" value="1000" oninput="tCalc()"></td>
               <td><input type="number" id="tCaG" value="100" oninput="tCalc()"></td>
@@ -680,7 +680,7 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
           </thead>
           <tbody>
             <tr>
-              <td class="t-name" style="color:#e8599a">钙</td>
+              <td class="t-name" style="color:#ec4899">钙</td>
               <td><input type="number" id="tCa1" value="465" oninput="tCalc()"></td>
               <td><input type="number" id="tCa2" value="435" oninput="tCalc()"></td>
               <td><input type="number" id="tCaD" value="7" min="1" oninput="tCalc()"></td>
@@ -1387,7 +1387,7 @@ const DEF_FIELDS=[
   {key:'no3',name:'NO₃',color:'#f0c040',tgt:5,lo:0,hi:10},
   {key:'po4',name:'PO₄',color:'#4499ee',tgt:0.05,lo:0,hi:0.1},
   {key:'kh', name:'KH', color:'#aa66dd',tgt:8.2,lo:7,hi:9},
-  {key:'ca', name:'Ca', color:'#e8599a',tgt:450,lo:400,hi:480},
+  {key:'ca', name:'Ca', color:'#ec4899',tgt:450,lo:400,hi:480},
   {key:'mg', name:'Mg', color:'#22bbaa',tgt:1350,lo:1250,hi:1450},
 ];
 const SEED=[];
@@ -1493,8 +1493,7 @@ const dlPlugin={
           ctx.strokeStyle=getCS('--card');ctx.lineWidth=2;ctx.stroke();
           ctx.fillStyle=warnC;ctx.fill();
           ctx.font='bold 6px sans-serif';ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText('!',tx,ty+1);
-          /* OOR point ring */
-          ctx.beginPath();ctx.arc(pt.x,pt.y,7,0,Math.PI*2);ctx.strokeStyle=warnC;ctx.lineWidth=2;ctx.stroke();
+
         } else {
           if(!_overviewMode){ctx.fillStyle=ds.borderColor;ctx.fillText(v,pt.x,pt.y-10);}
         }

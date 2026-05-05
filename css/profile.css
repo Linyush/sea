@@ -282,15 +282,6 @@
 .inv-days{font-size:10px;color:var(--text4);margin-top:3px;font-weight:400}
 
 /* === Investment: left big number + right rows === */
-.pf-invest-grid{display:flex;gap:16px;align-items:flex-start}
-.pf-invest-grid.pf-hidden .pf-inv-big-val,
-.pf-invest-grid.pf-hidden .pf-inv-sub-val,
-.pf-invest-grid.pf-hidden .pf-inv-row-val{color:transparent;text-shadow:0 0 8px var(--text3);user-select:none}
-.pf-inv-left{text-align:center;min-width:100px;padding:8px 0}
-.pf-inv-big-val{font-size:22px;font-weight:700;color:var(--accent);line-height:1.3}
-.pf-inv-big-lbl{font-size:11px;color:var(--text4);margin-top:2px}
-.pf-inv-sub-val{font-size:11px;color:var(--text3);margin-top:6px}
-.pf-inv-right{flex:1;min-width:0}
 .pf-inv-row{display:flex;align-items:center;padding:6px 10px;border-radius:6px;cursor:pointer;transition:background .15s;gap:8px}
 .pf-inv-row:hover{background:color-mix(in srgb,var(--accent) 5%,transparent)}
 .pf-inv-row-name{font-size:12px;color:var(--text2);font-weight:500;min-width:60px}
@@ -304,8 +295,16 @@
 .pf-tab-bar{display:flex;gap:0}
 .pf-filter-slot{display:flex;align-items:center}
 
-@media(max-width:420px){.pf-invest-grid{flex-direction:column}.pf-inv-left{width:100%}}
 
 /* Clickable maintenance rows */
 .pf-maint-click{cursor:pointer;transition:background .15s}
 .pf-maint-click:hover{background:color-mix(in srgb,var(--accent) 8%,transparent)}
+
+/* === Investment: flat rows layout === */
+.pf-invest-grid{display:block}
+.pf-invest-grid.pf-hidden .pf-inv-row-val,.pf-invest-grid.pf-hidden .pf-inv-row.loss .pf-inv-row-val,.pf-invest-grid.pf-hidden .pf-inv-row.gain .pf-inv-row-val,.pf-invest-grid.pf-hidden .pf-inv-row-accent .pf-inv-row-val{color:transparent;text-shadow:0 0 8px var(--text3);user-select:none}
+.pf-inv-rows{display:flex;flex-direction:column;gap:2px}
+.pf-inv-row-accent{font-weight:600}
+.pf-inv-row-accent .pf-inv-row-name{color:var(--accent);font-weight:600}
+.pf-inv-row-accent .pf-inv-row-val{color:var(--accent);font-size:15px;font-weight:700}
+.pf-inv-sep{height:1px;background:var(--border);margin:4px 0}

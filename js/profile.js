@@ -3,12 +3,12 @@
    ============================================================ */
 const P_INV_KEY=()=>'reef_'+_activeTank+'_inventory';
 const P_STATUS_LABELS={
-  alive:'存活',dead:'死亡',sold:'售出',moved:'转缸',
+  alive:'存活',dead:'死亡',sold:'售出',
   active:'使用中',standby:'闲置',broken:'损坏',
   sealed:'未开封',inuse:'使用中',empty:'已用完',expired:'已过期'
 };
 const P_STATUS_COLORS={
-  alive:'#22bb88',dead:'#e74c3c',sold:'#64748b',moved:'#64748b',
+  alive:'#22bb88',dead:'#e74c3c',sold:'#64748b',
   active:'#22bb88',standby:'#f59e0b',broken:'#e74c3c',
   sealed:'#64748b',inuse:'#22bb88',empty:'#64748b',expired:'#e74c3c'
 };
@@ -263,7 +263,7 @@ function _renderCard(item,i,type,childCount){
   return h;
 }
 
-const _INACTIVE_ST=['sold','dead','moved','empty','expired','broken'];
+const _INACTIVE_ST=['sold','dead','empty','expired','broken'];
 const _filterState={livestock:'all',equipment:'all',consumable:'all'};
 function P_filter(btn){
   const bar=btn.parentElement;
@@ -321,13 +321,12 @@ const IF_FIELDS={
     {key:'addDate',label:'购入日期',type:'date'},
     {key:'source',label:'购入渠道',type:'text'},
     {key:'price',label:'价格',type:'number',placeholder:'¥'},
-    {key:'status',label:'状态',type:'select',opts:['alive','dead','sold','moved'],labels:['存活','死亡','售出','转缸'],required:true,default:'alive'},
+    {key:'status',label:'状态',type:'select',opts:['alive','dead','sold'],labels:['存活','死亡','售出'],required:true,default:'alive'},
     {key:'parentId',label:'',type:'hidden'},
     {key:'value',label:'价值',type:'number',placeholder:'¥',showWhen:{status:'alive'}},
     {key:'deathDate',label:'死亡时间',type:'date',showWhen:{status:'dead'}},
     {key:'sellDate',label:'售出时间',type:'date',showWhen:{status:'sold'}},
     {key:'sellPrice',label:'售出价格',type:'number',placeholder:'¥',showWhen:{status:'sold'}},
-    {key:'moveDate',label:'转缸时间',type:'date',showWhen:{status:'moved'}},
     {key:'notes',label:'备注',type:'textarea'},
   ],
   equipment:[
@@ -338,11 +337,10 @@ const IF_FIELDS={
     {key:'addDate',label:'购入日期',type:'date'},
     {key:'source',label:'购入渠道',type:'text'},
     {key:'price',label:'价格',type:'number',placeholder:'¥'},
-    {key:'status',label:'状态',type:'select',opts:['active','broken','sold','moved'],labels:['使用中','损坏','售出','转缸'],required:true,default:'active'},
+    {key:'status',label:'状态',type:'select',opts:['active','broken','sold'],labels:['使用中','损坏','售出'],required:true,default:'active'},
     {key:'brokenDate',label:'损坏时间',type:'date',showWhen:{status:'broken'}},
     {key:'sellDate',label:'售出时间',type:'date',showWhen:{status:'sold'}},
     {key:'sellPrice',label:'售出价格',type:'number',placeholder:'¥',showWhen:{status:'sold'}},
-    {key:'moveDate',label:'转缸时间',type:'date',showWhen:{status:'moved'}},
     {key:'notes',label:'备注',type:'textarea'},
   ],
   consumable:[
@@ -712,7 +710,7 @@ function _renderChildrenPanel(parentIdx){
   });
   if(!children.length){box.innerHTML='';box.style.display='none';return;}
   box.style.display='';
-  const stClass={dead:'st-dead',sold:'st-sold',moved:'st-moved'};
+  const stClass={dead:'st-dead',sold:'st-sold'};
   let h='<div class="if-children-title">\u{1f331} \u5b50\u4f53 ('+children.length+')</div><div class="if-children-grid">';
   const _parentIcon=(arr[parentIdx]||{}).icon||'';
   children.forEach(({item,i})=>{

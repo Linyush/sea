@@ -1,0 +1,35 @@
+/* === Change styles === */
+.config-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;padding:10px 14px;background:color-mix(in srgb,var(--border) 20%,transparent);border-radius:8px;margin-bottom:16px}
+.config-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text3)}
+.config-item label{white-space:nowrap}
+.config-item input{background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:4px 6px;border-radius:5px;font-size:13px;font-weight:600;text-align:center;width:56px;outline:none;transition:border-color .3s}
+.config-item input:focus{border-color:var(--accent)}
+.config-item .unit{color:var(--text4);font-size:11px}
+.input-row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+.input-group{display:flex;flex-direction:column;gap:4px;flex:1;min-width:110px}
+.input-group label{font-size:12px;color:var(--text3);font-weight:500}
+.input-group label .unit{color:var(--text4);font-weight:400}
+.input-group input{background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:14px;font-weight:500;outline:none;transition:border-color .3s,box-shadow .3s;text-align:center;width:100%}
+.input-group input:focus{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 10%,transparent)}
+.sep{height:1px;background:var(--border);margin:16px 0}
+.result-row{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px}
+.result-card{flex:1;min-width:100px;background:color-mix(in srgb,var(--accent) 4%,transparent);border:1px solid color-mix(in srgb,var(--accent) 12%,transparent);border-radius:10px;padding:14px 16px;text-align:center;transition:transform .2s}
+.result-card:hover{transform:translateY(-1px)}
+.result-card .r-label{font-size:11px;color:var(--text3);margin-bottom:6px;font-weight:500}
+.result-card .r-value{font-size:22px;font-weight:700;color:var(--accent);line-height:1.2}
+.result-card .r-unit{font-size:12px;font-weight:500;color:var(--text3);margin-left:2px}
+.result-card .r-desc{font-size:10px;color:var(--text5);margin-top:4px}
+.tip{font-size:11px;color:var(--text4);line-height:1.6;margin-top:14px}
+.tip strong{color:var(--text3)}
+.result-warn{color:var(--warn) !important;font-size:13px !important;font-weight:600 !important}
+
+
+.r-icon{font-size:20px;margin-bottom:4px}
+.rc-blue{background:color-mix(in srgb,#4488ff 6%,transparent);border-color:color-mix(in srgb,#4488ff 15%,transparent)}
+.rc-blue .r-value{color:#4488ff}
+.rc-orange{background:color-mix(in srgb,#ff8844 6%,transparent);border-color:color-mix(in srgb,#ff8844 15%,transparent)}
+.rc-orange .r-value{color:#ff8844}
+.rc-green{background:color-mix(in srgb,#22bb88 6%,transparent);border-color:color-mix(in srgb,#22bb88 15%,transparent)}
+.rc-green .r-value{color:#22bb88}
+.rc-purple{background:color-mix(in srgb,var(--accent2) 6%,transparent);border-color:color-mix(in srgb,var(--accent2) 15%,transparent)}
+.rc-purple .r-value{color:var(--accent2)}

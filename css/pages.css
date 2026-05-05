@@ -1,0 +1,10 @@
+/* === Page sections === */
+.page-section{display:none}
+.page-section.active{display:block}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.anim-in{animation:fadeUp .5s cubic-bezier(.22,1,.36,1) both}
+.anim-d1{animation-delay:.08s}
+.anim-d2{animation-delay:.16s}
+.anim-d3{animation-delay:.24s}
+

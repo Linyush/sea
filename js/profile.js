@@ -212,14 +212,7 @@ const IF_FIELDS={
   ]
 };
 const IF_TITLES={livestock:'生物',equipment:'设备',consumable:'耗材'};
-let _invTab='livestock';
-function P_switchTab(type){
-  _invTab=type;
-  document.querySelectorAll('.inv-tab[data-type]').forEach(t=>t.classList.toggle('active',t.dataset.type===type));
-  document.getElementById('lsGrid').style.display=(type==='livestock')?'':'none';
-  document.getElementById('eqGrid').style.display=(type==='equipment')?'':'none';
-  document.getElementById('cmGrid').style.display=(type==='consumable')?'':'none';
-}
+
 const IF_INV_KEYS={livestock:'livestock',equipment:'equipment',consumable:'consumables'};
 
 function _ifRenderField(f,val){

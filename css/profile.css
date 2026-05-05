@@ -13,13 +13,10 @@
 .profile-field .pf-value{font-size:14px;font-weight:600;color:var(--text)}
 .profile-field .pf-value.accent{color:var(--accent)}
 .inv-section{margin-top:16px}
-.inv-tabs{display:flex;align-items:center;gap:6px;margin-bottom:14px;flex-wrap:wrap}
-.inv-tab{padding:6px 12px;font-size:12px;font-weight:500;border-radius:6px;color:var(--text3);cursor:pointer;transition:all .2s;border:1px solid transparent;user-select:none}
-.inv-tab:hover{color:var(--text);background:color-mix(in srgb,var(--accent) 5%,transparent)}
-.inv-tab.active{color:var(--accent);border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent);font-weight:600}
-.inv-tab .count{font-size:10px;color:var(--text4);font-weight:400;margin-left:2px}
-.inv-tab.active .count{color:var(--accent)}
-.inv-panel{min-height:40px}
+.inv-section{margin-top:0}
+.inv-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.inv-header h3{font-size:14px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:6px}
+.inv-header .count{font-size:11px;color:var(--text4);font-weight:400}
 .inv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
 .inv-card{background:var(--input-bg);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
 .inv-card:hover{border-color:var(--accent);transform:translateY(-1px)}

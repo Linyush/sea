@@ -48,16 +48,21 @@
       <div class="profile-grid" id="profileGrid"></div>
     </div>
     <div class="card anim-in anim-d2" style="padding:24px;margin-top:16px">
-      <div class="inv-tabs" id="invTabs">
-        <span class="inv-tab active" data-type="livestock" onclick="P_switchTab('livestock')">🐠 生物 <span class="count" id="lsCount"></span></span>
-        <span class="inv-tab" data-type="equipment" onclick="P_switchTab('equipment')">⚙️ 设备 <span class="count" id="eqCount"></span></span>
-        <span class="inv-tab" data-type="consumable" onclick="P_switchTab('consumable')">📦 耗材 <span class="count" id="cmCount"></span></span>
-
-      </div>
-      <div class="inv-panel" id="invPanel">
+      <div class="inv-section">
+        <div class="inv-header"><h3>🐠 生物 <span class="count" id="lsCount"></span></h3></div>
         <div id="lsGrid"></div>
-        <div id="eqGrid" style="display:none"></div>
-        <div id="cmGrid" style="display:none"></div>
+      </div>
+    </div>
+    <div class="card anim-in anim-d3" style="padding:24px;margin-top:16px">
+      <div class="inv-section">
+        <div class="inv-header"><h3>⚙️ 设备 <span class="count" id="eqCount"></span></h3></div>
+        <div id="eqGrid"></div>
+      </div>
+    </div>
+    <div class="card anim-in" style="padding:24px;margin-top:16px;animation-delay:.32s">
+      <div class="inv-section">
+        <div class="inv-header"><h3>📦 耗材 <span class="count" id="cmCount"></span></h3></div>
+        <div id="cmGrid"></div>
       </div>
     </div>
   </section>

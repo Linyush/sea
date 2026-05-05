@@ -10,34 +10,34 @@ const P_STATUS_LABELS={
 const P_SPECIES_OPTS=['鱼','珊瑚','无脊椎','藻','其他'];
 const P_EQ_CATS=['水泵','灯','造浪','蛋分','加热棒','冷水机','温度计','滴定','钙反','煮豆机','补水器','杀菌灯','滤布机','喂食器','检测设备','插座','其他'];
 const P_CM_CATS=['盐','食物','添加剂','试剂','药品','其他'];
-const P_ICONS={'fish':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 40c8-12 24-12 34-6l8-8v28l-8-8c-10 6-26 6-34-6z"/><circle cx="28" cy="38" r="2" fill="currentColor" stroke="none"/><path d="M38 35v10"/></svg>',
-'coral':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M40 65V45"/><path d="M40 45c-4-6-10-8-10-16 0-4 3-6 5-4 3 3 5 8 5 8s2-5 5-8c2-2 5 0 5 4 0 8-6 10-10 16z"/><path d="M30 65h20"/><path d="M28 40c-3-4-6-5-6-10 0-3 2-4 4-3 2 2 3 5 3 5"/></svg>',
-'invert':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 48c0-8 8-14 18-14s18 6 18 14-8 14-18 14-18-6-18-14z"/><path d="M30 44c0-4 4-7 10-7s10 3 10 7"/><circle cx="34" cy="51" r="2"/><circle cx="46" cy="51" r="2"/><path d="M26 34l-4-8m28 8l4-8"/></svg>',
-'algae':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M40 65V50c0-4-2-6-2-10s2-8 2-12"/><path d="M32 65V54c0-3-1.5-5-1.5-8s1.5-6 1.5-10"/><path d="M48 65V54c0-3 1.5-5 1.5-8s-1.5-6-1.5-10"/></svg>',
-'other_live':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="40" cy="40" r="16"/><path d="M36 36h1m6 0h1"/><path d="M34 46c3 3 9 3 12 0"/></svg>',
-'pump':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="24" y="30" width="36" height="22" rx="3"/><line x1="32" y1="34" x2="32" y2="48"/><line x1="38" y1="34" x2="38" y2="48"/><line x1="44" y1="34" x2="44" y2="48"/><line x1="50" y1="34" x2="50" y2="48"/><rect x="14" y="33" width="10" height="16" rx="2"/><path d="M19 33v-8h6"/><line x1="20" y1="52" x2="20" y2="58"/><line x1="54" y1="52" x2="54" y2="58"/><line x1="16" y1="58" x2="58" y2="58"/></svg>',
-'light':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="18" y="28" width="44" height="12" rx="3"/><path d="M26 40v4m10-4v4m8-4v4m10-4v4"/><path d="M30 48l-4 10m24-10l4 10"/><line x1="14" y1="28" x2="14" y2="40"/><line x1="66" y1="28" x2="66" y2="40"/></svg>',
-'wave':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="40" cy="40" r="14"/><circle cx="40" cy="40" r="6"/><path d="M34 40l-8 0m20 0h8"/><path d="M40 34v-8m0 20v8"/><rect x="56" y="36" width="10" height="8" rx="2"/></svg>',
-'skimmer':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="28" y="14" width="24" height="52" rx="5"/><path d="M28 24h24"/><path d="M28 56h24"/><circle cx="40" cy="40" r="4"/><path d="M36 62v4m8-4v4"/><path d="M34 18h12"/></svg>',
-'heater':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="34" y="14" width="12" height="52" rx="6"/><path d="M38 26h4m-4 8h4m-4 8h4m-4 8h4"/><path d="M34 14h12"/><circle cx="40" cy="58" r="3"/></svg>',
-'chiller':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="22" width="48" height="36" rx="4"/><rect x="24" y="30" width="14" height="14" rx="7"/><path d="M31 34v8m-3-4h6"/><line x1="48" y1="30" x2="48" y2="44"/><line x1="54" y1="30" x2="54" y2="44"/><line x1="20" y1="58" x2="20" y2="64"/><line x1="60" y1="58" x2="60" y2="64"/></svg>',
-'thermo':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="34" y="14" width="12" height="38" rx="6"/><circle cx="40" cy="56" r="8"/><circle cx="40" cy="56" r="4" fill="currentColor" stroke="none"/><line x1="40" y1="52" x2="40" y2="28"/><path d="M46 20h6m-6 8h6"/></svg>',
-'doser':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="22" y="24" width="36" height="32" rx="4"/><circle cx="33" cy="40" r="5"/><circle cx="47" cy="40" r="5"/><path d="M30 24v-6m10 6v-6m10 6v-6"/><path d="M30 56v6m10-6v6m10-6v6"/></svg>',
-'reactor':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="28" y="14" width="20" height="52" rx="4"/><path d="M28 24h20m-20 14h20m-20 14h20"/><circle cx="38" cy="45" r="2"/><circle cx="38" cy="38" r="1.5"/><path d="M52 20h6v16h-6"/><circle cx="55" cy="30" r="2"/></svg>',
-'beansoup':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="26" y="18" width="22" height="44" rx="4"/><path d="M26 28h22"/><circle cx="37" cy="38" r="2"/><circle cx="33" cy="44" r="1.5"/><circle cx="40" cy="48" r="1.5"/><circle cx="35" cy="52" r="1.5"/><path d="M48 34h8v12h-8"/><line x1="32" y1="62" x2="32" y2="68"/><line x1="42" y1="62" x2="42" y2="68"/></svg>',
-'ato':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="24" width="24" height="36" rx="3"/><path d="M20 42h16"/><path d="M28 42v-8"/><rect x="48" y="38" width="16" height="20" rx="3"/><path d="M56 38v-8"/><path d="M40 44h8"/><circle cx="56" cy="50" r="3"/></svg>',
-'uv':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="28" y="18" width="12" height="44" rx="6"/><path d="M22 30l4 2m-4 16l4-2"/><path d="M46 30l-4 2m4 16l-4-2"/><path d="M28 26h12m-12 28h12"/><path d="M34 14v4m0 44v4"/></svg>',
-'roller':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="20" y="22" width="40" height="36" rx="4"/><circle cx="34" cy="34" r="6"/><circle cx="46" cy="50" r="6"/><path d="M38 30l4 16"/><path d="M20 42h40"/></svg>',
-'feeder':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="40" cy="38" r="14"/><path d="M40 24v14l10 6"/><rect x="36" y="52" width="8" height="12" rx="2"/><path d="M54 38h10v8"/><line x1="40" y1="64" x2="40" y2="68"/></svg>',
-'tester':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="24" y="14" width="24" height="16" rx="3"/><path d="M30 30v26c0 4 2 8 6 8s6-4 6-8V30"/><path d="M30 42h12m-12 8h12"/><path d="M52 20h10v10h-10"/><path d="M57 30v10"/></svg>',
-'socket':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="28" width="52" height="24" rx="4"/><circle cx="28" cy="40" r="4"/><circle cx="42" cy="40" r="4"/><circle cx="56" cy="40" r="4"/><line x1="24" y1="52" x2="24" y2="56"/><line x1="56" y1="52" x2="56" y2="56"/><circle cx="18" cy="32" r="1.5" fill="currentColor" stroke="none"/></svg>',
-'other_eq':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="40" cy="40" r="14"/><circle cx="40" cy="40" r="6"/><path d="M40 20v6m0 28v6m-20-20h6m28 0h6"/><path d="M26 26l4 4m20 20l4 4m0-28l-4 4m-20 20l-4 4"/></svg>',
-'salt':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M24 26h32l-4 38H28l-4-38z"/><path d="M28 18h24v8H28z"/><path d="M32 36h8m-4-4v8"/><path d="M38 26c0-4 8-4 8 0"/></svg>',
-'food':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="26" y="22" width="28" height="38" rx="6"/><path d="M26 32h28"/><circle cx="36" cy="42" r="2" fill="currentColor" stroke="none"/><circle cx="44" cy="46" r="2" fill="currentColor" stroke="none"/><circle cx="38" cy="50" r="1.5" fill="currentColor" stroke="none"/><path d="M36 22v-6h8v6"/></svg>',
-'additive':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M30 28h20l-2 36H32l-2-36z"/><rect x="34" y="18" width="12" height="10" rx="2"/><path d="M40 18v-4"/><path d="M30 44h20"/></svg>',
-'reagent':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="22" width="48" height="36" rx="4"/><rect x="22" y="30" width="8" height="20" rx="2"/><rect x="34" y="30" width="8" height="20" rx="2"/><rect x="46" y="30" width="8" height="20" rx="2"/><path d="M16 22h48"/></svg>',
-'medicine':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="28" y="22" width="24" height="38" rx="5"/><path d="M28 32h24"/><path d="M36 42h8m-4-4v8"/><rect x="34" y="14" width="12" height="8" rx="2"/></svg>',
-'other_cm':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="40" cy="40" r="16"/><path d="M40 30v6l4 4"/><circle cx="40" cy="40" r="2" fill="currentColor" stroke="none"/></svg>'};
+const P_ICONS={'fish':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 40c8-12 24-12 34-6l8-8v28l-8-8c-10 6-26 6-34-6z"/><circle cx="28" cy="38" r="2" fill="currentColor" stroke="none"/><path d="M38 35v10"/></svg>',
+'coral':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M40 65V45"/><path d="M40 45c-4-6-10-8-10-16 0-4 3-6 5-4 3 3 5 8 5 8s2-5 5-8c2-2 5 0 5 4 0 8-6 10-10 16z"/><path d="M30 65h20"/><path d="M28 40c-3-4-6-5-6-10 0-3 2-4 4-3 2 2 3 5 3 5"/></svg>',
+'invert':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M22 48c0-8 8-14 18-14s18 6 18 14-8 14-18 14-18-6-18-14z"/><path d="M30 44c0-4 4-7 10-7s10 3 10 7"/><circle cx="34" cy="51" r="2"/><circle cx="46" cy="51" r="2"/><path d="M26 34l-4-8m28 8l4-8"/></svg>',
+'algae':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M40 65V50c0-4-2-6-2-10s2-8 2-12"/><path d="M32 65V54c0-3-1.5-5-1.5-8s1.5-6 1.5-10"/><path d="M48 65V54c0-3 1.5-5 1.5-8s-1.5-6-1.5-10"/></svg>',
+'other_live':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><circle cx="40" cy="40" r="16"/><path d="M36 36h1m6 0h1"/><path d="M34 46c3 3 9 3 12 0"/></svg>',
+'pump':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="24" y="30" width="36" height="22" rx="3"/><line x1="32" y1="34" x2="32" y2="48"/><line x1="38" y1="34" x2="38" y2="48"/><line x1="44" y1="34" x2="44" y2="48"/><line x1="50" y1="34" x2="50" y2="48"/><rect x="14" y="33" width="10" height="16" rx="2"/><path d="M19 33v-8h6"/><line x1="20" y1="52" x2="20" y2="58"/><line x1="54" y1="52" x2="54" y2="58"/><line x1="16" y1="58" x2="58" y2="58"/></svg>',
+'light':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="18" y="28" width="44" height="12" rx="3"/><path d="M26 40v4m10-4v4m8-4v4m10-4v4"/><path d="M30 48l-4 10m24-10l4 10"/><line x1="14" y1="28" x2="14" y2="40"/><line x1="66" y1="28" x2="66" y2="40"/></svg>',
+'wave':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><circle cx="40" cy="40" r="14"/><circle cx="40" cy="40" r="6"/><path d="M34 40l-8 0m20 0h8"/><path d="M40 34v-8m0 20v8"/><rect x="56" y="36" width="10" height="8" rx="2"/></svg>',
+'skimmer':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="28" y="14" width="24" height="52" rx="5"/><path d="M28 24h24"/><path d="M28 56h24"/><circle cx="40" cy="40" r="4"/><path d="M36 62v4m8-4v4"/><path d="M34 18h12"/></svg>',
+'heater':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="34" y="14" width="12" height="52" rx="6"/><path d="M38 26h4m-4 8h4m-4 8h4m-4 8h4"/><path d="M34 14h12"/><circle cx="40" cy="58" r="3"/></svg>',
+'chiller':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="22" width="48" height="36" rx="4"/><rect x="24" y="30" width="14" height="14" rx="7"/><path d="M31 34v8m-3-4h6"/><line x1="48" y1="30" x2="48" y2="44"/><line x1="54" y1="30" x2="54" y2="44"/><line x1="20" y1="58" x2="20" y2="64"/><line x1="60" y1="58" x2="60" y2="64"/></svg>',
+'thermo':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="34" y="14" width="12" height="38" rx="6"/><circle cx="40" cy="56" r="8"/><circle cx="40" cy="56" r="4" fill="currentColor" stroke="none"/><line x1="40" y1="52" x2="40" y2="28"/><path d="M46 20h6m-6 8h6"/></svg>',
+'doser':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="22" y="24" width="36" height="32" rx="4"/><circle cx="33" cy="40" r="5"/><circle cx="47" cy="40" r="5"/><path d="M30 24v-6m10 6v-6m10 6v-6"/><path d="M30 56v6m10-6v6m10-6v6"/></svg>',
+'reactor':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="28" y="14" width="20" height="52" rx="4"/><path d="M28 24h20m-20 14h20m-20 14h20"/><circle cx="38" cy="45" r="2"/><circle cx="38" cy="38" r="1.5"/><path d="M52 20h6v16h-6"/><circle cx="55" cy="30" r="2"/></svg>',
+'beansoup':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="26" y="18" width="22" height="44" rx="4"/><path d="M26 28h22"/><circle cx="37" cy="38" r="2"/><circle cx="33" cy="44" r="1.5"/><circle cx="40" cy="48" r="1.5"/><circle cx="35" cy="52" r="1.5"/><path d="M48 34h8v12h-8"/><line x1="32" y1="62" x2="32" y2="68"/><line x1="42" y1="62" x2="42" y2="68"/></svg>',
+'ato':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="24" width="24" height="36" rx="3"/><path d="M20 42h16"/><path d="M28 42v-8"/><rect x="48" y="38" width="16" height="20" rx="3"/><path d="M56 38v-8"/><path d="M40 44h8"/><circle cx="56" cy="50" r="3"/></svg>',
+'uv':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="28" y="18" width="12" height="44" rx="6"/><path d="M22 30l4 2m-4 16l4-2"/><path d="M46 30l-4 2m4 16l-4-2"/><path d="M28 26h12m-12 28h12"/><path d="M34 14v4m0 44v4"/></svg>',
+'roller':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="20" y="22" width="40" height="36" rx="4"/><circle cx="34" cy="34" r="6"/><circle cx="46" cy="50" r="6"/><path d="M38 30l4 16"/><path d="M20 42h40"/></svg>',
+'feeder':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><circle cx="40" cy="38" r="14"/><path d="M40 24v14l10 6"/><rect x="36" y="52" width="8" height="12" rx="2"/><path d="M54 38h10v8"/><line x1="40" y1="64" x2="40" y2="68"/></svg>',
+'tester':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="24" y="14" width="24" height="16" rx="3"/><path d="M30 30v26c0 4 2 8 6 8s6-4 6-8V30"/><path d="M30 42h12m-12 8h12"/><path d="M52 20h10v10h-10"/><path d="M57 30v10"/></svg>',
+'socket':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="28" width="52" height="24" rx="4"/><circle cx="28" cy="40" r="4"/><circle cx="42" cy="40" r="4"/><circle cx="56" cy="40" r="4"/><line x1="24" y1="52" x2="24" y2="56"/><line x1="56" y1="52" x2="56" y2="56"/><circle cx="18" cy="32" r="1.5" fill="currentColor" stroke="none"/></svg>',
+'other_eq':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><circle cx="40" cy="40" r="14"/><circle cx="40" cy="40" r="6"/><path d="M40 20v6m0 28v6m-20-20h6m28 0h6"/><path d="M26 26l4 4m20 20l4 4m0-28l-4 4m-20 20l-4 4"/></svg>',
+'salt':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M24 26h32l-4 38H28l-4-38z"/><path d="M28 18h24v8H28z"/><path d="M32 36h8m-4-4v8"/><path d="M38 26c0-4 8-4 8 0"/></svg>',
+'food':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="26" y="22" width="28" height="38" rx="6"/><path d="M26 32h28"/><circle cx="36" cy="42" r="2" fill="currentColor" stroke="none"/><circle cx="44" cy="46" r="2" fill="currentColor" stroke="none"/><circle cx="38" cy="50" r="1.5" fill="currentColor" stroke="none"/><path d="M36 22v-6h8v6"/></svg>',
+'additive':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M30 28h20l-2 36H32l-2-36z"/><rect x="34" y="18" width="12" height="10" rx="2"/><path d="M40 18v-4"/><path d="M30 44h20"/></svg>',
+'reagent':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="22" width="48" height="36" rx="4"/><rect x="22" y="30" width="8" height="20" rx="2"/><rect x="34" y="30" width="8" height="20" rx="2"/><rect x="46" y="30" width="8" height="20" rx="2"/><path d="M16 22h48"/></svg>',
+'medicine':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="28" y="22" width="24" height="38" rx="5"/><path d="M28 32h24"/><path d="M36 42h8m-4-4v8"/><rect x="34" y="14" width="12" height="8" rx="2"/></svg>',
+'other_cm':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><circle cx="40" cy="40" r="16"/><path d="M40 30v6l4 4"/><circle cx="40" cy="40" r="2" fill="currentColor" stroke="none"/></svg>'};
 const P_ICON_MAP={livestock:{'鱼':'fish','珊瑚':'coral','无脊椎':'invert','藻':'algae','其他':'other_live'},equipment:{'水泵':'pump','灯':'light','造浪':'wave','蛋分':'skimmer','加热棒':'heater','冷水机':'chiller','温度计':'thermo','滴定':'doser','钙反':'reactor','煮豆机':'beansoup','补水器':'ato','杀菌灯':'uv','滤布机':'roller','喂食器':'feeder','检测设备':'tester','插座':'socket','其他':'other_eq'},consumable:{'盐':'salt','食物':'food','添加剂':'additive','试剂':'reagent','药品':'medicine','其他':'other_cm'}};
 function P_getIcon(type,cat){const key=P_ICON_MAP[type]&&P_ICON_MAP[type][cat];return key&&P_ICONS[key]?P_ICONS[key]:'';}
 
@@ -142,16 +142,15 @@ function P_renderInvSection(prefix,items,type){
   }
   let h='<div class="inv-grid">';
   items.forEach((item,i)=>{
-    const icon=item.icon||(P_DEF_ICONS[item.species]||P_DEF_ICONS[item.category]||'📦');
     const statusCls='s-'+(item.status||'alive');
     const statusTxt=P_STATUS_LABELS[item.status]||item.status||'';
     const _iconRaw=item.icon||'';
     const _iconParts=_iconRaw.split('|');
     const iconKey=_iconParts[0]||'';
     const iconColor=_iconParts[1]||'var(--accent)';
-    const iconSvg=iconKey&&P_ICONS[iconKey]?'<div class="inv-card-icon" style="color:'+iconColor+'">'+P_ICONS[iconKey]+'</div>':'';
-    h+='<div class="inv-card" onclick="P_editItem(&#39;'+type+'&#39;,'+i+')">'+iconSvg;
-    h+='<div class="inv-icon">'+icon+'</div>';
+    const hasSvg=iconKey&&P_ICONS[iconKey];
+    const iconHtml=hasSvg?'<div class="inv-card-icon" style="color:'+iconColor+'">'+P_ICONS[iconKey]+'</div>':'<div class="inv-icon">📦</div>';
+    h+='<div class="inv-card" onclick="P_editItem(&#39;'+type+'&#39;,'+i+')">'+iconHtml;
     h+='<div class="inv-name">'+item.name+'</div>';
     if(item.breed||item.spec)h+='<div class="inv-sub">'+(item.breed||item.spec||'')+'</div>';
     h+='<div class="inv-status '+statusCls+'">'+statusTxt+'</div>';
@@ -244,15 +243,24 @@ function _ifRenderField(f,val){
   }
 }
 function _ifRenderAll(type,vals){
+  const topBox=document.getElementById('ifTopFields');
   const box=document.getElementById('ifFields');
   const status=vals.status||(IF_FIELDS[type].find(f=>f.key==='status')||{}).default||'';
-  box.innerHTML=IF_FIELDS[type].map(f=>{
-    /* Hide sellPrice unless status is sold */
-    if(f.key==='sellPrice'&&status!=='sold') return '';
+  const fields=IF_FIELDS[type];
+  /* Core fields: first 2 (name + category/species) go to top area */
+  const coreKeys=['name','species','category'];
+  let topH='',restH='';
+  fields.forEach(f=>{
+    if(f.key==='icon'||f.type==='icon_picker') return; /* icon handled by ifIconDisplay */
+    if(f.key==='sellPrice'&&status!=='sold') return;
     const v=vals[f.key]!=null?vals[f.key]:'';
     const inp=_ifRenderField(f,v);
-    return '<div class="if-row" data-fk="'+f.key+'"><label'+(f.required?' class="req"':'')+'>'+ f.label+'</label>'+inp+'</div>';
-  }).join('');
+    const row='<div class="if-row" data-fk="'+f.key+'"><label'+(f.required?' class="req"':'')+'>'+ f.label+'</label>'+inp+'</div>';
+    if(coreKeys.includes(f.key)) topH+=row;
+    else restH+=row;
+  });
+  topBox.innerHTML=topH;
+  box.innerHTML=restH;
 }
 /* === Icon Picker Modal === */
 let _ipIcon='',_ipColor='#4a90d9';
@@ -353,11 +361,15 @@ function IF_pickTag(el){
 function IF_collectVals(){
   const vals={};
   IF_FIELDS[_ifType].forEach(f=>{
+    if(f.type==='icon_picker'){
+      /* icon is stored in ifIconDisplay.dataset.val */
+      const disp=document.getElementById('ifIconDisplay');
+      vals[f.key]=(disp&&disp.dataset.val)||'';
+      return;
+    }
     const el=document.getElementById('if_'+f.key);
     if(!el)return;
-    if(f.type==='icon_picker'){
-      vals[f.key]=el.dataset.val||'';
-    }else if(f.type==='select'&&f.opts&&f.opts.length<=5){
+    if(f.type==='select'&&f.opts&&f.opts.length<=5){
       const active=el.querySelector('.if-tag.active');
       vals[f.key]=active?active.dataset.val:'';
     }else{

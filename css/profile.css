@@ -305,3 +305,7 @@
 .pf-filter-slot{display:flex;align-items:center}
 
 @media(max-width:420px){.pf-invest-grid{flex-direction:column}.pf-inv-left{width:100%}}
+
+/* Clickable maintenance rows */
+.pf-maint-click{cursor:pointer;transition:background .15s}
+.pf-maint-click:hover{background:color-mix(in srgb,var(--accent) 8%,transparent)}

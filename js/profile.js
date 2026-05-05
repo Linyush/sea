@@ -133,6 +133,17 @@ function P_loadInv(){
     });
     try{_s(P_INV_KEY(),JSON.stringify(inv));}catch(e){}
   }
+  // Normalize date formats (YYYY/M/D -> YYYY-MM-DD)
+  let _dateDirty=false;
+  const _dateKeys=['addDate','deathDate','sellDate','replaceDate','purchaseDate','buyDate','date'];
+  ["livestock","equipment","consumables"].forEach(k=>{
+    (inv[k]||[]).forEach(it=>{
+      _dateKeys.forEach(dk=>{
+        if(it[dk]){const nd=_normDate(it[dk]);if(nd!==it[dk]){it[dk]=nd;_dateDirty=true;}}
+      });
+    });
+  });
+  if(_dateDirty){try{_s(P_INV_KEY(),JSON.stringify(inv));}catch(e){}}
   // Sort all arrays by addDate ascending (in place)
   if(inv.livestock) inv.livestock.sort((a,b)=>{const d=_parseDate(_getItemDate(a))-_parseDate(_getItemDate(b));return d!==0?d:(a.name||'').localeCompare(b.name||'','zh');});
   if(inv.equipment) inv.equipment.sort((a,b)=>{const d=_parseDate(_getItemDate(a))-_parseDate(_getItemDate(b));return d!==0?d:(a.name||'').localeCompare(b.name||'','zh');});
@@ -169,8 +180,12 @@ function renderProfile(){
 function _renderInvestment(inv){
   const livestock=inv.livestock||[], equipment=inv.equipment||[], consumables=inv.consumables||[];
   let liveCost=0, equipCost=0, cmCost=0, deathLoss=0, soldIncome=0;
-  let liveCount=livestock.filter(x=>x.origin!=='breed').length;
-  let equipCount=equipment.length, cmCount=consumables.length;
+  const liveMain=livestock.filter(x=>x.origin!=='breed');
+  const liveActive=liveMain.filter(x=>!['dead','sold'].includes(x.status)).length;
+  const equipActive=equipment.filter(x=>!['broken','sold'].includes(x.status)).length;
+  const cmActive=consumables.filter(x=>!['empty','expired'].includes(x.status)).length;
+  let liveCount=liveActive+'/'+liveMain.length;
+  let equipCount=equipActive+'/'+equipment.length, cmCount=cmActive+'/'+consumables.length;
   let deadCount=0, soldCount=0;
   let firstDeadTab='', firstSoldTab='';
   livestock.forEach(item=>{
@@ -199,9 +214,9 @@ function _renderInvestment(inv){
       '<div class="pf-inv-sub-val">\u603b\u6295\u5165 '+fmt(totalCost)+'</div>'+
     '</div>'+
     '<div class="pf-inv-right">'+
-      '<div class="pf-inv-row pf-inv-click" onclick="P_switchTab(\'livestock\')"><span class="pf-inv-row-name">\u751f\u7269</span><span class="pf-inv-row-cnt">'+liveCount+'\u4e2a</span><span class="pf-inv-row-val">'+fmt(liveCost)+'</span></div>'+
-      '<div class="pf-inv-row pf-inv-click" onclick="P_switchTab(\'equipment\')"><span class="pf-inv-row-name">\u8bbe\u5907</span><span class="pf-inv-row-cnt">'+equipCount+'\u4e2a</span><span class="pf-inv-row-val">'+fmt(equipCost)+'</span></div>'+
-      '<div class="pf-inv-row pf-inv-click" onclick="P_switchTab(\'consumable\')"><span class="pf-inv-row-name">\u8017\u6750</span><span class="pf-inv-row-cnt">'+cmCount+'\u4e2a</span><span class="pf-inv-row-val">'+fmt(cmCost)+'</span></div>'+
+      '<div class="pf-inv-row pf-inv-click" onclick="P_switchTab(\'livestock\')"><span class="pf-inv-row-name">\u751f\u7269</span><span class="pf-inv-row-cnt">'+liveCount+'</span><span class="pf-inv-row-val">'+fmt(liveCost)+'</span></div>'+
+      '<div class="pf-inv-row pf-inv-click" onclick="P_switchTab(\'equipment\')"><span class="pf-inv-row-name">\u8bbe\u5907</span><span class="pf-inv-row-cnt">'+equipCount+'</span><span class="pf-inv-row-val">'+fmt(equipCost)+'</span></div>'+
+      '<div class="pf-inv-row pf-inv-click" onclick="P_switchTab(\'consumable\')"><span class="pf-inv-row-name">\u8017\u6750</span><span class="pf-inv-row-cnt">'+cmCount+'</span><span class="pf-inv-row-val">'+fmt(cmCost)+'</span></div>'+
       '<div class="pf-inv-row pf-inv-click loss" onclick="P_switchTab(\''+firstDeadTab+'\',\''+deadFilter+'\')"><span class="pf-inv-row-name">\u6b7b\u4ea1/\u635f\u574f</span><span class="pf-inv-row-cnt">'+deadCount+'\u4e2a</span><span class="pf-inv-row-val">'+fmt(deathLoss)+'</span></div>'+
       '<div class="pf-inv-row pf-inv-click gain" onclick="P_switchTab(\''+firstSoldTab+'\',\'sold\')"><span class="pf-inv-row-name">\u552e\u51fa\u6536\u5165</span><span class="pf-inv-row-cnt">'+soldCount+'\u4e2a</span><span class="pf-inv-row-val">'+fmt(soldIncome)+'</span></div>'+
     '</div>';
@@ -223,6 +238,9 @@ function P_switchTab(tab, filter){
     const bar=document.getElementById(typeMap[tab]);
     if(bar){const btn=bar.querySelector('[data-f="'+filter+'"]');if(btn){P_filter(btn);}}
   }
+  // Scroll tab area into view
+  const tabEl=document.getElementById('pfTabBar');
+  if(tabEl) tabEl.scrollIntoView({behavior:'smooth',block:'start'});
 }
 let _eyeOpen=false;
 function P_toggleEye(){
@@ -252,11 +270,11 @@ function _renderMaintenance(tank){
   if(lastTestDate){
     const lastD=new Date(lastTestDate+'T00:00:00');
     const daysSinceMaint=Math.floor((today-lastD)/86400000);
-    h+='<div class="pf-maint-row"><span class="pf-maint-icon">🧪</span><span>上次测水：<b>'+daysSinceMaint+' 天前</b></span></div>';
+    h+='<div class="pf-maint-row pf-maint-click" onclick="switchPage(\'water\')"><span class="pf-maint-icon">🧪</span><span>上次测水：<b>'+daysSinceMaint+' 天前</b></span></div>';
     if(tank.maintCycle&&tank.maintCycle>0){
       const nextDays=tank.maintCycle-daysSinceMaint;
-      if(nextDays>0) h+='<div class="pf-maint-row"><span class="pf-maint-icon">⏰</span><span>下次维护：还剩 <b>'+nextDays+' 天</b></span></div>';
-      else h+='<div class="pf-maint-row warn"><span class="pf-maint-icon">⚠️</span><span>维护已超期 <b>'+Math.abs(nextDays)+' 天</b></span></div>';
+      if(nextDays>0) h+='<div class="pf-maint-row pf-maint-click" onclick="switchPage(\'water\')"><span class="pf-maint-icon">⏰</span><span>下次维护：还剩 <b>'+nextDays+' 天</b></span></div>';
+      else h+='<div class="pf-maint-row warn pf-maint-click" onclick="switchPage(\'water\')"><span class="pf-maint-icon">⚠️</span><span>维护已超期 <b>'+Math.abs(nextDays)+' 天</b></span></div>';
     }
   }else{
     h+='<div class="pf-maint-row"><span class="pf-maint-icon">🧪</span><span>暂无测水记录</span></div>';
@@ -274,7 +292,7 @@ function _renderMaintenance(tank){
       vals.push('<span'+cls+'>'+f.name+' '+v+suffix+'</span>');
     });
     const rowCls=hasAlert?'pf-maint-row warn':'pf-maint-row ok';
-    h+='<div class="'+rowCls+'"><span class="pf-maint-icon">💧</span><span>'+(hasAlert?'水质异常：':'水质正常：')+vals.join(' · ')+'</span></div>';
+    h+='<div class="'+rowCls+' pf-maint-click" onclick="switchPage(\'water\')"><span class="pf-maint-icon">💧</span><span>'+(hasAlert?'水质异常：':'水质正常：')+vals.join(' · ')+'</span></div>';
   }
 
   // 3. Recent livestock events (7 days)
@@ -286,7 +304,7 @@ function _renderMaintenance(tank){
     if(item.addDate){const d=new Date(item.addDate+'T00:00:00');if(d>=weekAgo)newCount++;}
     if(item.status==='dead'&&item.deathDate){const d=new Date(item.deathDate+'T00:00:00');if(d>=weekAgo)deadCount++;}
   });
-  if(deadCount) h+='<div class="pf-maint-row warn"><span class="pf-maint-icon">🐠</span><span>近7天死亡 <b>'+deadCount+'</b> 个生物</span></div>';
+  if(deadCount) h+='<div class="pf-maint-row warn pf-maint-click" onclick="P_switchTab(\'livestock\',\'dead\')"><span class="pf-maint-icon">🐠</span><span>近7天死亡 <b>'+deadCount+'</b> 个生物</span></div>';
 
   // 4. Consumable replace reminders
   const cms=inv.consumables||[];
@@ -386,6 +404,13 @@ function _renderCard(item,i,type,childCount){
 
 const _INACTIVE_ST=['sold','dead','empty','expired','broken'];
 function _uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8);}
+function _normDate(s){
+  if(!s) return '';
+  // Handle formats: YYYY/M/D, YYYY-M-D, YYYY.M.D etc
+  const m=s.match(/(\d{4})[\/.\-](\d{1,2})[\/.\-](\d{1,2})/);
+  if(m) return m[1]+'-'+m[2].padStart(2,'0')+'-'+m[3].padStart(2,'0');
+  return s;
+}
 
 const _filterState={livestock:'active',equipment:'active',consumable:'active'};
 function P_filter(btn){

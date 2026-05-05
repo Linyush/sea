@@ -155,37 +155,60 @@ function renderProfile(){
 function _renderInvestment(inv){
   const livestock=inv.livestock||[], equipment=inv.equipment||[], consumables=inv.consumables||[];
   let liveCost=0, equipCost=0, cmCost=0, deathLoss=0, soldIncome=0;
+  let liveCount=livestock.filter(x=>x.origin!=='breed').length;
+  let equipCount=equipment.length, cmCount=consumables.length;
+  let deadCount=0, soldCount=0;
+  // Find first tab with dead/sold for jump targets
+  let firstDeadTab='', firstSoldTab='';
   livestock.forEach(item=>{
     const p=parseFloat(item.price)||0;
     liveCost+=p;
-    if(item.status==='dead') deathLoss+=p;
-    if(item.status==='sold') soldIncome+=parseFloat(item.sellPrice)||0;
+    if(item.status==='dead'){deathLoss+=p;deadCount++;if(!firstDeadTab)firstDeadTab='livestock';}
+    if(item.status==='sold'){soldIncome+=parseFloat(item.sellPrice)||0;soldCount++;if(!firstSoldTab)firstSoldTab='livestock';}
   });
-
   equipment.forEach(item=>{
     const p=parseFloat(item.price)||0;
     equipCost+=p;
-    if(item.status==='broken') deathLoss+=p;
-    if(item.status==='sold') soldIncome+=parseFloat(item.sellPrice)||0;
+    if(item.status==='broken'){deathLoss+=p;deadCount++;if(!firstDeadTab)firstDeadTab='equipment';}
+    if(item.status==='sold'){soldIncome+=parseFloat(item.sellPrice)||0;soldCount++;if(!firstSoldTab)firstSoldTab='equipment';}
   });
   consumables.forEach(item=>{
     cmCost+=parseFloat(item.price)||0;
   });
   const totalCost=liveCost+equipCost+cmCost;
-  const fmt=v=>v>=10000?'¥'+(v/10000).toFixed(1)+'万':'¥'+v.toFixed(0);
+  const fmt=v=>v>=10000?'\u00a5'+(v/10000).toFixed(1)+'\u4e07':'\u00a5'+v.toFixed(0);
   const box=document.getElementById('pfInvestBox');
   if(!box) return;
+  // Dead filter map
+  const deadFilter=firstDeadTab==='livestock'?'dead':'broken';
   box.innerHTML=
-    '<div class="pf-inv-item"><div class="pf-inv-val">'+fmt(totalCost)+'</div><div class="pf-inv-lbl">合计投入</div></div>'+
-    '<div class="pf-inv-item"><div class="pf-inv-val">'+fmt(liveCost)+'</div><div class="pf-inv-lbl">生物</div></div>'+
-    '<div class="pf-inv-item"><div class="pf-inv-val">'+fmt(equipCost)+'</div><div class="pf-inv-lbl">设备</div></div>'+
-    '<div class="pf-inv-item"><div class="pf-inv-val">'+fmt(cmCost)+'</div><div class="pf-inv-lbl">耗材</div></div>'+
-    '<div class="pf-inv-item loss"><div class="pf-inv-val">'+fmt(deathLoss)+'</div><div class="pf-inv-lbl">死亡/损坏</div></div>'+
-    '<div class="pf-inv-item gain"><div class="pf-inv-val">'+fmt(soldIncome)+'</div><div class="pf-inv-lbl">售出收入</div></div>'+
-    '<div class="pf-inv-item accent"><div class="pf-inv-val">'+fmt(totalCost-soldIncome)+'</div><div class="pf-inv-lbl">净投入</div></div>';
+    '<div class="pf-inv-summary">'+
+      '<div class="pf-inv-item pf-inv-big"><div class="pf-inv-val">'+fmt(totalCost)+'</div><div class="pf-inv-lbl">\u5408\u8ba1\u6295\u5165</div></div>'+
+      '<div class="pf-inv-item pf-inv-big accent"><div class="pf-inv-val">'+fmt(totalCost-soldIncome)+'</div><div class="pf-inv-lbl">\u51c0\u6295\u5165</div></div>'+
+    '</div>'+
+    '<div class="pf-inv-detail">'+
+      '<div class="pf-inv-item pf-inv-click" onclick="P_switchTab(\'livestock\')"><div class="pf-inv-val">'+fmt(liveCost)+'</div><div class="pf-inv-cnt">'+liveCount+'\u4e2a</div><div class="pf-inv-lbl">\u751f\u7269</div></div>'+
+      '<div class="pf-inv-item pf-inv-click" onclick="P_switchTab(\'equipment\')"><div class="pf-inv-val">'+fmt(equipCost)+'</div><div class="pf-inv-cnt">'+equipCount+'\u4e2a</div><div class="pf-inv-lbl">\u8bbe\u5907</div></div>'+
+      '<div class="pf-inv-item pf-inv-click" onclick="P_switchTab(\'consumable\')"><div class="pf-inv-val">'+fmt(cmCost)+'</div><div class="pf-inv-cnt">'+cmCount+'\u4e2a</div><div class="pf-inv-lbl">\u8017\u6750</div></div>'+
+      '<div class="pf-inv-item loss pf-inv-click" onclick="P_switchTab(\''+firstDeadTab+'\',\''+deadFilter+'\')"><div class="pf-inv-val">'+fmt(deathLoss)+'</div><div class="pf-inv-cnt">'+deadCount+'\u4e2a</div><div class="pf-inv-lbl">\u6b7b\u4ea1/\u635f\u574f</div></div>'+
+      '<div class="pf-inv-item gain pf-inv-click" onclick="P_switchTab(\''+firstSoldTab+'\',\'sold\')"><div class="pf-inv-val">'+fmt(soldIncome)+'</div><div class="pf-inv-cnt">'+soldCount+'\u4e2a</div><div class="pf-inv-lbl">\u552e\u51fa\u6536\u5165</div></div>'+
+    '</div>';
 }
 
-function P_scrollTo(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:"smooth",block:"start"});}
+let _activeTab='livestock';
+function P_switchTab(tab, filter){
+  _activeTab=tab;
+  document.querySelectorAll('.pf-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+  document.getElementById('panelLivestock').style.display=tab==='livestock'?'':'none';
+  document.getElementById('panelEquipment').style.display=tab==='equipment'?'':'none';
+  document.getElementById('panelConsumable').style.display=tab==='consumable'?'':'none';
+  if(filter){
+    // Click the corresponding filter button
+    const typeMap={livestock:'lsFilter',equipment:'eqFilter',consumable:'cmFilter'};
+    const bar=document.getElementById(typeMap[tab]);
+    if(bar){const btn=bar.querySelector('[data-f="'+filter+'"]');if(btn){P_filter(btn);}}
+  }
+}
 let _eyeOpen=false;
 function P_toggleEye(){
   _eyeOpen=!_eyeOpen;
@@ -330,6 +353,17 @@ function _renderCard(item,i,type,childCount){
       }
     }
     if(sub.length) h+='<div class="inv-sub">'+sub.join('·')+'</div>';
+  }
+  // Duration display
+  if(item.addDate){
+    let endD;
+    if(item.status==='dead'&&item.deathDate) endD=new Date(item.deathDate+'T00:00:00');
+    else if(item.status==='sold'&&item.sellDate) endD=new Date(item.sellDate+'T00:00:00');
+    else if(item.status==='broken'&&item.deathDate) endD=new Date(item.deathDate+'T00:00:00');
+    else endD=new Date();
+    const startD=new Date(item.addDate+'T00:00:00');
+    const days=Math.max(0,Math.floor((endD-startD)/86400000));
+    h+='<div class="inv-days">'+days+'天</div>';
   }
   h+='</div>';
   return h;

@@ -280,3 +280,23 @@
 
 /* Hidden values */
 .pf-invest-grid.pf-hidden .pf-inv-val{color:transparent;text-shadow:0 0 8px var(--text3);user-select:none}
+
+/* === Tab bar === */
+.pf-tab-bar{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:14px}
+.pf-tab{background:none;border:none;border-bottom:2px solid transparent;padding:8px 16px;font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;transition:all .2s;white-space:nowrap}
+.pf-tab:hover{color:var(--text2)}
+.pf-tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+.pf-tab .count{font-size:11px;opacity:.7;margin-left:2px}
+.pf-tab-panel{min-height:100px}
+
+/* Investment layout: summary + detail */
+.pf-inv-summary{display:flex;gap:10px;margin-bottom:10px}
+.pf-inv-summary .pf-inv-big{flex:1;padding:14px 10px;border-radius:10px;text-align:center;background:var(--card);border:1px solid var(--border)}
+.pf-inv-summary .pf-inv-big .pf-inv-val{font-size:18px}
+.pf-inv-detail{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px}
+.pf-inv-click{cursor:pointer;transition:border-color .2s,transform .15s}
+.pf-inv-click:hover{border-color:var(--accent);transform:translateY(-1px)}
+.pf-inv-cnt{font-size:10px;color:var(--text4);margin-top:1px}
+
+/* Card duration */
+.inv-days{font-size:10px;color:var(--text4);margin-top:3px;font-weight:400}

@@ -119,6 +119,20 @@ function P_loadInv(){
   const s=_g(P_INV_KEY());
   let inv={livestock:[],equipment:[],consumables:[]};
   if(s){try{inv=JSON.parse(s);}catch(e){}}
+  // Migration: ensure all items have stable _id + convert index-based parentId
+  let _dirty=false;
+  ["livestock","equipment","consumables"].forEach(k=>{(inv[k]||[]).forEach(it=>{if(!it._id){it._id=_uid();_dirty=true;}});});
+  if(_dirty){
+    // Convert old index-based parentId to _id-based
+    const ls=inv.livestock||[];
+    ls.forEach(it=>{
+      if(it.origin==='breed'&&it.parentId&&/^\d+$/.test(it.parentId)){
+        const pi=parseInt(it.parentId);
+        if(ls[pi]&&ls[pi]._id) it.parentId=ls[pi]._id;
+      }
+    });
+    try{_s(P_INV_KEY(),JSON.stringify(inv));}catch(e){}
+  }
   // Sort all arrays by addDate ascending (in place)
   if(inv.livestock) inv.livestock.sort((a,b)=>{const d=_parseDate(_getItemDate(a))-_parseDate(_getItemDate(b));return d!==0?d:(a.name||'').localeCompare(b.name||'','zh');});
   if(inv.equipment) inv.equipment.sort((a,b)=>{const d=_parseDate(_getItemDate(a))-_parseDate(_getItemDate(b));return d!==0?d:(a.name||'').localeCompare(b.name||'','zh');});
@@ -371,6 +385,8 @@ function _renderCard(item,i,type,childCount){
 }
 
 const _INACTIVE_ST=['sold','dead','empty','expired','broken'];
+function _uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8);}
+
 const _filterState={livestock:'active',equipment:'active',consumable:'active'};
 function P_filter(btn){
   const bar=btn.parentElement;
@@ -411,7 +427,7 @@ function P_renderInvSection(prefix,items,type){
   else if(filter==='active') filtered=active;
   else filtered=mainItems.filter(({item})=>item.status===filter);
   let h='<div class="inv-grid">';
-  filtered.forEach(({item,i})=>{ h+=_renderCard(item,i,type,childMap[i.toString()]||0); });
+  filtered.forEach(({item,i})=>{ h+=_renderCard(item,i,type,childMap[item._id]||0); });
   h+='<div class="inv-card inv-card-add" onclick="P_openForm(&#39;'+type+'&#39;)"><span class="inv-add-plus">+</span><span class="inv-add-label">添加'+typeName+'</span></div>';
   h+='</div>';
   gridEl.innerHTML=h;
@@ -747,8 +763,9 @@ function IF_save(){
     const prev=inv[arrKey][_ifIdx]||{};
     if(prev.origin) item.origin=prev.origin;
     if(prev.parentId) item.parentId=prev.parentId;
+    if(prev._id) item._id=prev._id;
     inv[arrKey][_ifIdx]=item;
-  }else{inv[arrKey].push(item);}
+  }else{item._id=_uid();inv[arrKey].push(item);}
   P_saveInv(inv);
   IF_close();
   renderProfile();
@@ -762,18 +779,12 @@ function IF_del(){
   if(!inv[arrKey])return;
   // If deleting a livestock parent, also remove its children
   if(_ifType==='livestock'){
-    const pidStr=_ifIdx.toString();
+    const delItem=inv[arrKey][_ifIdx];
+    const delId=delItem?delItem._id:'';
     inv[arrKey]=inv[arrKey].filter((item,i)=>{
       if(i===_ifIdx) return false;
-      if(item.origin==='breed'&&item.parentId===pidStr) return false;
+      if(delId&&item.origin==='breed'&&item.parentId===delId) return false;
       return true;
-    });
-    // Reindex parentId for remaining items
-    inv[arrKey].forEach(item=>{
-      if(item.parentId){
-        const pid=parseInt(item.parentId);
-        if(pid>_ifIdx) item.parentId=(pid-1).toString();
-      }
     });
   }else{
     inv[arrKey].splice(_ifIdx,1);
@@ -791,6 +802,7 @@ function P_breedItem(){
   const parent=arr[_ifIdx];
   if(!parent){toast('未找到母体');return;}
   const child={
+    _id:_uid(),
     name:parent.name,
     breed:parent.breed||'',
     size:'',
@@ -798,7 +810,7 @@ function P_breedItem(){
     source:'',price:0,
     status:'alive',
     origin:'breed',
-    parentId:_ifIdx.toString(),
+    parentId:(arr[_ifIdx]||{})._id||'',
     notes:''
   };
   arr.push(child);
@@ -812,8 +824,9 @@ function _renderChildrenPanel(parentIdx){
   const inv=P_loadInv();
   const arr=inv.livestock||[];
   const children=[];
+  const _parentId=(arr[parentIdx]||{})._id||'__none__';
   arr.forEach((item,i)=>{
-    if(item.origin==='breed'&&item.parentId===parentIdx.toString()) children.push({item,i});
+    if(item.origin==='breed'&&item.parentId===_parentId) children.push({item,i});
   });
   if(!children.length){box.innerHTML='';box.style.display='none';return;}
   box.style.display='';
@@ -896,16 +909,9 @@ function P_delChild(idx){
   const arr=inv.livestock||[];
   arr.splice(idx,1);
   if(idx<_ifIdx) _ifIdx--;
-  arr.forEach(item=>{
-    if(item.parentId){
-      const pid=parseInt(item.parentId);
-      if(pid>idx) item.parentId=(pid-1).toString();
-      else if(pid===idx) item.parentId='';
-    }
-  });
   P_saveInv(inv);
   _renderChildrenPanel(_ifIdx);
-  toast('\u5df2\u5220\u9664');
+  toast('已删除');
 }
 function initProfile(){
   // Profile page is render-only, no special init needed
@@ -1028,7 +1034,7 @@ function IMP_confirm(){
       const defaults={livestock:'alive',equipment:'active',consumable:'sealed'};
       item.status=defaults[_impType]||'';
     }
-    if(item.name) inv[arrKey].push(item);
+    if(item.name){item._id=item._id||_uid();inv[arrKey].push(item);}
   });
   P_saveInv(inv);
   IMP_close();

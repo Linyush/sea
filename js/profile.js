@@ -689,7 +689,6 @@ function P_breedItem(){
     name:parent.name,
     breed:parent.breed||'',
     size:'',
-    icon:parent.icon||'',
     addDate:new Date().toISOString().slice(0,10),
     source:'',price:0,
     status:'alive',
@@ -715,8 +714,9 @@ function _renderChildrenPanel(parentIdx){
   box.style.display='';
   const stClass={dead:'st-dead',sold:'st-sold',moved:'st-moved'};
   let h='<div class="if-children-title">\u{1f331} \u5b50\u4f53 ('+children.length+')</div><div class="if-children-grid">';
+  const _parentIcon=(arr[parentIdx]||{}).icon||'';
   children.forEach(({item,i})=>{
-    const _iconRaw=item.icon||'';
+    const _iconRaw=_parentIcon;
     const _iconParts=_iconRaw.split('|');
     const iconKey=_iconParts[0]||'';
     const iconColor=_iconParts[1]||'var(--accent)';

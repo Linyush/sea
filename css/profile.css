@@ -29,8 +29,11 @@
 .inv-card .inv-sub{font-size:10px;color:var(--text3);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .inv-overdue{color:#e74c3c !important;font-weight:600}
 .inv-card.st-alive,.inv-card.st-active,.inv-card.st-inuse{border-left:3px solid #22bb88;background:linear-gradient(135deg,color-mix(in srgb,#22bb88 4%,var(--card)),var(--card))}
-.inv-card.st-dead,.inv-card.st-broken,.inv-card.st-expired,.inv-card.st-empty,.inv-card.st-moved{border-left:3px solid #94a3b8;background:linear-gradient(135deg,color-mix(in srgb,#94a3b8 6%,var(--card)),var(--card));opacity:.6;filter:grayscale(.3)}
-.inv-card.st-sold{border-left:3px solid #d4a017;background:linear-gradient(135deg,color-mix(in srgb,#d4a017 8%,var(--card)),var(--card));opacity:.8}
+.inv-card.st-dead,.inv-card.st-broken,.inv-card.st-expired,.inv-card.st-empty,.inv-card.st-moved{border-left:3px solid #94a3b8;background:linear-gradient(135deg,color-mix(in srgb,#94a3b8 6%,var(--card)),var(--card))}
+.inv-card.st-dead .inv-name,.inv-card.st-broken .inv-name,.inv-card.st-expired .inv-name,.inv-card.st-empty .inv-name,.inv-card.st-moved .inv-name{opacity:.7}
+.inv-card.st-dead .inv-sub,.inv-card.st-broken .inv-sub,.inv-card.st-expired .inv-sub,.inv-card.st-empty .inv-sub,.inv-card.st-moved .inv-sub{opacity:.5}
+.inv-card.st-sold{border-left:3px solid #d4a017;background:linear-gradient(135deg,color-mix(in srgb,#d4a017 8%,var(--card)),var(--card))}
+.inv-card.st-sold .inv-name,.inv-card.st-sold .inv-sub{opacity:.75}
 .inv-card.st-sealed,.inv-card.st-standby{border-left:3px solid #f59e0b;background:linear-gradient(135deg,color-mix(in srgb,#f59e0b 3%,var(--card)),var(--card))}
 .pf-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:16px 0 20px}
 .pf-stat-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 12px;text-align:center;transition:all .2s}

@@ -213,9 +213,9 @@ function _daysRemain(dateStr){
 
 function _glowCSS(level,color){
   if(!level)return '';
-  if(level===1) return ';filter:drop-shadow(0 0 3px '+color+') drop-shadow(0 0 6px '+color+'40)';
-  if(level===2) return ';filter:drop-shadow(0 0 4px '+color+') drop-shadow(0 0 8px '+color+') brightness(1.15) saturate(1.3)';
-  return ';filter:drop-shadow(0 0 4px '+color+') drop-shadow(0 0 10px '+color+') drop-shadow(0 0 18px '+color+'60) brightness(1.25) saturate(1.5)';
+  if(level===1) return ';filter:drop-shadow(0 0 2px '+color+') drop-shadow(0 0 5px '+color+'50)';
+  if(level===2) return ';filter:drop-shadow(0 0 3px '+color+') drop-shadow(0 0 6px '+color+'90) brightness(1.1) saturate(1.2)';
+  return ';filter:drop-shadow(0 0 3px '+color+') drop-shadow(0 0 7px '+color+'aa) drop-shadow(0 0 12px '+color+'40) brightness(1.2) saturate(1.4)';
 }
 function _renderCard(item,i,type){
   const _iconRaw=item.icon||'';

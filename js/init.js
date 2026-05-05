@@ -6,6 +6,8 @@ document.addEventListener('keydown',function(e){
     /* Close modals from top layer to bottom */
     const ipOv=document.getElementById('iconPickerOverlay');
     if(ipOv&&ipOv.classList.contains('open')){IP_close();return;}
+    const impOv=document.getElementById('impOverlay');
+    if(impOv&&impOv.classList.contains('open')){IMP_close();return;}
     if(document.getElementById('itemFormOverlay').classList.contains('open'))IF_close();
     else if(document.getElementById('tankFormOverlay').classList.contains('open'))TF_close();
     else if(document.getElementById('nfModal').classList.contains('open'))closeNf();

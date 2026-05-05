@@ -166,7 +166,12 @@ function P_renderInvSection(prefix,items,type){
     // Status class on card border/bg
     const stClass=item.status?' st-'+item.status:'';
 
-    h+='<div class="inv-card'+stClass+'" onclick="P_editItem(&#39;'+type+'&#39;,'+i+')">'+iconHtml;
+    // Badge for dead/sold
+    let badge='';
+    if(item.status==='dead') badge='<span class="inv-badge inv-badge-dead" title="死亡">💀</span>';
+    else if(item.status==='sold') badge='<span class="inv-badge inv-badge-sold" title="售出">💰</span>';
+
+    h+='<div class="inv-card'+stClass+'" onclick="P_editItem(&#39;'+type+'&#39;,'+i+')">'+badge+iconHtml;
     
     if(type==='livestock'){
       // 生物: 图标 → 名称 → 品种·尺寸
@@ -529,4 +534,129 @@ function IF_del(){
 
 function initProfile(){
   // Profile page is render-only, no special init needed
+}
+
+
+// === Import Module ===
+let _impType='';
+let _impData=[];
+
+function IMP_open(type){
+  _impType=type;
+  _impData=[];
+  document.getElementById('impTitle').textContent='导入'+IF_TITLES[type];
+  document.getElementById('impTextarea').value='';
+  document.getElementById('impFileName').textContent='';
+  document.getElementById('impPreview').innerHTML='';
+  document.getElementById('impConfirmBtn').disabled=true;
+  IMP_switchTab('paste');
+  const ov=document.getElementById('impOverlay');
+  ov.style.display='flex';requestAnimationFrame(()=>ov.classList.add('open'));
+}
+
+function IMP_close(){
+  const ov=document.getElementById('impOverlay');ov.classList.remove('open');
+  setTimeout(()=>ov.style.display='none',300);
+}
+
+function IMP_switchTab(tab){
+  document.querySelectorAll('.imp-tab').forEach(t=>t.classList.remove('active'));
+  if(tab==='paste'){
+    document.querySelectorAll('.imp-tab')[0].classList.add('active');
+    document.getElementById('impPasteArea').style.display='';
+    document.getElementById('impFileArea').style.display='none';
+  }else{
+    document.querySelectorAll('.imp-tab')[1].classList.add('active');
+    document.getElementById('impPasteArea').style.display='none';
+    document.getElementById('impFileArea').style.display='';
+  }
+}
+
+function IMP_onFile(e){
+  const file=e.target.files[0];
+  if(!file)return;
+  document.getElementById('impFileName').textContent=file.name;
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    document.getElementById('impTextarea').value=ev.target.result;
+  };
+  reader.readAsText(file);
+}
+
+function IMP_parseCSV(text){
+  const lines=text.trim().split('\n').map(l=>l.trim()).filter(l=>l);
+  if(lines.length<2) return [];
+  const headers=lines[0].split(',').map(h=>h.trim().replace(/^"|"$/g,''));
+  const rows=[];
+  for(let i=1;i<lines.length;i++){
+    const vals=lines[i].split(',').map(v=>v.trim().replace(/^"|"$/g,''));
+    const obj={};
+    headers.forEach((h,j)=>{obj[h]=vals[j]||'';});
+    rows.push(obj);
+  }
+  return rows;
+}
+
+function IMP_preview(){
+  const text=document.getElementById('impTextarea').value.trim();
+  if(!text){toast('请输入数据');return;}
+  let data=[];
+  try{
+    data=JSON.parse(text);
+    if(!Array.isArray(data)){toast('JSON 必须是数组格式');return;}
+  }catch(e){
+    // Try CSV
+    data=IMP_parseCSV(text);
+    if(!data.length){toast('无法解析数据，请检查格式');return;}
+  }
+  if(!data.length){toast('没有解析到数据');return;}
+  _impData=data;
+  // Show preview
+  let h='<div class="imp-preview-info">解析到 <b>'+data.length+'</b> 条记录</div>';
+  h+='<div class="imp-preview-table"><table><tr>';
+  const keys=Object.keys(data[0]);
+  keys.forEach(k=>{h+='<th>'+k+'</th>';});
+  h+='</tr>';
+  const showCount=Math.min(data.length,5);
+  for(let i=0;i<showCount;i++){
+    h+='<tr>';
+    keys.forEach(k=>{h+='<td>'+(data[i][k]||'')+'</td>';});
+    h+='</tr>';
+  }
+  if(data.length>5) h+='<tr><td colspan="'+keys.length+'" style="text-align:center;color:var(--text4)">... 共 '+data.length+' 条</td></tr>';
+  h+='</table></div>';
+  document.getElementById('impPreview').innerHTML=h;
+  document.getElementById('impConfirmBtn').disabled=false;
+}
+
+function IMP_confirm(){
+  if(!_impData.length){toast('请先预览数据');return;}
+  const inv=P_loadInv();
+  const arrKey=IF_INV_KEYS[_impType];
+  if(!inv[arrKey])inv[arrKey]=[];
+  // Map fields and add defaults
+  const fields=IF_FIELDS[_impType];
+  const fieldKeys=fields.map(f=>f.key);
+  _impData.forEach(row=>{
+    const item={};
+    fieldKeys.forEach(k=>{
+      item[k]=row[k]||'';
+    });
+    // Ensure name exists
+    if(!item.name&&row['名称']) item.name=row['名称'];
+    if(!item.breed&&row['品种']) item.breed=row['品种'];
+    if(!item.brand&&row['品牌']) item.brand=row['品牌'];
+    if(!item.spec&&row['规格']) item.spec=row['规格'];
+    if(!item.size&&row['尺寸']) item.size=row['尺寸'];
+    if(!item.status){
+      const defaults={livestock:'alive',equipment:'active',consumable:'sealed'};
+      item.status=defaults[_impType]||'';
+    }
+    if(item.name) inv[arrKey].push(item);
+  });
+  P_saveInv(inv);
+  IMP_close();
+  renderProfile();
+  toast('已导入 '+_impData.length+' 条记录');
+  _impData=[];
 }

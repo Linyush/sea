@@ -25,17 +25,18 @@ const P_ICONS={'clownfish':'<svg viewBox="0 0 80 80" fill="none" stroke="current
 'cardinal':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="38" cy="40" rx="14" ry="12"/><path d="M52 40l8-4v8l-8-4"/><circle cx="30" cy="36" r="4"/><circle cx="30" cy="36" r="2" fill="currentColor" stroke="none"/><path d="M38 28c2-4 4-4 6-2"/><path d="M38 52c2 4 4 4 6 2"/><path d="M34 44h8"/></svg>',
 'hawkfish':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="38" cy="38" rx="14" ry="10"/><path d="M52 38c4-2 8-6 10-4v8c-2 2-6-2-10-4"/><circle cx="28" cy="36" r="2" fill="currentColor" stroke="none"/><path d="M30 28c2-2 4-2 6 0 2-2 4-2 6 0 2-2 4-2 6 0"/><path d="M30 48l-2 8m12-8l2 8"/><path d="M20 56h40"/></svg>',
 'other_fish':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 40c8-12 24-12 34-6l8-8v28l-8-8c-10 6-26 6-34-6z"/><circle cx="28" cy="38" r="2" fill="currentColor" stroke="none"/><path d="M38 35v10"/></svg>',
-'sps':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M40 62V46"/><path d="M40 46c-2-4-2-8 0-12"/><path d="M40 34l-8-12m8 12l8-14m0 0l4-4m-4 4l4 2"/><path d="M32 22l-4-4m4 4l-4 2"/><path d="M40 34l0-10"/><path d="M40 24l3-4m-3 4l-3-4"/><path d="M34 62h12"/></svg>',
-'lps':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="40" cy="44" rx="18" ry="12"/><path d="M28 42c4-3 8-3 12 0s8 3 12 0"/><path d="M28 48c4-3 8-3 12 0s8 3 12 0"/><path d="M34 36c2-1 4-1 6 0m-2-4v4"/><path d="M40 56v6"/></svg>',
-'soft':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M40 62V50"/><path d="M28 50c0-10 6-14 12-14s12 4 12 14"/><path d="M28 50c-4-2-8-8-6-14"/><path d="M52 50c4-2 8-8 6-14"/><path d="M36 36c-2-4 0-8 2-6"/><path d="M44 36c2-4 0-8-2-6"/><path d="M34 62h12"/></svg>',
-'mushroom':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="40" cy="42" rx="18" ry="10"/><path d="M40 52v10"/><circle cx="34" cy="40" r="2" fill="currentColor" stroke="none"/><circle cx="42" cy="38" r="1.5" fill="currentColor" stroke="none"/><circle cx="46" cy="43" r="1.5" fill="currentColor" stroke="none"/><circle cx="36" cy="45" r="1" fill="currentColor" stroke="none"/></svg>',
-'zoa':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="30" cy="34" r="7"/><circle cx="30" cy="34" r="3" fill="currentColor" stroke="none"/><circle cx="50" cy="34" r="7"/><circle cx="50" cy="34" r="3" fill="currentColor" stroke="none"/><circle cx="40" cy="50" r="7"/><circle cx="40" cy="50" r="3" fill="currentColor" stroke="none"/><path d="M30 41v8m10-8V34m10 7v8"/></svg>',
-'anemone':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M40 62V52"/><ellipse cx="40" cy="52" rx="12" ry="4"/><path d="M32 48c-2-6-4-14-2-18"/><path d="M36 48c-1-6 0-16 2-20"/><path d="M40 48c0-6 0-16 0-20"/><path d="M44 48c1-6 0-16-2-20"/><path d="M48 48c2-6 4-14 2-18"/><circle cx="30" cy="28" r="2.5"/><circle cx="38" cy="26" r="2.5"/><circle cx="42" cy="26" r="2.5"/><circle cx="50" cy="28" r="2.5"/></svg>',
-'gorgonian':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M40 62V44"/><path d="M40 44c0-8-12-12-16-18"/><path d="M40 44c0-8 12-12 16-18"/><path d="M30 34c-4-4-6-8-6-12"/><path d="M50 34c4-4 6-8 6-12"/><path d="M36 36c-2-4-2-10-2-14"/><path d="M44 36c2-4 2-10 2-14"/><path d="M34 62h12"/></svg>',
-'brain':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="40" cy="42" rx="18" ry="14"/><path d="M26 40c4-4 8 0 12-4s6 0 10-4"/><path d="M28 46c4-4 8 0 12-4s6 0 10-4"/><path d="M30 52c3-3 6 0 9-3s5 0 8-3"/></svg>',
-'torch':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M40 62V48"/><path d="M40 48c0-6-2-10-2-14"/><path d="M40 48c0-6 2-10 2-14"/><path d="M40 48c-4-4-8-8-10-14"/><path d="M40 48c4-4 8-8 10-14"/><circle cx="38" cy="32" r="4"/><circle cx="42" cy="32" r="4"/><circle cx="30" cy="32" r="4"/><circle cx="50" cy="32" r="4"/><path d="M34 62h12"/></svg>',
-'plate':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="40" cy="44" rx="20" ry="8"/><path d="M20 44c0-4 4-10 10-14"/><path d="M60 44c0-4-4-10-10-14"/><path d="M30 30h20"/><path d="M40 52v8"/><path d="M28 44h24"/></svg>',
-'other_coral':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M40 62V45"/><path d="M40 45c-4-6-10-8-10-16 0-4 3-6 5-4 3 3 5 8 5 8s2-5 5-8c2-2 5 0 5 4 0 8-6 10-10 16z"/><path d="M30 62h20"/><path d="M28 40c-3-4-6-5-6-10 0-3 2-4 4-3 2 2 3 5 3 5"/></svg>',
+'sps':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M40 64V52"/><path d="M40 52V38l-6-10"/><path d="M40 38l6-10"/><path d="M40 44l-10-6"/><path d="M40 44l10-6"/><path d="M34 28l-4-6m4 6l4-4"/><path d="M46 28l4-6m-4 6l-4-4"/><path d="M30 38l-6-4m6 4l-2 4"/><path d="M50 38l6-4m-6 4l2 4"/><circle cx="34" cy="22" r="2"/><circle cx="46" cy="22" r="2"/><circle cx="24" cy="34" r="2"/><circle cx="56" cy="34" r="2"/><circle cx="40" cy="28" r="1.5"/><path d="M34 64h12"/></svg>',
+'lps':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="40" cy="44" rx="18" ry="14"/><circle cx="32" cy="40" r="5"/><circle cx="40" cy="36" r="4"/><circle cx="48" cy="40" r="5"/><circle cx="36" cy="48" r="4"/><circle cx="44" cy="48" r="4"/><circle cx="32" cy="40" r="2" fill="currentColor" stroke="none"/><circle cx="48" cy="40" r="2" fill="currentColor" stroke="none"/><circle cx="40" cy="36" r="1.5" fill="currentColor" stroke="none"/></svg>',
+'soft':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M40 64V54"/><path d="M34 54c-6 0-12-4-12-10h36c0 6-6 10-12 10"/><path d="M26 40c0-4 2-6 4-6"/><path d="M54 40c0-4-2-6-4-6"/><path d="M30 34v-6m4 8v-8m4 9v-8m4 8v-8m4 9v-8m4 8v-8m4 7v-6"/><path d="M34 64h12"/></svg>',
+'mushroom':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="40" cy="40" rx="20" ry="12"/><path d="M40 52v10"/><path d="M32 38c1 0 2 1 2 2s-1 2-2 2-2-1-2-2 1-2 2-2"/><path d="M42 35c1.5 0 2.5 1 2.5 2.5s-1 2.5-2.5 2.5-2.5-1-2.5-2.5 1-2.5 2.5-2.5"/><path d="M48 42c1 0 1.5.8 1.5 1.5s-.5 1.5-1.5 1.5-1.5-.8-1.5-1.5.5-1.5 1.5-1.5"/><path d="M36 44c.8 0 1.5.6 1.5 1.2s-.7 1.2-1.5 1.2-1.5-.6-1.5-1.2.7-1.2 1.5-1.2"/><path d="M40 28c0-2 1-3 2-2"/></svg>',
+'zoa':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="28" cy="34" r="6"/><circle cx="28" cy="34" r="2.5" fill="currentColor" stroke="none"/><circle cx="44" cy="30" r="6"/><circle cx="44" cy="30" r="2.5" fill="currentColor" stroke="none"/><circle cx="56" cy="40" r="5"/><circle cx="56" cy="40" r="2" fill="currentColor" stroke="none"/><circle cx="34" cy="48" r="5.5"/><circle cx="34" cy="48" r="2" fill="currentColor" stroke="none"/><circle cx="50" cy="52" r="5"/><circle cx="50" cy="52" r="2" fill="currentColor" stroke="none"/><path d="M28 40v4m16-18v-4m12 12h4m-26 16v4m16 2v2"/></svg>',
+'anemone':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M40 64V54"/><ellipse cx="40" cy="54" rx="10" ry="3"/><path d="M30 51c-1-6-1-12 2-16"/><path d="M34 51c0-6 1-14 2-16"/><path d="M38 51c0-6 0-14 0-16"/><path d="M42 51c0-6-1-14-2-16"/><path d="M46 51c0-6 0-12 2-16"/><path d="M50 51c1-6 1-12-2-16"/><circle cx="32" cy="33" r="3"/><circle cx="36" cy="31" r="2.5"/><circle cx="40" cy="33" r="3"/><circle cx="44" cy="31" r="2.5"/><circle cx="48" cy="33" r="3"/><circle cx="30" cy="35" r="2"/><circle cx="50" cy="35" r="2"/></svg>',
+'gorgonian':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M40 64V50"/><path d="M40 50c0-6-4-10-8-14"/><path d="M40 50c0-6 4-10 8-14"/><path d="M32 36c-2-4-6-6-8-8"/><path d="M48 36c2-4 6-6 8-8"/><path d="M36 42c-2-2-6-4-8-4"/><path d="M44 42c2-2 6-4 8-4"/><path d="M38 46c-2-2-4-2-6-2"/><path d="M42 46c2-2 4-2 6-2"/><circle cx="24" cy="28" r="1.5"/><circle cx="56" cy="28" r="1.5"/><path d="M34 64h12"/></svg>',
+'brain':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="40" cy="42" rx="18" ry="14"/><path d="M24 38c5 4 8-2 12 2s6-2 10 2c4 4 8-2 10 2"/><path d="M26 44c4 4 7-2 11 2s5-2 9 2c4 4 7-2 9 2"/><path d="M28 50c4 3 6-2 9 1s5-1 8 1c3 2 5-1 7 1"/><path d="M30 34c3 2 6-1 9 1s5-1 8 1"/></svg>',
+'torch':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M40 64V52"/><path d="M40 52c0-4-1-8-1-12"/><path d="M40 52c0-4 1-8 1-12"/><path d="M36 52c-2-4-4-8-6-12"/><path d="M44 52c2-4 4-8 6-12"/><circle cx="39" cy="36" r="5" fill="currentColor" stroke="currentColor" stroke-width="1" opacity=".3"/><circle cx="41" cy="36" r="5" fill="currentColor" stroke="currentColor" stroke-width="1" opacity=".3"/><circle cx="30" cy="36" r="5" fill="currentColor" stroke="currentColor" stroke-width="1" opacity=".3"/><circle cx="50" cy="36" r="5" fill="currentColor" stroke="currentColor" stroke-width="1" opacity=".3"/><circle cx="39" cy="36" r="2"/><circle cx="41" cy="36" r="2"/><circle cx="30" cy="36" r="2"/><circle cx="50" cy="36" r="2"/><path d="M34 64h12"/></svg>',
+'plate':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="40" cy="44" rx="22" ry="8"/><ellipse cx="40" cy="42" rx="22" ry="8"/><path d="M22 40c2-4 8-8 18-8s16 4 18 8"/><circle cx="32" cy="42" r="1.5" fill="currentColor" stroke="none"/><circle cx="40" cy="40" r="1.5" fill="currentColor" stroke="none"/><circle cx="48" cy="42" r="1.5" fill="currentColor" stroke="none"/><circle cx="36" cy="44" r="1" fill="currentColor" stroke="none"/><circle cx="44" cy="44" r="1" fill="currentColor" stroke="none"/><path d="M40 50v10"/></svg>',
+'carpet':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M16 56h48"/><path d="M20 56v-6m4 6v-8m4 8v-6m4 8v-9m4 9v-7m4 9v-8m4 8v-6m4 8v-8m4 8v-6m4 8v-7m4 7v-6"/><circle cx="20" cy="46" r="1.5"/><circle cx="24" cy="44" r="1.5"/><circle cx="28" cy="46" r="1.5"/><circle cx="32" cy="43" r="1.5"/><circle cx="36" cy="45" r="1.5"/><circle cx="40" cy="43" r="1.5"/><circle cx="44" cy="45" r="1.5"/><circle cx="48" cy="44" r="1.5"/><circle cx="52" cy="46" r="1.5"/><circle cx="56" cy="44" r="1.5"/><circle cx="60" cy="46" r="1.5"/></svg>',
+'other_coral':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M40 64V48"/><path d="M40 48c-4-6-10-8-10-16 0-4 3-6 5-4 3 3 5 8 5 8s2-5 5-8c2-2 5 0 5 4 0 8-6 10-10 16z"/><path d="M30 64h20"/><path d="M28 40c-3-4-6-5-6-10 0-3 2-4 4-3 2 2 3 5 3 5"/><path d="M52 40c3-4 6-5 6-10 0-3-2-4-4-3-2 2-3 5-3 5"/></svg>',
 'snail':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="42" cy="38" r="12"/><circle cx="42" cy="38" r="6"/><path d="M30 44c-6 2-10 6-10 10h40c0-4-4-8-10-10"/><path d="M26 38l-4-8m8 6l-2-8"/></svg>',
 'shrimp':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 36c4-4 10-6 16-4 6 2 10 8 14 12 2 4 2 8 0 10-4 4-10 2-14-2s-10-8-16-6"/><path d="M20 30l-6-8m24-2l8-6"/><circle cx="26" cy="34" r="2" fill="currentColor" stroke="none"/><path d="M48 52l4 6m-8-4l2 6m-8-6l0 6"/><path d="M54 46c4-2 6 0 8 2"/></svg>',
 'crab':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="40" cy="44" rx="14" ry="10"/><circle cx="34" cy="42" r="2" fill="currentColor" stroke="none"/><circle cx="46" cy="42" r="2" fill="currentColor" stroke="none"/><path d="M26 44l-8-4-2 4 4 2"/><path d="M54 44l8-4 2 4-4 2"/><path d="M30 52l-4 6m24-6l4 6m-16 0l0 4m-6-6l-2 4m14-4l2 4"/><path d="M34 34l-2-6m12 6l2-6"/></svg>',
@@ -86,8 +87,8 @@ const P_ICONS={'clownfish':'<svg viewBox="0 0 80 80" fill="none" stroke="current
 'filterbag':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M26 20h28v4l-4 4v28c0 4-4 8-10 8s-10-4-10-8V28l-4-4v-4z"/><path d="M26 24h28"/><path d="M32 36h16m-16 8h16"/></svg>',
 'filtercotton':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="18" y="28" width="44" height="24" rx="4"/><path d="M18 36h44m-44 8h44"/><path d="M26 24v4m14-4v4m14-4v4"/><path d="M26 52v4m14-4v4m14-4v4"/></svg>',
 'filtercloth':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 24h40v8c-6 4-14 4-20 0s-14-4-20 0v-8z"/><path d="M20 40h40v8c-6 4-14 4-20 0s-14-4-20 0"/><path d="M20 56c6-4 14-4 20 0s14 4 20 0"/></svg>'};
-const P_ICON_MAP={livestock:{'小丑鱼':'clownfish','吊类':'tang','龙/隆头鱼':'wrasse','虾虎鱼':'goby','神仙鱼':'angelfish','䲁鱼':'blenny','拟雀鲷':'dottyback','天竺鲷':'cardinal','鹰鱼':'hawkfish','其他鱼':'other_fish','SPS硬珊瑚':'sps','LPS珊瑚':'lps','软体珊瑚':'soft','菇类':'mushroom','纽扣':'zoa','海葵':'anemone','柳珊瑚':'gorgonian','脑珊瑚':'brain','火炬/锤子':'torch','盘类':'plate','其他珊瑚':'other_coral','螺':'snail','虾':'shrimp','蟹':'crab','海胆':'urchin','海星':'starfish','贝/砗磲':'clam','海参':'cucumber','其他无脊椎':'other_invert','藻':'algae','其他':'other_live'},equipment:{'水泵':'pump','灯':'light','造浪':'wave','蛋分':'skimmer','加热棒':'heater','冷水机':'chiller','温度计':'thermo','滴定':'doser','钙反':'reactor','煮豆机':'beansoup','补水器':'ato','杀菌灯':'uv','滤布机':'roller','喂食器':'feeder','检测设备':'tester','插座':'socket','串联缸':'sertank','珊瑚支架':'coralrack','工具':'tool','增氧设备':'airpump','造景':'scape','柜子':'cabinet','盐度计':'salinity','其他':'other_eq'},consumable:{'盐':'salt','食物':'food','添加剂':'additive','试剂':'reagent','药品':'medicine','吸附剂':'adsorbent','滤材':'media','包装':'package','板材':'board','胶水':'glue','水管':'tubing','珊瑚基座':'frag','滤袋':'filterbag','滤棉':'filtercotton','滤布':'filtercloth','其他':'other_cm'}};
-const P_ICON_NAMES={clownfish:'小丑鱼',tang:'吊类',wrasse:'龙/隆头鱼',goby:'虾虎鱼',angelfish:'神仙鱼',blenny:'䲁鱼',dottyback:'拟雀鲷',cardinal:'天竺鲷',hawkfish:'鹰鱼',other_fish:'其他鱼',sps:'SPS硬珊瑚',lps:'LPS珊瑚',soft:'软体珊瑚',mushroom:'菇类',zoa:'纽扣',anemone:'海葵',gorgonian:'柳珊瑚',brain:'脑珊瑚',torch:'火炬/锤子',plate:'盘类',other_coral:'其他珊瑚',snail:'螺',shrimp:'虾',crab:'蟹',urchin:'海胆',starfish:'海星',clam:'贝/砗磲',cucumber:'海参',other_invert:'其他无脊椎',algae:'藻',other_live:'其他',pump:'水泵',light:'灯',wave:'造浪',skimmer:'蛋分',heater:'加热棒',chiller:'冷水机',thermo:'温度计',doser:'滴定泵',reactor:'钙反',beansoup:'煮豆机',ato:'补水器',uv:'杀菌灯',roller:'滤布机',feeder:'喂食器',tester:'检测',socket:'智能插座',other_eq:'其他',sertank:'串联缸',coralrack:'珊瑚支架',tool:'工具',airpump:'增氧设备',scape:'造景',cabinet:'柜子',salinity:'盐度计',salt:'海盐',food:'鱼粮',additive:'添加剂',reagent:'试剂',medicine:'药品',other_cm:'其他',adsorbent:'吸附剂',media:'滤材',package:'包装',board:'板材',glue:'胶水',tubing:'水管',frag:'珊瑚基座',filterbag:'滤袋',filtercotton:'滤棉',filtercloth:'滤布'};
+const P_ICON_MAP={livestock:{'小丑鱼':'clownfish','吊类':'tang','龙/隆头鱼':'wrasse','虾虎鱼':'goby','神仙鱼':'angelfish','䲁鱼':'blenny','拟雀鲷':'dottyback','天竺鲷':'cardinal','鹰鱼':'hawkfish','其他鱼':'other_fish','SPS硬珊瑚':'sps','LPS珊瑚':'lps','软体珊瑚':'soft','菇类':'mushroom','纽扣':'zoa','海葵':'anemone','柳珊瑚':'gorgonian','脑珊瑚':'brain','火炬/锤子':'torch','盘类':'plate','其他珊瑚':'other_coral','草皮':'carpet','螺':'snail','虾':'shrimp','蟹':'crab','海胆':'urchin','海星':'starfish','贝/砗磲':'clam','海参':'cucumber','其他无脊椎':'other_invert','藻':'algae','其他':'other_live'},equipment:{'水泵':'pump','灯':'light','造浪':'wave','蛋分':'skimmer','加热棒':'heater','冷水机':'chiller','温度计':'thermo','滴定':'doser','钙反':'reactor','煮豆机':'beansoup','补水器':'ato','杀菌灯':'uv','滤布机':'roller','喂食器':'feeder','检测设备':'tester','插座':'socket','串联缸':'sertank','珊瑚支架':'coralrack','工具':'tool','增氧设备':'airpump','造景':'scape','柜子':'cabinet','盐度计':'salinity','其他':'other_eq'},consumable:{'盐':'salt','食物':'food','添加剂':'additive','试剂':'reagent','药品':'medicine','吸附剂':'adsorbent','滤材':'media','包装':'package','板材':'board','胶水':'glue','水管':'tubing','珊瑚基座':'frag','滤袋':'filterbag','滤棉':'filtercotton','滤布':'filtercloth','其他':'other_cm'}};
+const P_ICON_NAMES={clownfish:'小丑鱼',tang:'吊类',wrasse:'龙/隆头鱼',goby:'虾虎鱼',angelfish:'神仙鱼',blenny:'䲁鱼',dottyback:'拟雀鲷',cardinal:'天竺鲷',hawkfish:'鹰鱼',other_fish:'其他鱼',sps:'SPS硬珊瑚',lps:'LPS珊瑚',soft:'软体珊瑚',mushroom:'菇类',zoa:'纽扣',anemone:'海葵',gorgonian:'柳珊瑚',brain:'脑珊瑚',torch:'火炬/锤子',plate:'盘类',other_coral:'其他珊瑚',carpet:'草皮',snail:'螺',shrimp:'虾',crab:'蟹',urchin:'海胆',starfish:'海星',clam:'贝/砗磲',cucumber:'海参',other_invert:'其他无脊椎',algae:'藻',other_live:'其他',pump:'水泵',light:'灯',wave:'造浪',skimmer:'蛋分',heater:'加热棒',chiller:'冷水机',thermo:'温度计',doser:'滴定泵',reactor:'钙反',beansoup:'煮豆机',ato:'补水器',uv:'杀菌灯',roller:'滤布机',feeder:'喂食器',tester:'检测',socket:'智能插座',other_eq:'其他',sertank:'串联缸',coralrack:'珊瑚支架',tool:'工具',airpump:'增氧设备',scape:'造景',cabinet:'柜子',salinity:'盐度计',salt:'海盐',food:'鱼粮',additive:'添加剂',reagent:'试剂',medicine:'药品',other_cm:'其他',adsorbent:'吸附剂',media:'滤材',package:'包装',board:'板材',glue:'胶水',tubing:'水管',frag:'珊瑚基座',filterbag:'滤袋',filtercotton:'滤棉',filtercloth:'滤布'};
 function P_getIcon(type,cat){const key=P_ICON_MAP[type]&&P_ICON_MAP[type][cat];return key&&P_ICONS[key]?P_ICONS[key]:'';}
 
 // Default icons per category
@@ -215,8 +216,10 @@ function _renderCard(item,i,type){
   const _iconParts=_iconRaw.split('|');
   const iconKey=_iconParts[0]||'';
   const iconColor=_iconParts[1]||'var(--accent)';
+  const iconGlow=parseInt(_iconParts[2])||0;
   const hasSvg=iconKey&&P_ICONS[iconKey];
-  const iconHtml=hasSvg?'<div class="inv-card-icon" style="color:'+iconColor+'">'+P_ICONS[iconKey]+'</div>':'<div class="inv-icon">📦</div>';
+  const glowStyle=iconGlow>0?';filter:drop-shadow(0 0 '+(iconGlow*3)+'px '+iconColor+')':'';
+  const iconHtml=hasSvg?'<div class="inv-card-icon" style="color:'+iconColor+glowStyle+'">'+P_ICONS[iconKey]+'</div>':'<div class="inv-icon">📦</div>';
   const stClass=item.status?' st-'+item.status:'';
   let badge='';
   if(item.status==='dead') badge='<span class="inv-badge inv-badge-dead" title="死亡">💀</span>';
@@ -395,14 +398,14 @@ function _ifRenderAll(type,vals){
   box.innerHTML=restH;
 }
 /* === Icon Picker Modal === */
-let _ipIcon='',_ipColor='#4a90d9';
+let _ipIcon='',_ipColor='#4a90d9',_ipGlow=0;
 function IP_open(){
   const trigger=document.getElementById('if_icon');
   const disp=document.getElementById('ifIconDisplay');
   const curVal=trigger?trigger.dataset.val:(disp?disp.dataset.val:'');
-  if(curVal&&curVal.includes('|')){_ipIcon=curVal.split('|')[0];_ipColor=curVal.split('|')[1];}
-  else if(curVal){_ipIcon=curVal;_ipColor='#4a90d9';}
-  else{_ipIcon='';_ipColor='#4a90d9';}
+  if(curVal&&curVal.includes('|')){const pp=curVal.split('|');_ipIcon=pp[0];_ipColor=pp[1];_ipGlow=parseInt(pp[2])||0;}
+  else if(curVal){_ipIcon=curVal;_ipColor='#4a90d9';_ipGlow=0;}
+  else{_ipIcon='';_ipColor='#4a90d9';_ipGlow=0;}
   IP_render();
   const ov=document.getElementById('iconPickerOverlay');
   ov.style.display='flex';requestAnimationFrame(()=>ov.classList.add('open'));
@@ -447,6 +450,10 @@ function IP_renderColors(){
   const hexPv=document.getElementById('ipHexPreview');
   if(hexIn) hexIn.value=_ipColor;
   if(hexPv) hexPv.style.background=_ipColor;
+  document.querySelectorAll('.ip-glow-btn').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.g)===_ipGlow));
+  const labels=['关','弱','中','强'];
+  const valEl=document.getElementById('ipGlowVal');
+  if(valEl) valEl.textContent=labels[_ipGlow]||'关';
 }
 function IP_pickColor(el){
   _ipColor=el.dataset.c;
@@ -465,6 +472,14 @@ function IP_onHex(v){
     IP_updatePreview();
   }
 }
+function IP_setGlow(g){
+  _ipGlow=g;
+  document.querySelectorAll('.ip-glow-btn').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.g)===g));
+  const labels=['关','弱','中','强'];
+  const valEl=document.getElementById('ipGlowVal');
+  if(valEl) valEl.textContent=labels[g]||'关';
+  IP_updatePreview();
+}
 function IP_select(el){
   document.querySelectorAll('.ip-opt.active').forEach(e=>e.classList.remove('active'));
   el.classList.add('active');
@@ -474,20 +489,22 @@ function IP_select(el){
 function IP_updatePreview(){
   const pv=document.getElementById('ipPreview');
   if(_ipIcon&&P_ICONS[_ipIcon]){
-    pv.innerHTML='<span style="color:'+_ipColor+'">'+P_ICONS[_ipIcon]+'</span>';
+    const gf=_ipGlow>0?';filter:drop-shadow(0 0 '+(_ipGlow*3)+'px '+_ipColor+')':'';
+    pv.innerHTML='<span style="color:'+_ipColor+gf+'">'+P_ICONS[_ipIcon]+'</span>';
   }else{
     pv.innerHTML='<span class="ip-no">未选择</span>';
   }
 }
 function IP_confirm(){
-  const val=_ipIcon?_ipIcon+'|'+_ipColor:'';
+  const val=_ipIcon?_ipIcon+'|'+_ipColor+(_ipGlow>0?'|'+_ipGlow:''):'';
   const trigger=document.getElementById('if_icon');
   if(trigger) trigger.dataset.val=val;
   const disp=document.getElementById('ifIconDisplay');
   if(disp) disp.dataset.val=val;
   if(disp){
     if(_ipIcon&&P_ICONS[_ipIcon]){
-      disp.innerHTML='<span style="color:'+_ipColor+'">'+P_ICONS[_ipIcon]+'</span>';
+      const gf2=_ipGlow>0?';filter:drop-shadow(0 0 '+(_ipGlow*3)+'px '+_ipColor+')':'';
+      disp.innerHTML='<span style="color:'+_ipColor+gf2+'">'+P_ICONS[_ipIcon]+'</span>';
     }else{
       disp.innerHTML='<span class="if-icon-plus">+</span><span class="if-icon-hint">图标</span>';
     }
@@ -500,8 +517,9 @@ function _syncIconDisplay(val){
   if(!disp)return;
   disp.dataset.val=val||'';
   if(val&&val.includes('|')){
-    const k=val.split('|')[0],c=val.split('|')[1];
-    if(P_ICONS[k]) disp.innerHTML='<span style="color:'+c+'">'+P_ICONS[k]+'</span>';
+    const pp=val.split('|'),k=pp[0],c=pp[1],g=parseInt(pp[2])||0;
+    const gf=g>0?';filter:drop-shadow(0 0 '+(g*3)+'px '+c+')':'';
+    if(P_ICONS[k]) disp.innerHTML='<span style="color:'+c+gf+'">'+P_ICONS[k]+'</span>';
     else disp.innerHTML='<span class="if-icon-plus">+</span><span class="if-icon-hint">图标</span>';
   }else{
     disp.innerHTML='<span class="if-icon-plus">+</span><span class="if-icon-hint">图标</span>';

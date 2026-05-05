@@ -194,3 +194,11 @@
 .inv-inactive-toggle.open .inv-inactive-arrow{transform:rotate(90deg)}
 .inv-inactive-section{max-height:0;overflow:hidden;transition:max-height .3s ease;margin-top:0}
 .inv-inactive-section.open{max-height:2000px;margin-top:10px}
+
+/* Glow/Fluorescence controls */
+.ip-glow-section{margin-top:12px}
+.ip-glow-val{font-size:11px;color:var(--accent);margin-left:4px}
+.ip-glow-btns{display:flex;gap:6px;margin-top:6px}
+.ip-glow-btn{flex:1;padding:6px 0;border:1px solid var(--border2);border-radius:6px;background:transparent;color:var(--text3);font-size:12px;cursor:pointer;transition:all .2s}
+.ip-glow-btn:hover{border-color:var(--accent);color:var(--accent)}
+.ip-glow-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}

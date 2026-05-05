@@ -177,3 +177,8 @@
 .imp-preview-table table{width:100%;border-collapse:collapse;font-size:11px}
 .imp-preview-table th{background:var(--input-bg);padding:6px 8px;text-align:left;font-weight:600;color:var(--text3);border-bottom:1px solid var(--border)}
 .imp-preview-table td{padding:5px 8px;border-bottom:1px solid var(--border);color:var(--text)}
+
+/* Header actions group */
+.inv-header-actions{display:flex;gap:6px;align-items:center}
+.inv-clear-btn{background:none;border:1px solid var(--border2);color:var(--text4);padding:3px 10px;border-radius:6px;font-size:11px;cursor:pointer;transition:all .2s}
+.inv-clear-btn:hover{border-color:#e74c3c;color:#e74c3c}

@@ -661,3 +661,16 @@ function IMP_confirm(){
   toast('已导入 '+_impData.length+' 条记录');
   _impData=[];
 }
+
+function P_clearAll(type){
+  const typeName=IF_TITLES[type]||'';
+  const inv=P_loadInv();
+  const arrKey=IF_INV_KEYS[type];
+  const count=(inv[arrKey]||[]).length;
+  if(!count){toast('没有数据可清空');return;}
+  if(!confirm('确定清空全部 '+count+' 条'+typeName+'记录？此操作不可恢复！'))return;
+  inv[arrKey]=[];
+  P_saveInv(inv);
+  renderProfile();
+  toast('已清空'+typeName);
+}

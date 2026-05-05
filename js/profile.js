@@ -39,6 +39,7 @@ const P_ICONS={'fish':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor
 'medicine':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="28" y="22" width="24" height="38" rx="5"/><path d="M28 32h24"/><path d="M36 42h8m-4-4v8"/><rect x="34" y="14" width="12" height="8" rx="2"/></svg>',
 'other_cm':'<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><circle cx="40" cy="40" r="16"/><path d="M40 30v6l4 4"/><circle cx="40" cy="40" r="2" fill="currentColor" stroke="none"/></svg>'};
 const P_ICON_MAP={livestock:{'鱼':'fish','珊瑚':'coral','无脊椎':'invert','藻':'algae','其他':'other_live'},equipment:{'水泵':'pump','灯':'light','造浪':'wave','蛋分':'skimmer','加热棒':'heater','冷水机':'chiller','温度计':'thermo','滴定':'doser','钙反':'reactor','煮豆机':'beansoup','补水器':'ato','杀菌灯':'uv','滤布机':'roller','喂食器':'feeder','检测设备':'tester','插座':'socket','其他':'other_eq'},consumable:{'盐':'salt','食物':'food','添加剂':'additive','试剂':'reagent','药品':'medicine','其他':'other_cm'}};
+const P_ICON_NAMES={pump:'水泵',light:'灯',wave:'造浪',skimmer:'蛋分',heater:'加热棒',chiller:'冷水机',thermo:'温度计',doser:'滴定泵',reactor:'钙反',beansoup:'煮豆机',ato:'补水器',uv:'杀菌灯',roller:'滤布机',feeder:'喂食器',tester:'检测',socket:'智能插座',other_eq:'其他',fish:'鱼',coral:'珊瑚',invert:'无脊椎',algae:'藻',other_live:'其他',salt:'海盐',food:'鱼粮',additive:'添加剂',reagent:'试剂',medicine:'药品',other_cm:'其他'};
 function P_getIcon(type,cat){const key=P_ICON_MAP[type]&&P_ICON_MAP[type][cat];return key&&P_ICONS[key]?P_ICONS[key]:'';}
 
 // Default icons per category
@@ -306,7 +307,8 @@ function IP_render(){
     group.keys.forEach(k=>{
       if(!P_ICONS[k])return;
       const active=(k===_ipIcon)?' active':'';
-      h+='<div class="ip-opt'+active+'" data-k="'+k+'" onclick="IP_select(this)">'+P_ICONS[k]+'</div>';
+      const name=P_ICON_NAMES[k]||k;
+      h+='<div class="ip-opt'+active+'" data-k="'+k+'" onclick="IP_select(this)" title="'+name+'">'+P_ICONS[k]+'<span class="ip-opt-name">'+name+'</span></div>';
     });
     h+='</div>';
   }

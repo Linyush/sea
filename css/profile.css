@@ -267,3 +267,16 @@
 .bk-info{margin-top:12px;font-size:13px}
 .bk-success{color:#22bb88;font-weight:500}
 .bk-error{color:#e74c3c;font-weight:500}
+
+/* Two-column layout for overview */
+.pf-columns{display:flex;gap:16px}
+.pf-col-left{flex:1;min-width:0}
+.pf-col-right{flex:1;min-width:0}
+@media(max-width:520px){.pf-columns{flex-direction:column}}
+
+/* Eye toggle button */
+.pf-eye-btn{background:none;border:none;cursor:pointer;font-size:14px;vertical-align:middle;padding:2px 4px;opacity:.7;transition:opacity .2s}
+.pf-eye-btn:hover{opacity:1}
+
+/* Hidden values */
+.pf-invest-grid.pf-hidden .pf-inv-val{color:transparent;text-shadow:0 0 8px var(--text3);user-select:none}

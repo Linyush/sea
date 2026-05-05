@@ -191,7 +191,7 @@ function updateLaneLabels(){
 let _overviewMode=false;
 function toggleOverview(){
   _overviewMode=!_overviewMode;
-  document.getElementById('overviewBtn').classList.toggle('active',_overviewMode);
+  const btn=document.getElementById('overviewBtn');if(btn)btn.classList.toggle('active',_overviewMode);
   renderChart();
 }
 function renderChart(){

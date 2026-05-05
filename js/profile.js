@@ -186,6 +186,12 @@ function _renderInvestment(inv){
 }
 
 function P_scrollTo(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:"smooth",block:"start"});}
+let _eyeOpen=false;
+function P_toggleEye(){
+  _eyeOpen=!_eyeOpen;
+  document.getElementById("pfEyeBtn").textContent=_eyeOpen?"👁":"🙈";
+  document.getElementById("pfInvestBox").classList.toggle("pf-hidden",!_eyeOpen);
+}
 
 function _renderMaintenance(tank){
   const box=document.getElementById('pfMaintBox');
@@ -230,8 +236,7 @@ function _renderMaintenance(tank){
       vals.push('<span'+cls+'>'+f.name+' '+v+suffix+'</span>');
     });
     const rowCls=hasAlert?'pf-maint-row warn':'pf-maint-row ok';
-    h+='<div class="'+rowCls+'"><span class="pf-maint-icon">💧</span><span>'+(hasAlert?'水质异常':'水质正常')+'</span></div>';
-    h+='<div class="pf-maint-vals">'+vals.join(' ')+'</div>';
+    h+='<div class="'+rowCls+'"><span class="pf-maint-icon">💧</span><span>'+(hasAlert?'水质异常：':'水质正常：')+vals.join(' · ')+'</span></div>';
   }
 
   // 3. Recent livestock events (7 days)

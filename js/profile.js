@@ -5,7 +5,12 @@ const P_INV_KEY=()=>'reef_'+_activeTank+'_inventory';
 const P_STATUS_LABELS={
   alive:'存活',dead:'死亡',sold:'售出',moved:'转缸',
   active:'使用中',standby:'闲置',broken:'损坏',
-  sealed:'未开封',inuse:'使用中',empty:'已用完'
+  sealed:'未开封',inuse:'使用中',empty:'已用完',expired:'已过期'
+};
+const P_STATUS_COLORS={
+  alive:'#22bb88',dead:'#e74c3c',sold:'#64748b',moved:'#64748b',
+  active:'#22bb88',standby:'#f59e0b',broken:'#e74c3c',
+  sealed:'#64748b',inuse:'#22bb88',empty:'#64748b',expired:'#e74c3c'
 };
 const P_SPECIES_OPTS=['鱼','珊瑚','无脊椎','藻','其他'];
 const P_EQ_CATS=['水泵','灯','造浪','蛋分','加热棒','冷水机','温度计','滴定','钙反','煮豆机','补水器','杀菌灯','滤布机','喂食器','检测设备','插座','其他'];
@@ -44,13 +49,10 @@ function P_getIcon(type,cat){const key=P_ICON_MAP[type]&&P_ICON_MAP[type][cat];r
 
 // Default icons per category
 const P_DEF_ICONS={
-  // Species
   '鱼':'🐠','珊瑚':'🪸','无脊椎':'🦐','藻':'🌿','其他':'🔵',
-  // Equipment
   '水泵':'💧','灯':'💡','造浪':'🌊','蛋分':'🫧','加热棒':'🌡️','冷水机':'❄️',
   '温度计':'🌡️','滴定':'🧪','钙反':'⚗️','煮豆机':'♨️','补水器':'🚰',
   '杀菌灯':'🔦','滤布机':'🧻','喂食器':'🍽️','检测设备':'📊','插座':'🔌',
-  // Consumable
   '盐':'🧂','食物':'🐟','添加剂':'💊','试剂':'🧪','药品':'💉',
 };
 
@@ -92,27 +94,22 @@ function P_renderStats(){
   const inv=JSON.parse(localStorage.getItem(P_INV_KEY())||'{}');
   const livestock=inv.livestock||[], equipment=inv.equipment||[], consumables=inv.consumables||[];
   
-  /* Count livestock stats */
   const totalLive=livestock.length;
   const alive=livestock.filter(x=>x.status==='alive').length;
   const dead=livestock.filter(x=>x.status==='dead').length;
   const survivalRate=totalLive>0?Math.round(alive/totalLive*100):0;
   
-  /* Count equipment */
   const totalEquip=equipment.length;
   const activeEquip=equipment.filter(x=>x.status==='active').length;
   
-  /* Cost calculation */
   let totalCost=0;
   livestock.forEach(x=>{if(x.price)totalCost+=parseFloat(x.price)||0;});
   equipment.forEach(x=>{if(x.price)totalCost+=parseFloat(x.price)||0;});
   consumables.forEach(x=>{if(x.price)totalCost+=parseFloat(x.price)||0;});
   
-  /* Water records count */
   let waterCount=0;
   try{const wd=JSON.parse(localStorage.getItem(W_SK())||'{}');waterCount=(wd.rows||[]).length;}catch(e){}
   
-  /* Format cost */
   const fmtCost=totalCost>=10000?(totalCost/10000).toFixed(1)+'万':totalCost.toFixed(0);
   
   const statsHtml='<div class="pf-stats">'+
@@ -123,7 +120,6 @@ function P_renderStats(){
     '<div class="pf-stat-card"><div class="pf-stat-val">'+waterCount+'</div><div class="pf-stat-lbl">水质记录</div></div>'+
   '</div>';
   
-  /* Insert stats at top of profile page, after the tank info section */
   const pfEl=document.getElementById('profilePage');
   if(!pfEl)return;
   const firstInvSec=pfEl.querySelector('.inv-section');
@@ -132,6 +128,16 @@ function P_renderStats(){
     pfEl.insertBefore(d.firstElementChild,firstInvSec);
   }
 }
+
+/* Check if a date string is overdue (past today) */
+function _isOverdue(dateStr){
+  if(!dateStr) return false;
+  const today=new Date();
+  today.setHours(0,0,0,0);
+  const d=new Date(dateStr+'T00:00:00');
+  return d<=today;
+}
+
 function P_renderInvSection(prefix,items,type){
   const countEl=document.getElementById(prefix+'Count');
   const gridEl=document.getElementById(prefix+'Grid');
@@ -140,18 +146,39 @@ function P_renderInvSection(prefix,items,type){
   const typeName=IF_TITLES[type]||'';
   let h='<div class="inv-grid">';
   items.forEach((item,i)=>{
-    const statusCls='s-'+(item.status||'alive');
-    const statusTxt=P_STATUS_LABELS[item.status]||item.status||'';
     const _iconRaw=item.icon||'';
     const _iconParts=_iconRaw.split('|');
     const iconKey=_iconParts[0]||'';
     const iconColor=_iconParts[1]||'var(--accent)';
     const hasSvg=iconKey&&P_ICONS[iconKey];
     const iconHtml=hasSvg?'<div class="inv-card-icon" style="color:'+iconColor+'">'+P_ICONS[iconKey]+'</div>':'<div class="inv-icon">📦</div>';
+    
+    // Status color dot
+    const statusColor=P_STATUS_COLORS[item.status]||'#64748b';
+    const statusDot='<span class="inv-status-dot" style="background:'+statusColor+'" title="'+(P_STATUS_LABELS[item.status]||'')+'"></span>';
+
     h+='<div class="inv-card" onclick="P_editItem(&#39;'+type+'&#39;,'+i+')">'+iconHtml;
-    h+='<div class="inv-name">'+item.name+'</div>';
-    if(item.breed||item.spec)h+='<div class="inv-sub">'+(item.breed||item.spec||'')+'</div>';
-    h+='<div class="inv-status '+statusCls+'">'+statusTxt+'</div>';
+    
+    if(type==='livestock'){
+      // 生物: 图标 名称 品种 状态(颜色点)
+      h+='<div class="inv-name">'+item.name+statusDot+'</div>';
+      if(item.breed) h+='<div class="inv-sub">'+item.breed+'</div>';
+    }else if(type==='equipment'){
+      // 设备: 图标 名称 品牌 规格 状态(颜色点)
+      h+='<div class="inv-name">'+item.name+statusDot+'</div>';
+      let subParts=[];
+      if(item.brand) subParts.push(item.brand);
+      if(item.spec) subParts.push(item.spec);
+      if(subParts.length) h+='<div class="inv-sub">'+subParts.join(' · ')+'</div>';
+    }else if(type==='consumable'){
+      // 耗材: 图标 名称 状态(颜色点) 更换日期(到期标红)
+      h+='<div class="inv-name">'+item.name+statusDot+'</div>';
+      if(item.replaceDate){
+        const overdue=_isOverdue(item.replaceDate);
+        h+='<div class="inv-sub'+(overdue?' inv-overdue':'')+'">'+item.replaceDate+'</div>';
+      }
+    }
+    
     h+='</div>';
   });
   /* Add card at the end */
@@ -218,14 +245,12 @@ const IF_INV_KEYS={livestock:'livestock',equipment:'equipment',consumable:'consu
 function _ifRenderField(f,val){
   val=val!=null?val:(f.default||'');
   if(f.type==='icon_picker'){
-    /* Compact trigger: show selected icon or placeholder */
     const iconSvg=val&&P_ICONS[val.split('|')[0]]?P_ICONS[val.split('|')[0]]:'';
     const iconColor=val&&val.includes('|')?val.split('|')[1]:'#4a90d9';
     const preview=iconSvg?'<span class="ip-preview" style="color:'+iconColor+'">'+iconSvg+'</span>':'<span class="ip-placeholder">选择图标</span>';
     return '<div class="ip-trigger" id="if_icon" data-val="'+(val||'')+'" onclick="IP_open()">'+preview+'<span class="ip-arrow">›</span></div>';
   }
   if(f.type==='select'&&f.opts&&f.opts.length<=5){
-    /* Radio tag group for <=5 options */
     const tags=f.opts.map((o,i)=>{
       const optVal=f.labels?f.opts[i]:o;
       const txt=f.labels?f.labels[i]:o;
@@ -264,8 +289,7 @@ function _ifRenderAll(type,vals){
   const fields=IF_FIELDS[type];
   let topH='',restH='';
   fields.forEach(f=>{
-    if(f.type==='icon_picker') return; /* icon handled by ifIconDisplay */
-    /* Conditional visibility */
+    if(f.type==='icon_picker') return;
     if(f.showWhen){
       const k=Object.keys(f.showWhen)[0];
       const need=f.showWhen[k];
@@ -284,7 +308,6 @@ function _ifRenderAll(type,vals){
 /* === Icon Picker Modal === */
 let _ipIcon='',_ipColor='#4a90d9';
 function IP_open(){
-  // Read current value from hidden trigger or ifIconDisplay
   const trigger=document.getElementById('if_icon');
   const disp=document.getElementById('ifIconDisplay');
   const curVal=trigger?trigger.dataset.val:(disp?disp.dataset.val:'');
@@ -301,7 +324,6 @@ function IP_close(){
 }
 function IP_render(){
   const box=document.getElementById('ipGrid');
-  /* Show only icons for current form type */
   const typeMap={livestock:'livestock',equipment:'equipment',consumable:'consumable'};
   const currentType=typeMap[_ifType]||'equipment';
   const groups=[
@@ -310,7 +332,6 @@ function IP_render(){
     {type:'consumable',label:'耗材',keys:Object.values(P_ICON_MAP.consumable||{})},
   ];
   let h='';
-  /* Show current type first and only that type */
   const group=groups.find(g=>g.type===currentType);
   if(group){
     h+='<div class="ip-group">';
@@ -373,7 +394,6 @@ function IP_confirm(){
   const val=_ipIcon?_ipIcon+'|'+_ipColor:'';
   const trigger=document.getElementById('if_icon');
   if(trigger) trigger.dataset.val=val;
-  // Update form header icon display
   const disp=document.getElementById('ifIconDisplay');
   if(disp) disp.dataset.val=val;
   if(disp){
@@ -401,7 +421,6 @@ function _syncIconDisplay(val){
 function IF_pickTag(el){
   el.parentElement.querySelectorAll('.if-tag').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
-  /* Re-render to show/hide conditional fields */
   const wrap=el.parentElement;
   if(wrap.id==='if_status'){
     const vals=IF_collectVals();
@@ -413,7 +432,6 @@ function IF_collectVals(){
   const vals={};
   IF_FIELDS[_ifType].forEach(f=>{
     if(f.type==='icon_picker'){
-      /* icon is stored in ifIconDisplay.dataset.val */
       const disp=document.getElementById('ifIconDisplay');
       vals[f.key]=(disp&&disp.dataset.val)||'';
       return;

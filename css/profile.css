@@ -314,7 +314,7 @@
 .pf-inv-card-name{font-size:11px;color:var(--text3);font-weight:500;margin-bottom:2px}
 .pf-inv-card-val{font-size:14px;font-weight:600;color:var(--text)}
 .pf-inv-card.pf-inv-row-accent .pf-inv-card-name{color:var(--accent);font-weight:600}
-.pf-inv-card.pf-inv-row-accent .pf-inv-card-val{color:var(--accent);font-size:16px;font-weight:700}
+.pf-inv-card.pf-inv-row-accent .pf-inv-card-val{color:var(--accent);font-size:14px;font-weight:600}
 .pf-inv-card.pf-inv-card-cur .pf-inv-card-name{color:#22bb88;font-weight:500}
 .pf-inv-card.pf-inv-card-cur .pf-inv-card-val{color:#22bb88;font-size:14px;font-weight:600}
 @media(max-width:420px){.pf-invest-grid{flex-direction:column}.pf-inv-left,.pf-inv-right{width:100%}}

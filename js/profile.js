@@ -322,7 +322,6 @@ const IF_FIELDS={
     {key:'source',label:'购入渠道',type:'text'},
     {key:'price',label:'价格',type:'number',placeholder:'¥'},
     {key:'status',label:'状态',type:'select',opts:['alive','dead','sold','moved'],labels:['存活','死亡','售出','转缸'],required:true,default:'alive'},
-    {key:'origin',label:'来源',type:'select',opts:['purchase','breed','gift'],labels:['购买','繁殖','赠送'],default:'purchase'},
     {key:'parentId',label:'',type:'hidden'},
     {key:'value',label:'价值',type:'number',placeholder:'¥',showWhen:{status:'alive'}},
     {key:'deathDate',label:'死亡时间',type:'date',showWhen:{status:'dead'}},
@@ -638,8 +637,13 @@ function IF_save(){
   const inv=P_loadInv();
   const arrKey=IF_INV_KEYS[_ifType];
   if(!inv[arrKey])inv[arrKey]=[];
-  if(_ifIdx>=0){inv[arrKey][_ifIdx]=item;}
-  else{inv[arrKey].push(item);}
+  if(_ifIdx>=0){
+    // Preserve internal fields not in form
+    const prev=inv[arrKey][_ifIdx]||{};
+    if(prev.origin) item.origin=prev.origin;
+    if(prev.parentId) item.parentId=prev.parentId;
+    inv[arrKey][_ifIdx]=item;
+  }else{inv[arrKey].push(item);}
   P_saveInv(inv);
   IF_close();
   renderProfile();

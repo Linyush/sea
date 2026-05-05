@@ -749,15 +749,15 @@ function P_editChild(idx){
   const ov=document.getElementById('childFormOverlay');
   document.getElementById('ceTitle').textContent='\u7f16\u8f91\u5b50\u4f53';
   let fh='';
-  fh+='<div class="if-field"><label>\u72b6\u6001</label><div class="if-tags" id="ce_status">';
+  fh+='<div class="if-row"><label>\u72b6\u6001</label><div class="if-tags" id="ce_status">';
   [{v:'alive',l:'\u5b58\u6d3b'},{v:'dead',l:'\u6b7b\u4ea1'},{v:'sold',l:'\u552e\u51fa'},{v:'moved',l:'\u8f6c\u7f38'}].forEach(s=>{
     fh+='<span class="if-tag'+(child.status===s.v?' active':'')+'" data-val="'+s.v+'" onclick="IF_pickTag(this)">'+s.l+'</span>';
   });
   fh+='</div></div>';
-  fh+='<div class="if-field"><label>\u5c3a\u5bf8</label><input id="ce_size" value="'+(child.size||'')+'" placeholder="\u5982 3cm"></div>';
-  fh+='<div class="if-field"><label>\u7e41\u6b96\u65e5\u671f</label><input type="text" id="ce_addDate" value="'+(child.addDate||'')+'" placeholder="YYYY-MM-DD" maxlength="10" oninput="IF_fmtDate(this)"></div>';
-  fh+='<div class="if-field"><label>\u552e\u51fa\u4ef7\u683c</label><input id="ce_sellPrice" type="number" value="'+(child.sellPrice||'')+'" placeholder="\u00a5"></div>';
-  fh+='<div class="if-field"><label>\u5907\u6ce8</label><input id="ce_notes" value="'+(child.notes||'')+'"></div>';
+  fh+='<div class="if-row"><label>\u5c3a\u5bf8</label><input id="ce_size" value="'+(child.size||'')+'" placeholder="\u5982 3cm"></div>';
+  fh+='<div class="if-row"><label>\u552e\u51fa\u65e5\u671f</label><input type="text" id="ce_sellDate" value="'+(child.sellDate||'')+'" placeholder="YYYY-MM-DD" maxlength="10" oninput="IF_fmtDate(this)"></div>';
+  fh+='<div class="if-row"><label>\u552e\u51fa\u4ef7\u683c</label><input id="ce_sellPrice" type="number" value="'+(child.sellPrice||'')+'" placeholder="\u00a5"></div>';
+  fh+='<div class="if-row"><label>\u5907\u6ce8</label><input id="ce_notes" value="'+(child.notes||'')+'"></div>';
   document.getElementById('ceFields').innerHTML=fh;
   ov.style.display='flex';requestAnimationFrame(()=>ov.classList.add('open'));
 }
@@ -773,7 +773,7 @@ function CE_save(){
   const activeTag=stEl?stEl.querySelector('.if-tag.active'):null;
   if(activeTag) child.status=activeTag.dataset.val;
   child.size=(document.getElementById('ce_size').value||'').trim();
-  child.addDate=(document.getElementById('ce_addDate').value||'').trim();
+  child.sellDate=(document.getElementById('ce_sellDate').value||'').trim();
   child.sellPrice=(document.getElementById('ce_sellPrice').value||'').trim();
   child.notes=(document.getElementById('ce_notes').value||'').trim();
   P_saveInv(inv);
@@ -787,7 +787,6 @@ function CE_del(){
   CE_close();
 }
 function P_delChild(idx){
-  if(_ceIdx<0&&!confirm('\u5220\u9664\u6b64\u5b50\u4f53\uff1f')) return;
   const inv=P_loadInv();
   const arr=inv.livestock||[];
   arr.splice(idx,1);

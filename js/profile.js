@@ -787,10 +787,10 @@ function IF_save(){
   const _vals=IF_collectVals();
   const item={};
   for(const f of flds){
-    let v=(_vals[f.key]||'').toString().trim();
+    let v=(_vals[f.key]!=null&&_vals[f.key]!==''?_vals[f.key]:'').toString().trim();
     if(f.required&&!v){toast('请填写'+f.label);return;}
-    if(f.type==='number'&&v)v=parseFloat(v);
-    item[f.key]=v||'';
+    if(f.type==='number'&&v!=='')v=parseFloat(v);
+    item[f.key]=(v===0||v)?v:'';
   }
   const inv=P_loadInv();
   const arrKey=IF_INV_KEYS[_ifType];

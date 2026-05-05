@@ -709,75 +709,85 @@ function _renderChildrenPanel(parentIdx){
   });
   if(!children.length){box.innerHTML='';box.style.display='none';return;}
   box.style.display='';
-  const stLabels={alive:'存活',dead:'死亡',sold:'售出',moved:'转缸'};
-  const stIcons={alive:'✅',dead:'💀',sold:'💰',moved:'🔄'};
-  let h='<div class="if-children-title">🌱 子体 ('+children.length+')</div><div class="if-children-list">';
+  const stClass={dead:'st-dead',sold:'st-sold',moved:'st-moved'};
+  let h='<div class="if-children-title">\u{1f331} \u5b50\u4f53 ('+children.length+')</div><div class="if-children-grid">';
   children.forEach(({item,i})=>{
-    const st=stLabels[item.status]||item.status;
-    const icon=stIcons[item.status]||'';
-    let info=item.size||'';
-    if(item.sellPrice) info+=' ¥'+item.sellPrice;
-    h+='<div class="if-child-row">';
-    h+='<span class="if-child-st">'+icon+'</span>';
-    h+='<span class="if-child-name">'+(item.name||'子体')+(info?' · '+info:'')+'</span>';
-    h+='<span class="if-child-actions">';
-    h+='<button class="if-child-btn" onclick="P_editChild('+i+')" title="编辑">✏️</button>';
-    h+='<button class="if-child-btn if-child-del" onclick="P_delChild('+i+')" title="删除">✕</button>';
-    h+='</span></div>';
+    const _iconRaw=item.icon||'';
+    const _iconParts=_iconRaw.split('|');
+    const iconKey=_iconParts[0]||'';
+    const iconColor=_iconParts[1]||'var(--accent)';
+    const iconGlow=parseInt(_iconParts[2])||0;
+    const hasSvg=iconKey&&P_ICONS[iconKey];
+    const glowStyle=_glowCSS(iconGlow,iconColor);
+    const iconHtml=hasSvg?'<div class="inv-card-icon'+(iconGlow>0?' glow-'+iconGlow:'')+'" style="color:'+iconColor+glowStyle+'">'+P_ICONS[iconKey]+'</div>':'<div class="inv-icon">\u{1f331}</div>';
+    const sc=stClass[item.status]||'';
+    let badge='';
+    if(item.status==='dead') badge='<span class="inv-badge inv-badge-dead">\u{1f480}</span>';
+    else if(item.status==='sold') badge='<span class="inv-badge inv-badge-sold">\u{1f4b8}</span>';
+    h+='<div class="inv-card inv-card-child '+sc+'" onclick="P_editChild('+i+')">'+badge+iconHtml;
+    h+='<div class="inv-name">'+(item.name||'\u5b50\u4f53')+'</div>';
+    let sub=[];
+    if(item.size) sub.push(item.size);
+    if(item.sellPrice) sub.push('\u00a5'+item.sellPrice);
+    if(sub.length) h+='<div class="inv-sub">'+sub.join('\u00b7')+'</div>';
+    h+='</div>';
   });
   h+='</div>';
   box.innerHTML=h;
 }
+let _ceIdx=-1;
 function P_editChild(idx){
-  // Open a mini editor for child item
   const inv=P_loadInv();
   const arr=inv.livestock||[];
   const child=arr[idx];
   if(!child) return;
-  const parentIdx=_ifIdx;
-  const html='<div class="if-child-edit" id="childEditPanel">'+
-    '<div class="if-child-edit-title">编辑子体</div>'+
-    '<div class="if-field"><label>状态</label><div class="if-tags" id="ce_status">'+
-    ['alive','dead','sold','moved'].map(s=>{
-      const labels={alive:'存活',dead:'死亡',sold:'售出',moved:'转缸'};
-      return '<span class="if-tag'+(child.status===s?' active':'')+'" data-val="'+s+'" onclick="IF_pickTag(this)">'+labels[s]+'</span>';
-    }).join('')+'</div></div>'+
-    '<div class="if-field"><label>尺寸</label><input id="ce_size" value="'+(child.size||'')+'" placeholder="如 3cm"></div>'+
-    '<div class="if-field"><label>售出价格</label><input id="ce_sellPrice" type="number" value="'+(child.sellPrice||'')+'" placeholder="¥"></div>'+
-    '<div class="if-field"><label>备注</label><input id="ce_notes" value="'+(child.notes||'')+'"></div>'+
-    '<div class="if-child-edit-actions"><button class="btn-ghost" onclick="P_closeChildEdit()">取消</button><button class="btn" onclick="P_saveChild('+idx+')">保存</button></div>'+
-    '</div>';
-  const box=document.getElementById('ifChildrenBox');
-  box.insertAdjacentHTML('beforeend',html);
+  _ceIdx=idx;
+  const ov=document.getElementById('childFormOverlay');
+  document.getElementById('ceTitle').textContent='\u7f16\u8f91\u5b50\u4f53';
+  let fh='';
+  fh+='<div class="if-field"><label>\u72b6\u6001</label><div class="if-tags" id="ce_status">';
+  [{v:'alive',l:'\u5b58\u6d3b'},{v:'dead',l:'\u6b7b\u4ea1'},{v:'sold',l:'\u552e\u51fa'},{v:'moved',l:'\u8f6c\u7f38'}].forEach(s=>{
+    fh+='<span class="if-tag'+(child.status===s.v?' active':'')+'" data-val="'+s.v+'" onclick="IF_pickTag(this)">'+s.l+'</span>';
+  });
+  fh+='</div></div>';
+  fh+='<div class="if-field"><label>\u5c3a\u5bf8</label><input id="ce_size" value="'+(child.size||'')+'" placeholder="\u5982 3cm"></div>';
+  fh+='<div class="if-field"><label>\u7e41\u6b96\u65e5\u671f</label><input type="text" id="ce_addDate" value="'+(child.addDate||'')+'" placeholder="YYYY-MM-DD" maxlength="10" oninput="IF_fmtDate(this)"></div>';
+  fh+='<div class="if-field"><label>\u552e\u51fa\u4ef7\u683c</label><input id="ce_sellPrice" type="number" value="'+(child.sellPrice||'')+'" placeholder="\u00a5"></div>';
+  fh+='<div class="if-field"><label>\u5907\u6ce8</label><input id="ce_notes" value="'+(child.notes||'')+'"></div>';
+  document.getElementById('ceFields').innerHTML=fh;
+  ov.style.display='flex';requestAnimationFrame(()=>ov.classList.add('open'));
 }
-function P_closeChildEdit(){
-  const el=document.getElementById('childEditPanel');
-  if(el) el.remove();
+function CE_close(){
+  const ov=document.getElementById('childFormOverlay');ov.classList.remove('open');setTimeout(()=>{ov.style.display='none';},300);
 }
-function P_saveChild(idx){
+function CE_save(){
   const inv=P_loadInv();
   const arr=inv.livestock||[];
-  const child=arr[idx];
+  const child=arr[_ceIdx];
   if(!child) return;
   const stEl=document.getElementById('ce_status');
   const activeTag=stEl?stEl.querySelector('.if-tag.active'):null;
   if(activeTag) child.status=activeTag.dataset.val;
-  child.size=document.getElementById('ce_size').value.trim();
-  child.sellPrice=document.getElementById('ce_sellPrice').value.trim();
-  child.notes=document.getElementById('ce_notes').value.trim();
+  child.size=(document.getElementById('ce_size').value||'').trim();
+  child.addDate=(document.getElementById('ce_addDate').value||'').trim();
+  child.sellPrice=(document.getElementById('ce_sellPrice').value||'').trim();
+  child.notes=(document.getElementById('ce_notes').value||'').trim();
   P_saveInv(inv);
-  P_closeChildEdit();
+  CE_close();
   _renderChildrenPanel(_ifIdx);
-  toast('已保存');
+  toast('\u5df2\u4fdd\u5b58');
+}
+function CE_del(){
+  if(!confirm('\u5220\u9664\u6b64\u5b50\u4f53\uff1f')) return;
+  P_delChild(_ceIdx);
+  CE_close();
 }
 function P_delChild(idx){
-  if(!confirm('删除此子体？')) return;
+  if(_ceIdx<0&&!confirm('\u5220\u9664\u6b64\u5b50\u4f53\uff1f')) return;
   const inv=P_loadInv();
   const arr=inv.livestock||[];
   arr.splice(idx,1);
-  // Adjust current parent index if child was before parent
   if(idx<_ifIdx) _ifIdx--;
-  // Reindex parentId references
   arr.forEach(item=>{
     if(item.parentId){
       const pid=parseInt(item.parentId);
@@ -787,7 +797,7 @@ function P_delChild(idx){
   });
   P_saveInv(inv);
   _renderChildrenPanel(_ifIdx);
-  toast('已删除');
+  toast('\u5df2\u5220\u9664');
 }
 function initProfile(){
   // Profile page is render-only, no special init needed

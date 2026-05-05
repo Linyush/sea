@@ -394,7 +394,7 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
 .ip-preview svg{width:24px;height:24px}
 .ip-placeholder{color:var(--text4);font-size:12px}
 .ip-arrow{color:var(--text4);font-size:16px;margin-left:auto}
-.ip-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0);z-index:400;align-items:center;justify-content:center;transition:background .3s}
+.ip-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0);z-index:450;align-items:center;justify-content:center;transition:background .3s}
 .ip-overlay.open{background:rgba(0,0,0,.55)}
 .ip-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:0;max-width:420px;width:94%;max-height:80vh;display:flex;flex-direction:column;transform:scale(.92);opacity:0;transition:transform .3s cubic-bezier(.22,1,.36,1),opacity .25s}
 .ip-overlay.open .ip-box{transform:scale(1);opacity:1}
@@ -784,23 +784,7 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
 <!-- Tank form modal -->
 <div class="tf-overlay" id="tankFormOverlay" onclick="if(event.target===this)TF_close()">
   <div class="tf-box">
-<!-- ========== Icon Picker Modal ========== -->
-  <div class="ip-overlay" id="iconPickerOverlay">
-    <div class="ip-box">
-      <div class="ip-header"><span>选择图标</span><button class="modal-close" onclick="IP_close()">✕</button></div>
-      <div class="ip-body" id="ipGrid"></div>
-      <div class="ip-footer">
-        <div class="ip-color-row">
-          <span class="ip-color-label">颜色</span>
-          <input type="color" id="ipColorInput" value="#4a90d9" oninput="IP_onColor(this.value)">
-          <div class="ip-preview-box" id="ipPreview"></div>
-        </div>
-        <button class="btn" onclick="IP_confirm()">确认</button>
-      </div>
-    </div>
-  </div>
-
-      <h4 id="tfTitle" style="font-size:15px;font-weight:600;margin-bottom:14px">新建鱼缸</h4>
+    <h4 id="tfTitle" style="font-size:15px;font-weight:600;margin-bottom:14px">新建鱼缸</h4>
     <div class="if-row"><label class="req">名称</label><input id="tfName" placeholder="如 客厅海缸"></div>
     <div class="if-row"><label class="req">类型</label><select id="tfType"><option value="LPS">LPS</option><option value="SPS">SPS</option><option value="FOT">FOT</option><option value="NPS">NPS</option><option value="其他">其他</option></select></div>
     <div class="if-row"><label class="req">水体</label><input type="number" id="tfVolume" placeholder="升" step="1"><span style="color:var(--text4);font-size:12px;margin-left:-4px">L</span></div>
@@ -2276,5 +2260,20 @@ document.addEventListener('DOMContentLoaded',function(){
   if(startPage==='profile') renderProfile();
 });
 </script>
+<!-- ========== Icon Picker Modal ========== -->
+  <div class="ip-overlay" id="iconPickerOverlay">
+    <div class="ip-box">
+      <div class="ip-header"><span>选择图标</span><button class="modal-close" onclick="IP_close()">✕</button></div>
+      <div class="ip-body" id="ipGrid"></div>
+      <div class="ip-footer">
+        <div class="ip-color-row">
+          <span class="ip-color-label">颜色</span>
+          <input type="color" id="ipColorInput" value="#4a90d9" oninput="IP_onColor(this.value)">
+          <div class="ip-preview-box" id="ipPreview"></div>
+        </div>
+        <button class="btn" onclick="IP_confirm()">确认</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

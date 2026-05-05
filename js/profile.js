@@ -38,7 +38,7 @@ const P_ICONS={'clownfish':'<svg viewBox="0 0 80 80"><ellipse cx="38" cy="40" rx
 'carpet':'<svg viewBox="0 0 80 80"><rect x="12" y="50" width="56" height="10" rx="4" fill="currentColor" opacity=".4"/><g stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M18 48v-4m8-2v-4m8-1v-4m8 0v-4m8 1v-4m8 2v-3"/><path d="M22 43v-4m8-1v-4m8 0v-4m8 0v-4m8 1v-3"/></g></svg>',
 
 
-'snail':'<svg viewBox="0 0 80 80"><ellipse cx="38" cy="52" rx="14" ry="8" fill="currentColor" opacity=".5"/><circle cx="42" cy="38" r="13" fill="currentColor"/><circle cx="44" cy="36" r="8" fill="currentColor" opacity=".8"/><circle cx="45" cy="35" r="4" fill="currentColor" opacity=".6"/><path d="M42 38c2-4 5-6 6-4" stroke="#fff" stroke-width="1.5" opacity=".3" fill="none"/><path d="M24" cy="44" r="0" fill="none"/><path d="M26 50l-4-8m6 6l-2-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".7"/></svg>',
+'snail':'<svg viewBox="0 0 80 80"><ellipse cx="38" cy="52" rx="14" ry="8" fill="currentColor" opacity=".5"/><circle cx="42" cy="38" r="13" fill="currentColor"/><circle cx="44" cy="36" r="8" fill="currentColor" opacity=".8"/><circle cx="45" cy="35" r="4" fill="currentColor" opacity=".6"/><path d="M42 38c2-4 5-6 6-4" stroke="#fff" stroke-width="1.5" opacity=".3" fill="none"/><path d="M26 50l-4-8m6 6l-2-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".7"/></svg>',
 'shrimp':'<svg viewBox="0 0 80 80"><path d="M22 38c4-4 10-6 16-4 6 2 12 10 16 14 2 3 1 6-2 7-4 2-10 0-14-4s-10-6-16-4" fill="currentColor"/><path d="M22 38c4-4 10-6 16-4" fill="currentColor" opacity=".8"/><circle cx="24" cy="36" r="2" fill="#fff"/><circle cx="24" cy="36" r="1" fill="#111"/><path d="M20 32l-6-8m6 0l8-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M48 55l3 5m-6-3l2 5m-6-5l1 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".7"/></svg>',
 'crab':'<svg viewBox="0 0 80 80"><ellipse cx="40" cy="46" rx="14" ry="10" fill="currentColor"/><ellipse cx="40" cy="44" rx="12" ry="8" fill="currentColor"/><circle cx="34" cy="40" r="2.5" fill="#fff"/><circle cx="34" cy="40" r="1.2" fill="#111"/><circle cx="46" cy="40" r="2.5" fill="#fff"/><circle cx="46" cy="40" r="1.2" fill="#111"/><path d="M26 44c-4-2-8-4-10-2l-2 4 5 1" fill="currentColor" opacity=".8"/><path d="M54 44c4-2 8-4 10-2l2 4-5 1" fill="currentColor" opacity=".8"/><path d="M32 54l-3 5m8-5l1 5m6-5l1 5m6-5l3 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".6"/></svg>',
 'urchin':'<svg viewBox="0 0 80 80"><circle cx="40" cy="44" r="12" fill="currentColor"/><circle cx="40" cy="42" r="10" fill="currentColor"/><circle cx="40" cy="41" r="6" fill="#fff" opacity=".1"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M40 32v-8m-8 10l-5-6m16 6l5-6m-20 12l-7-2m28 2l7-2m-22 12l-5 5m16-5l5 5m-10 1v6"/></g></svg>',
@@ -203,14 +203,19 @@ function _renderInvestment(inv){
   consumables.forEach(item=>{cmCost+=parseFloat(item.price)||0;});
   const totalCost=liveCost+equipCost+cmCost;
   const netCost=totalCost-soldIncome;
+  // Calculate current value (alive livestock value + active equipment price)
+  let curValue=0;
+  livestock.forEach(item=>{if(!['dead','sold'].includes(item.status)){curValue+=parseFloat(item.value||item.price)||0;}});
+  equipment.forEach(item=>{if(!['broken','sold'].includes(item.status)){curValue+=parseFloat(item.value||item.price)||0;}});
   const fmt=v=>v>=10000?'\u00a5'+(v/10000).toFixed(1)+'\u4e07':'\u00a5'+v.toFixed(0);
   const box=document.getElementById('pfInvestBox');
   if(!box) return;
   const deadFilter=firstDeadTab==='livestock'?'dead':'broken';
   box.innerHTML=
     '<div class="pf-inv-left">'+
-      '<div class="pf-inv-row pf-inv-row-accent"><span class="pf-inv-row-name">\u51c0\u6295\u5165</span><span class="pf-inv-row-val">'+fmt(netCost)+'</span></div>'+
-      '<div class="pf-inv-row"><span class="pf-inv-row-name">\u603b\u6295\u5165</span><span class="pf-inv-row-val">'+fmt(totalCost)+'</span></div>'+
+      '<div class="pf-inv-card pf-inv-row-accent"><div class="pf-inv-card-name">\u51c0\u6295\u5165</div><div class="pf-inv-card-val">'+fmt(netCost)+'</div></div>'+
+      '<div class="pf-inv-card pf-inv-card-cur"><div class="pf-inv-card-name">\u51c0\u4ef7\u503c</div><div class="pf-inv-card-val">'+fmt(curValue)+'</div></div>'+
+      '<div class="pf-inv-card"><div class="pf-inv-card-name">\u603b\u6295\u5165</div><div class="pf-inv-card-val">'+fmt(totalCost)+'</div></div>'+
     '</div>'+
     '<div class="pf-inv-right">'+
       '<div class="pf-inv-row pf-inv-click" onclick="P_switchTab(\'livestock\')"><span class="pf-inv-row-name">\u751f\u7269</span><span class="pf-inv-row-cnt">'+liveCount+'</span><span class="pf-inv-row-val">'+fmt(liveCost)+'</span></div>'+
@@ -269,12 +274,14 @@ function _renderMaintenance(tank){
   if(lastTestDate){
     const lastD=new Date(lastTestDate+'T00:00:00');
     const daysSinceMaint=Math.floor((today-lastD)/86400000);
-    h+='<div class="pf-maint-row pf-maint-click" onclick="switchPage(\'water\')"><span class="pf-maint-icon">🧪</span><span>上次测水：<b>'+daysSinceMaint+' 天前</b></span></div>';
+    let maintText='上次测水：<b>'+daysSinceMaint+'天前</b>';
     if(tank.maintCycle&&tank.maintCycle>0){
       const nextDays=tank.maintCycle-daysSinceMaint;
-      if(nextDays>0) h+='<div class="pf-maint-row pf-maint-click" onclick="switchPage(\'water\')"><span class="pf-maint-icon">⏰</span><span>下次维护：还剩 <b>'+nextDays+' 天</b></span></div>';
-      else h+='<div class="pf-maint-row warn pf-maint-click" onclick="switchPage(\'water\')"><span class="pf-maint-icon">⚠️</span><span>维护已超期 <b>'+Math.abs(nextDays)+' 天</b></span></div>';
+      if(nextDays>0) maintText+=' · 下次：<b>'+nextDays+'天后</b>';
+      else maintText+=' · <span class="pf-maint-hi">超期'+Math.abs(nextDays)+'天</span>';
     }
+    const maintWarn=(tank.maintCycle&&tank.maintCycle>0&&(tank.maintCycle-daysSinceMaint)<=0);
+    h+='<div class="pf-maint-row'+(maintWarn?' warn':'')+' pf-maint-click" onclick="switchPage(\'water\')"><span class="pf-maint-icon">'+(maintWarn?'⚠️':'🧪')+'</span><span>'+maintText+'</span></div>';
   }else{
     h+='<div class="pf-maint-row"><span class="pf-maint-icon">🧪</span><span>暂无测水记录</span></div>';
   }

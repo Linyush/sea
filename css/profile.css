@@ -258,7 +258,7 @@
 .bk-error{color:#e74c3c;font-weight:500}
 
 /* Two-column layout for overview */
-.pf-columns{display:flex;gap:16px}
+.pf-columns{display:flex;gap:16px;align-items:stretch}
 .pf-col-left{flex:1;min-width:0}
 .pf-col-right{flex:1;min-width:0}
 @media(max-width:520px){.pf-columns{flex-direction:column}}
@@ -301,13 +301,20 @@
 .pf-maint-click:hover{background:color-mix(in srgb,var(--accent) 8%,transparent)}
 
 /* === Investment: flat rows layout === */
-.pf-invest-grid.pf-hidden .pf-inv-row-val,.pf-invest-grid.pf-hidden .pf-inv-row.loss .pf-inv-row-val,.pf-invest-grid.pf-hidden .pf-inv-row.gain .pf-inv-row-val,.pf-invest-grid.pf-hidden .pf-inv-row-accent .pf-inv-row-val{color:transparent;text-shadow:0 0 8px var(--text3);user-select:none}
+.pf-invest-grid.pf-hidden .pf-inv-row-val,.pf-invest-grid.pf-hidden .pf-inv-row.loss .pf-inv-row-val,.pf-invest-grid.pf-hidden .pf-inv-row.gain .pf-inv-row-val,.pf-invest-grid.pf-hidden .pf-inv-row-accent .pf-inv-row-val,.pf-invest-grid.pf-hidden .pf-inv-card-val,.pf-invest-grid.pf-hidden .pf-inv-card.pf-inv-row-accent .pf-inv-card-val,.pf-invest-grid.pf-hidden .pf-inv-card.pf-inv-card-cur .pf-inv-card-val{color:transparent;text-shadow:0 0 8px var(--text3);user-select:none}
 .pf-inv-row-accent{font-weight:600}
 .pf-inv-row-accent .pf-inv-row-name{color:var(--accent);font-weight:600}
 .pf-inv-row-accent .pf-inv-row-val{color:var(--accent);font-size:15px;font-weight:700}
 
 /* Investment: left-right flex layout */
-.pf-invest-grid{display:flex;gap:16px;align-items:flex-start}
-.pf-inv-left{display:flex;flex-direction:column;gap:2px;min-width:110px}
-.pf-inv-right{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}
+.pf-invest-grid{display:flex;gap:16px;align-items:stretch}
+.pf-inv-left{display:flex;flex-direction:column;justify-content:space-between;min-width:100px}
+.pf-inv-right{flex:1;display:flex;flex-direction:column;justify-content:space-between;min-width:0}
+.pf-inv-card{padding:6px 10px;border-radius:6px}
+.pf-inv-card-name{font-size:11px;color:var(--text3);font-weight:500;margin-bottom:2px}
+.pf-inv-card-val{font-size:14px;font-weight:600;color:var(--text)}
+.pf-inv-card.pf-inv-row-accent .pf-inv-card-name{color:var(--accent);font-weight:600}
+.pf-inv-card.pf-inv-row-accent .pf-inv-card-val{color:var(--accent);font-size:16px;font-weight:700}
+.pf-inv-card.pf-inv-card-cur .pf-inv-card-name{color:#22bb88;font-weight:500}
+.pf-inv-card.pf-inv-card-cur .pf-inv-card-val{color:#22bb88;font-size:14px;font-weight:600}
 @media(max-width:420px){.pf-invest-grid{flex-direction:column}.pf-inv-left,.pf-inv-right{width:100%}}

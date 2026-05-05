@@ -7,15 +7,15 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a1628'/%3E%3Cpath d='M12 40Q20 20 32 30Q44 40 52 22' stroke='%2300d2ff' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='30' r='3' fill='%237b68ee'/%3E%3C/svg%3E">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<link rel="stylesheet" href="css/base.css?v=20260505d">
-<link rel="stylesheet" href="css/header.css?v=20260505d">
-<link rel="stylesheet" href="css/pages.css?v=20260505d">
-<link rel="stylesheet" href="css/water.css?v=20260505d">
-<link rel="stylesheet" href="css/light.css?v=20260505d">
-<link rel="stylesheet" href="css/change.css?v=20260505d">
-<link rel="stylesheet" href="css/titrate.css?v=20260505d">
-<link rel="stylesheet" href="css/tank.css?v=20260505d">
-<link rel="stylesheet" href="css/profile.css?v=20260505d">
+<link rel="stylesheet" href="css/base.css?v=20260505e">
+<link rel="stylesheet" href="css/header.css?v=20260505e">
+<link rel="stylesheet" href="css/pages.css?v=20260505e">
+<link rel="stylesheet" href="css/water.css?v=20260505e">
+<link rel="stylesheet" href="css/light.css?v=20260505e">
+<link rel="stylesheet" href="css/change.css?v=20260505e">
+<link rel="stylesheet" href="css/titrate.css?v=20260505e">
+<link rel="stylesheet" href="css/tank.css?v=20260505e">
+<link rel="stylesheet" href="css/profile.css?v=20260505e">
 </head>
 <body>
 <div class="container">
@@ -166,7 +166,7 @@
       <button class="btn-data" onclick="L_openDataModal()">📊 强度数据</button>
       <div class="chart-wrap" style="height:380px;overflow:visible"><canvas id="lightChart"></canvas></div>
     </div>
-    <div class="modal-overlay" id="lightDataModal">
+    <div class="modal-overlay" id="lightDataModal" onclick="if(event.target===this)L_closeDataModal()">
       <div class="modal" style="max-width:90vw;max-height:80vh;padding:20px;overflow:auto">
         <h3 style="font-size:16px;margin-bottom:12px">📊 光照强度数据</h3>
         <button class="modal-close" onclick="L_closeDataModal()" style="position:absolute;top:12px;right:16px">✕</button>
@@ -460,7 +460,7 @@
 </div>
 
 <!-- Water: delete confirm -->
-<div class="cfm-overlay" id="delCfm">
+<div class="cfm-overlay" id="delCfm" onclick="if(event.target===this)closeDel()">
   <div class="cfm-box"><p id="delMsg"></p>
     <div class="cfm-btns"><button class="btn-ghost" onclick="closeDel()">取消</button><button class="btn-del" id="delOk">删除</button></div>
   </div>
@@ -480,17 +480,17 @@
   </div>
 </div>
 
-<script src="js/utils.js?v=20260505d"></script>
-<script src="js/tank.js?v=20260505d"></script>
-<script src="js/profile.js?v=20260505d"></script>
-<script src="js/router.js?v=20260505d"></script>
-<script src="js/water.js?v=20260505d"></script>
-<script src="js/light.js?v=20260505d"></script>
-<script src="js/change.js?v=20260505d"></script>
-<script src="js/titrate.js?v=20260505d"></script>
-<script src="js/init.js?v=20260505d"></script>
+<script src="js/utils.js?v=20260505e"></script>
+<script src="js/tank.js?v=20260505e"></script>
+<script src="js/profile.js?v=20260505e"></script>
+<script src="js/router.js?v=20260505e"></script>
+<script src="js/water.js?v=20260505e"></script>
+<script src="js/light.js?v=20260505e"></script>
+<script src="js/change.js?v=20260505e"></script>
+<script src="js/titrate.js?v=20260505e"></script>
+<script src="js/init.js?v=20260505e"></script>
 <!-- ========== Icon Picker Modal ========== -->
-  <div class="ip-overlay" id="iconPickerOverlay">
+  <div class="ip-overlay" id="iconPickerOverlay" onclick="if(event.target===this)IP_close()">
     <div class="ip-box">
       <div class="ip-header"><span>选择图标</span><button class="modal-close" onclick="IP_close()">✕</button></div>
       <div class="ip-content">

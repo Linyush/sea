@@ -130,12 +130,22 @@ function P_renderStats(){
 }
 
 /* Check if a date string is overdue (past today) */
+
+/* Check if a date string is overdue (past today) */
 function _isOverdue(dateStr){
   if(!dateStr) return false;
   const today=new Date();
   today.setHours(0,0,0,0);
   const d=new Date(dateStr+'T00:00:00');
   return d<=today;
+}
+/* Calculate remaining days from today to a date string */
+function _daysRemain(dateStr){
+  if(!dateStr) return null;
+  const today=new Date();
+  today.setHours(0,0,0,0);
+  const d=new Date(dateStr+'T00:00:00');
+  return Math.ceil((d-today)/(86400000));
 }
 
 function P_renderInvSection(prefix,items,type){
@@ -153,30 +163,41 @@ function P_renderInvSection(prefix,items,type){
     const hasSvg=iconKey&&P_ICONS[iconKey];
     const iconHtml=hasSvg?'<div class="inv-card-icon" style="color:'+iconColor+'">'+P_ICONS[iconKey]+'</div>':'<div class="inv-icon">📦</div>';
     
-    // Status color dot
-    const statusColor=P_STATUS_COLORS[item.status]||'#64748b';
-    const statusDot='<span class="inv-status-dot" style="background:'+statusColor+'" title="'+(P_STATUS_LABELS[item.status]||'')+'"></span>';
+    // Status class on card border/bg
+    const stClass=item.status?' st-'+item.status:'';
 
-    h+='<div class="inv-card" onclick="P_editItem(&#39;'+type+'&#39;,'+i+')">'+iconHtml;
+    h+='<div class="inv-card'+stClass+'" onclick="P_editItem(&#39;'+type+'&#39;,'+i+')">'+iconHtml;
     
     if(type==='livestock'){
-      // 生物: 图标 名称 品种 状态(颜色点)
-      h+='<div class="inv-name">'+item.name+statusDot+'</div>';
-      if(item.breed) h+='<div class="inv-sub">'+item.breed+'</div>';
+      // 生物: 图标 → 名称 → 品种·尺寸
+      h+='<div class="inv-name">'+item.name+'</div>';
+      let subParts=[];
+      if(item.breed) subParts.push(item.breed);
+      if(item.size) subParts.push(item.size);
+      if(subParts.length) h+='<div class="inv-sub">'+subParts.join('·')+'</div>';
     }else if(type==='equipment'){
-      // 设备: 图标 名称 品牌 规格 状态(颜色点)
-      h+='<div class="inv-name">'+item.name+statusDot+'</div>';
+      // 设备: 图标 → 名称 → 品牌·规格
+      h+='<div class="inv-name">'+item.name+'</div>';
       let subParts=[];
       if(item.brand) subParts.push(item.brand);
       if(item.spec) subParts.push(item.spec);
-      if(subParts.length) h+='<div class="inv-sub">'+subParts.join(' · ')+'</div>';
+      if(subParts.length) h+='<div class="inv-sub">'+subParts.join('·')+'</div>';
     }else if(type==='consumable'){
-      // 耗材: 图标 名称 状态(颜色点) 更换日期(到期标红)
-      h+='<div class="inv-name">'+item.name+statusDot+'</div>';
+      // 耗材: 图标 → 名称 → 规格·剩余x天
+      h+='<div class="inv-name">'+item.name+'</div>';
+      let subParts=[];
+      if(item.spec) subParts.push(item.spec);
       if(item.replaceDate){
-        const overdue=_isOverdue(item.replaceDate);
-        h+='<div class="inv-sub'+(overdue?' inv-overdue':'')+'">'+item.replaceDate+'</div>';
+        const days=_daysRemain(item.replaceDate);
+        if(days!==null){
+          if(days<=0){
+            subParts.push('<span class="inv-overdue">已到期</span>');
+          }else{
+            subParts.push('剩余'+days+'天');
+          }
+        }
       }
+      if(subParts.length) h+='<div class="inv-sub">'+subParts.join('·')+'</div>';
     }
     
     h+='</div>';

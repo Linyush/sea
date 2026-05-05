@@ -373,7 +373,8 @@ function _renderCard(item,i,type,childCount){
     h+='<div class="inv-name">'+item.name+'</div>';
     let sub=[];
     if(item.breed) sub.push(item.breed);
-    if(item.size) sub.push(item.size);
+    const dispSize=item.curSize||item.deadSize||item.soldSize||item.size||'';
+    if(dispSize) sub.push(dispSize);
     if(sub.length) h+='<div class="inv-sub">'+sub.join('·')+'</div>';
   }else if(type==='equipment'){
     h+='<div class="inv-name">'+item.name+'</div>';
@@ -472,15 +473,18 @@ const IF_FIELDS={
   livestock:[
     {key:'name',label:'名称',type:'text',required:true,top:true},
     {key:'breed',label:'品种',type:'text',top:true},
-    {key:'size',label:'尺寸',type:'text',placeholder:'如 5cm',top:true},
+    {key:'status',label:'状态',type:'select',opts:['alive','dead','sold'],labels:['存活','死亡','售出'],required:true,default:'alive',top:true},
     {key:'icon',label:'图标',type:'icon_picker'},
     {key:'addDate',label:'购入日期',type:'date'},
     {key:'source',label:'购入渠道',type:'text'},
+    {key:'size',label:'购入尺寸',type:'text',placeholder:'如 5cm'},
     {key:'price',label:'价格',type:'number',placeholder:'¥'},
-    {key:'status',label:'状态',type:'select',opts:['alive','dead','sold'],labels:['存活','死亡','售出'],required:true,default:'alive'},
     {key:'parentId',label:'',type:'hidden'},
+    {key:'curSize',label:'现尺寸',type:'text',placeholder:'如 8cm',showWhen:{status:'alive'}},
     {key:'value',label:'价值',type:'number',placeholder:'¥',showWhen:{status:'alive'}},
+    {key:'deadSize',label:'死亡尺寸',type:'text',placeholder:'如 8cm',showWhen:{status:'dead'}},
     {key:'deathDate',label:'死亡时间',type:'date',showWhen:{status:'dead'}},
+    {key:'soldSize',label:'售出尺寸',type:'text',placeholder:'如 8cm',showWhen:{status:'sold'}},
     {key:'sellDate',label:'售出时间',type:'date',showWhen:{status:'sold'}},
     {key:'sellPrice',label:'售出价格',type:'number',placeholder:'¥',showWhen:{status:'sold'}},
     {key:'notes',label:'备注',type:'textarea'},

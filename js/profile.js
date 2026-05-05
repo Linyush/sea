@@ -56,10 +56,24 @@ const P_DEF_ICONS={
   '盐':'🧂','食物':'🐟','添加剂':'💊','试剂':'🧪','药品':'💉',
 };
 
+
+/* Sort items by addDate ascending (oldest first) */
+function _sortByDate(items){
+  return items.slice().sort((a,b)=>{
+    const da=a.addDate||'9999-99-99';
+    const db=b.addDate||'9999-99-99';
+    return da.localeCompare(db);
+  });
+}
 function P_loadInv(){
   const s=_g(P_INV_KEY());
-  if(s){try{return JSON.parse(s);}catch(e){}}
-  return{livestock:[],equipment:[],consumables:[]};
+  let inv={livestock:[],equipment:[],consumables:[]};
+  if(s){try{inv=JSON.parse(s);}catch(e){}}
+  // Sort all arrays by addDate ascending
+  if(inv.livestock) inv.livestock=_sortByDate(inv.livestock);
+  if(inv.equipment) inv.equipment=_sortByDate(inv.equipment);
+  if(inv.consumables) inv.consumables=_sortByDate(inv.consumables);
+  return inv;
 }
 function P_saveInv(inv){
   _s(P_INV_KEY(),JSON.stringify(inv));

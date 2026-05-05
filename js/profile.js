@@ -164,45 +164,47 @@ function P_renderInvSection(prefix,items,type){
 let _ifType='',_ifIdx=-1;
 const IF_FIELDS={
   livestock:[
-    {key:'name',label:'名称',type:'text',required:true},
-    {key:'species',label:'物种',type:'select',opts:P_SPECIES_OPTS,required:true},
-    {key:'breed',label:'品种',type:'text'},
-    {key:'size',label:'尺寸',type:'text',placeholder:'如 5cm'},
+    {key:'name',label:'名称',type:'text',required:true,top:true},
+    {key:'breed',label:'品种',type:'text',top:true},
+    {key:'size',label:'尺寸',type:'text',placeholder:'如 5cm',top:true},
     {key:'icon',label:'图标',type:'icon_picker'},
     {key:'addDate',label:'购入日期',type:'date'},
     {key:'source',label:'购入渠道',type:'text'},
     {key:'price',label:'价格',type:'number',placeholder:'¥'},
     {key:'status',label:'状态',type:'select',opts:['alive','dead','sold','moved'],labels:['存活','死亡','售出','转缸'],required:true,default:'alive'},
-    {key:'statusDate',label:'状态日期',type:'date'},
-    {key:'sellPrice',label:'售价',type:'number',placeholder:'¥'},
+    {key:'value',label:'价值',type:'number',placeholder:'¥',showWhen:{status:'alive'}},
+    {key:'deathDate',label:'死亡时间',type:'date',showWhen:{status:'dead'}},
+    {key:'sellDate',label:'售出时间',type:'date',showWhen:{status:'sold'}},
+    {key:'sellPrice',label:'售出价格',type:'number',placeholder:'¥',showWhen:{status:'sold'}},
+    {key:'moveDate',label:'转缸时间',type:'date',showWhen:{status:'moved'}},
     {key:'notes',label:'备注',type:'textarea'},
   ],
   equipment:[
-    {key:'name',label:'名称',type:'text',required:true},
-    {key:'category',label:'类型',type:'select',opts:P_EQ_CATS,required:true},
+    {key:'name',label:'名称',type:'text',required:true,top:true},
+    {key:'category',label:'类型',type:'select',opts:P_EQ_CATS,required:true,top:true},
     {key:'icon',label:'图标',type:'icon_picker'},
-    {key:'brand',label:'品牌',type:'text'},
+    {key:'brand',label:'品牌',type:'text',top:true},
     {key:'spec',label:'规格',type:'text'},
     {key:'addDate',label:'购入日期',type:'date'},
     {key:'source',label:'购入渠道',type:'text'},
     {key:'price',label:'价格',type:'number',placeholder:'¥'},
     {key:'status',label:'状态',type:'select',opts:['active','standby','broken','sold'],labels:['使用中','闲置','损坏','售出'],required:true,default:'active'},
     {key:'statusDate',label:'状态日期',type:'date'},
-    {key:'sellPrice',label:'售价',type:'number',placeholder:'¥'},
+    {key:'sellPrice',label:'售价',type:'number',placeholder:'¥',showWhen:{status:'sold'}},
     {key:'notes',label:'备注',type:'textarea'},
   ],
   consumable:[
-    {key:'name',label:'名称',type:'text',required:true},
-    {key:'category',label:'类型',type:'select',opts:P_CM_CATS,required:true},
+    {key:'name',label:'名称',type:'text',required:true,top:true},
+    {key:'category',label:'类型',type:'select',opts:P_CM_CATS,required:true,top:true},
     {key:'icon',label:'图标',type:'icon_picker'},
-    {key:'brand',label:'品牌',type:'text'},
+    {key:'brand',label:'品牌',type:'text',top:true},
     {key:'spec',label:'规格',type:'text',placeholder:'如 22kg'},
     {key:'addDate',label:'购入日期',type:'date'},
     {key:'source',label:'购入渠道',type:'text'},
     {key:'price',label:'价格',type:'number',placeholder:'¥'},
     {key:'status',label:'状态',type:'select',opts:['sealed','inuse','empty','sold'],labels:['未开封','使用中','已用完','售出'],required:true,default:'inuse'},
     {key:'statusDate',label:'状态日期',type:'date'},
-    {key:'sellPrice',label:'售价',type:'number',placeholder:'¥'},
+    {key:'sellPrice',label:'售价',type:'number',placeholder:'¥',showWhen:{status:'sold'}},
     {key:'replaceInterval',label:'更换周期',type:'number',placeholder:'天'},
     {key:'notes',label:'备注',type:'textarea'},
   ]
@@ -247,16 +249,20 @@ function _ifRenderAll(type,vals){
   const box=document.getElementById('ifFields');
   const status=vals.status||(IF_FIELDS[type].find(f=>f.key==='status')||{}).default||'';
   const fields=IF_FIELDS[type];
-  /* Core fields: first 2 (name + category/species) go to top area */
-  const coreKeys=['name','species','category','status'];
   let topH='',restH='';
   fields.forEach(f=>{
-    if(f.key==='icon'||f.type==='icon_picker') return; /* icon handled by ifIconDisplay */
-    if(f.key==='sellPrice'&&status!=='sold') return;
+    if(f.type==='icon_picker') return; /* icon handled by ifIconDisplay */
+    /* Conditional visibility */
+    if(f.showWhen){
+      const k=Object.keys(f.showWhen)[0];
+      const need=f.showWhen[k];
+      const cur=vals[k]||status;
+      if(cur!==need) return;
+    }
     const v=vals[f.key]!=null?vals[f.key]:'';
     const inp=_ifRenderField(f,v);
     const row='<div class="if-row" data-fk="'+f.key+'"><label'+(f.required?' class="req"':'')+'>'+ f.label+'</label>'+inp+'</div>';
-    if(coreKeys.includes(f.key)) topH+=row;
+    if(f.top) topH+=row;
     else restH+=row;
   });
   topBox.innerHTML=topH;
@@ -377,7 +383,7 @@ function _syncIconDisplay(val){
 function IF_pickTag(el){
   el.parentElement.querySelectorAll('.if-tag').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
-  /* If status changed to/from sold, re-render to show/hide sellPrice */
+  /* Re-render to show/hide conditional fields */
   const wrap=el.parentElement;
   if(wrap.id==='if_status'){
     const vals=IF_collectVals();

@@ -181,7 +181,7 @@ const IF_FIELDS={
   equipment:[
     {key:'name',label:'名称',type:'text',required:true},
     {key:'category',label:'类型',type:'select',opts:P_EQ_CATS,required:true},
-    {key:'icon',label:'图标',type:'text',placeholder:'emoji'},
+    {key:'icon',label:'图标',type:'icon_picker'},
     {key:'brand',label:'品牌',type:'text'},
     {key:'spec',label:'规格',type:'text'},
     {key:'addDate',label:'购入日期',type:'date'},
@@ -195,7 +195,7 @@ const IF_FIELDS={
   consumable:[
     {key:'name',label:'名称',type:'text',required:true},
     {key:'category',label:'类型',type:'select',opts:P_CM_CATS,required:true},
-    {key:'icon',label:'图标',type:'text',placeholder:'emoji'},
+    {key:'icon',label:'图标',type:'icon_picker'},
     {key:'brand',label:'品牌',type:'text'},
     {key:'spec',label:'规格',type:'text',placeholder:'如 22kg'},
     {key:'addDate',label:'购入日期',type:'date'},
@@ -257,8 +257,10 @@ function _ifRenderAll(type,vals){
 /* === Icon Picker Modal === */
 let _ipIcon='',_ipColor='#4a90d9';
 function IP_open(){
+  // Read current value from hidden trigger or ifIconDisplay
   const trigger=document.getElementById('if_icon');
-  const curVal=trigger?trigger.dataset.val:'';
+  const disp=document.getElementById('ifIconDisplay');
+  const curVal=trigger?trigger.dataset.val:(disp?disp.dataset.val:'');
   if(curVal&&curVal.includes('|')){_ipIcon=curVal.split('|')[0];_ipColor=curVal.split('|')[1];}
   else if(curVal){_ipIcon=curVal;_ipColor='#4a90d9';}
   else{_ipIcon='';_ipColor='#4a90d9';}
@@ -311,12 +313,31 @@ function IP_updatePreview(){
 function IP_confirm(){
   const val=_ipIcon?_ipIcon+'|'+_ipColor:'';
   const trigger=document.getElementById('if_icon');
-  if(trigger){
-    trigger.dataset.val=val;
-    const iconSvg=_ipIcon&&P_ICONS[_ipIcon]?P_ICONS[_ipIcon]:'';
-    trigger.innerHTML=(iconSvg?'<span class="ip-preview" style="color:'+_ipColor+'">'+iconSvg+'</span>':'<span class="ip-placeholder">选择图标</span>')+'<span class="ip-arrow">›</span>';
+  if(trigger) trigger.dataset.val=val;
+  // Update form header icon display
+  const disp=document.getElementById('ifIconDisplay');
+  if(disp) disp.dataset.val=val;
+  if(disp){
+    if(_ipIcon&&P_ICONS[_ipIcon]){
+      disp.innerHTML='<span style="color:'+_ipColor+'">'+P_ICONS[_ipIcon]+'</span>';
+    }else{
+      disp.innerHTML='<span class="if-icon-hint">图标</span>';
+    }
   }
   IP_close();
+}
+
+function _syncIconDisplay(val){
+  const disp=document.getElementById('ifIconDisplay');
+  if(!disp)return;
+  disp.dataset.val=val||'';
+  if(val&&val.includes('|')){
+    const k=val.split('|')[0],c=val.split('|')[1];
+    if(P_ICONS[k]) disp.innerHTML='<span style="color:'+c+'">'+P_ICONS[k]+'</span>';
+    else disp.innerHTML='<span class="if-icon-hint">图标</span>';
+  }else{
+    disp.innerHTML='<span class="if-icon-hint">图标</span>';
+  }
 }
 function IF_pickTag(el){
   el.parentElement.querySelectorAll('.if-tag').forEach(t=>t.classList.remove('active'));
@@ -350,6 +371,7 @@ function P_openForm(type){
   document.getElementById('ifTitle').textContent='添加'+IF_TITLES[type];
   document.getElementById('ifDelBtn').style.display='none';
   _ifRenderAll(type,{});
+  _syncIconDisplay('');
   const ov=document.getElementById('itemFormOverlay');
   ov.style.display='flex';requestAnimationFrame(()=>ov.classList.add('open'));
 }
@@ -362,6 +384,7 @@ function P_editItem(type,idx){
   document.getElementById('ifTitle').textContent='编辑'+IF_TITLES[type];
   document.getElementById('ifDelBtn').style.display='';
   _ifRenderAll(type,item);
+  _syncIconDisplay(item.icon||'');
   const ov=document.getElementById('itemFormOverlay');
   ov.style.display='flex';requestAnimationFrame(()=>ov.classList.add('open'));
 }

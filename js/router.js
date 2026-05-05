@@ -2,7 +2,7 @@
    SPA ROUTER
    ============================================================ */
 const PAGE_META={
-  profile:{title:'鱼缸档案',badge:'PROFILE'},
+  profile:{title:'概览',badge:'OVERVIEW'},
   water:{title:'水质记录',badge:'REEF MONITOR'},
   change:{title:'换水计算',badge:'WATER CHANGE'},
   titrate:{title:'滴定计算',badge:'TITRATION'},

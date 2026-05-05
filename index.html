@@ -349,8 +349,8 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
 .inv-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .inv-header h3{font-size:14px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:6px}
 .inv-header .count{font-size:11px;color:var(--text4);font-weight:400}
-.inv-add-btn{background:none;border:1px dashed var(--border);color:var(--text4);padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;transition:all .2s}
-.inv-add-btn:hover{border-color:var(--accent);color:var(--accent)}
+.inv-add-btn{background:none;border:1.5px dashed var(--accent);color:var(--accent);padding:10px 0;border-radius:10px;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;width:100%;display:block;text-align:center;margin-top:12px;opacity:.7}
+.inv-add-btn:hover{opacity:1;background:color-mix(in srgb,var(--accent) 6%,transparent)}
 .inv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
 .inv-card{background:var(--input-bg);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
 .inv-card:hover{border-color:var(--accent);transform:translateY(-1px)}
@@ -373,9 +373,9 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
 /* Item form modal */
 .if-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0);z-index:400;align-items:center;justify-content:center;transition:background .3s}
 .if-overlay.open{display:flex;background:rgba(0,0,0,.55)}
-.if-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;max-width:420px;width:94%;max-height:80vh;overflow-y:auto;transform:scale(.92);opacity:0;transition:transform .3s cubic-bezier(.22,1,.36,1),opacity .25s}
+.if-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;max-width:520px;width:94%;max-height:85vh;overflow-y:auto;transform:scale(.92);opacity:0;transition:transform .3s cubic-bezier(.22,1,.36,1),opacity .25s;position:relative}
 .if-overlay.open .if-box{transform:scale(1);opacity:1}
-.if-box h4{font-size:15px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.if-box h4{font-size:15px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;padding-right:70px}
 .if-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
 .if-row label{font-size:12px;color:var(--text3);width:64px;flex-shrink:0;text-align:right}
 .if-row input,.if-row select,.if-row textarea{flex:1;background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:7px;font-size:13px;outline:none;transition:border-color .3s;font-family:inherit}
@@ -394,12 +394,30 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
 .ip-preview svg{width:24px;height:24px}
 .ip-placeholder{color:var(--text4);font-size:12px}
 .ip-arrow{color:var(--text4);font-size:16px;margin-left:auto}
+/* Icon display in form top-right */
+.if-icon-display{position:absolute;top:20px;right:20px;width:56px;height:56px;border:1.5px dashed var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;color:var(--text4)}
+.if-icon-display:hover{border-color:var(--accent);color:var(--accent)}
+.if-icon-display svg{width:36px;height:36px}
+.if-icon-display .if-icon-hint{font-size:10px;color:var(--text5)}
+/* Icon picker modal - left-right split */
 .ip-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0);z-index:450;align-items:center;justify-content:center;transition:background .3s}
 .ip-overlay.open{background:rgba(0,0,0,.55)}
-.ip-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:0;max-width:420px;width:94%;max-height:80vh;display:flex;flex-direction:column;transform:scale(.92);opacity:0;transition:transform .3s cubic-bezier(.22,1,.36,1),opacity .25s}
+.ip-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:0;max-width:560px;width:94%;max-height:80vh;display:flex;flex-direction:column;transform:scale(.92);opacity:0;transition:transform .3s cubic-bezier(.22,1,.36,1),opacity .25s}
 .ip-overlay.open .ip-box{transform:scale(1);opacity:1}
 .ip-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border);font-weight:600;font-size:14px}
-.ip-body{padding:12px 16px;overflow-y:auto;flex:1}
+.ip-content{display:flex;flex:1;overflow:hidden;min-height:0}
+.ip-left{flex:1;padding:12px 16px;overflow-y:auto;border-right:1px solid var(--border)}
+.ip-right{width:180px;display:flex;flex-direction:column;flex-shrink:0}
+.ip-right-top{flex:1;display:flex;align-items:center;justify-content:center;padding:20px;border-bottom:1px solid var(--border)}
+.ip-right-bottom{padding:16px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.ip-big-preview{width:64px;height:64px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:12px;transition:all .2s}
+.ip-big-preview svg{width:48px;height:48px}
+.ip-big-preview .ip-no{font-size:11px;color:var(--text5)}
+.ip-color-wrap{display:flex;align-items:center;gap:8px}
+.ip-color-label{font-size:12px;color:var(--text3);font-weight:500}
+#ipColorInput{width:36px;height:36px;padding:2px;border:1px solid var(--border);border-radius:8px;cursor:pointer;background:var(--card);-webkit-appearance:none;appearance:none}
+#ipColorInput::-webkit-color-swatch-wrapper{padding:2px}
+#ipColorInput::-webkit-color-swatch{border:none;border-radius:4px}
 .ip-group-label{font-size:11px;color:var(--text4);font-weight:600;margin:12px 0 6px;text-transform:uppercase;letter-spacing:1px}
 .ip-group-label:first-child{margin-top:0}
 .ip-group{display:grid;grid-template-columns:repeat(auto-fill,42px);gap:6px}
@@ -407,15 +425,12 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
 .ip-opt:hover{border-color:var(--accent);color:var(--accent);transform:scale(1.1)}
 .ip-opt.active{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 20%,transparent)}
 .ip-opt svg{width:24px;height:24px}
-.ip-footer{padding:12px 16px;border-top:1px solid var(--border);display:flex;align-items:center;gap:12px}
-.ip-color-row{display:flex;align-items:center;gap:10px;flex:1}
-.ip-color-label{font-size:12px;color:var(--text3);font-weight:500}
-#ipColorInput{width:36px;height:36px;padding:2px;border:1px solid var(--border);border-radius:8px;cursor:pointer;background:var(--card);-webkit-appearance:none;appearance:none}
-#ipColorInput::-webkit-color-swatch-wrapper{padding:2px}
-#ipColorInput::-webkit-color-swatch{border:none;border-radius:4px}
-.ip-preview-box{width:42px;height:42px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:8px}
-.ip-preview-box svg{width:28px;height:28px}
+.ip-footer{padding:12px 16px;border-top:1px solid var(--border);display:flex;justify-content:flex-end}
 .ip-no{font-size:11px;color:var(--text5)}
+/* ip-trigger (inline in form, now hidden since we use if-icon-display) */
+.ip-trigger{display:none}
+/* Mobile: stack vertically */
+@media(max-width:500px){.ip-content{flex-direction:column}.ip-left{border-right:none;border-bottom:1px solid var(--border);max-height:50vh}.ip-right{width:100%;flex-direction:row;padding:12px 16px}.ip-right-top{flex:0;padding:12px}.ip-right-bottom{flex:1;flex-direction:row;padding:12px}}
 #ifFields select,#ifFields input[type=date]{appearance:none;-webkit-appearance:none;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;width:100%;outline:none;transition:border-color .2s;cursor:pointer}
 #ifFields select:focus,#ifFields input[type=date]:focus{border-color:var(--accent)}
 #ifFields select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2388888888' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
@@ -439,7 +454,7 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
       <span class="badge" id="pageBadge">REEF MONITOR</span>
     </div>
     <div class="nav-right">
-      <button class="nav-tab" data-page="profile" onclick="switchPage('profile')">📋 档案</button>
+      <button class="nav-tab" data-page="profile" onclick="switchPage('profile')">📋 概览</button>
       <button class="nav-tab active" data-page="water" onclick="switchPage('water')">💧 水质</button>
       <button class="nav-tab" data-page="change" onclick="switchPage('change')">🔄 换水</button>
       <button class="nav-tab" data-page="titrate" onclick="switchPage('titrate')">🧪 滴定</button>
@@ -462,27 +477,27 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
       <div class="inv-section" id="invLivestock">
         <div class="inv-header">
           <h3>🐠 生物 <span class="count" id="lsCount"></span></h3>
-          <button class="inv-add-btn" onclick="P_openForm('livestock')">+ 添加</button>
         </div>
         <div id="lsGrid"></div>
+        <button class="inv-add-btn" onclick="P_openForm('livestock')">+ 添加生物</button>
       </div>
     </div>
     <div class="card anim-in anim-d3" style="padding:24px;margin-top:16px">
       <div class="inv-section" id="invEquipment">
         <div class="inv-header">
           <h3>⚙️ 设备 <span class="count" id="eqCount"></span></h3>
-          <button class="inv-add-btn" onclick="P_openForm('equipment')">+ 添加</button>
         </div>
         <div id="eqGrid"></div>
+        <button class="inv-add-btn" onclick="P_openForm('equipment')">+ 添加设备</button>
       </div>
     </div>
     <div class="card anim-in" style="padding:24px;margin-top:16px;animation-delay:.32s">
       <div class="inv-section" id="invConsumable">
         <div class="inv-header">
           <h3>📦 耗材 <span class="count" id="cmCount"></span></h3>
-          <button class="inv-add-btn" onclick="P_openForm('consumable')">+ 添加</button>
         </div>
         <div id="cmGrid"></div>
+        <button class="inv-add-btn" onclick="P_openForm('consumable')">+ 添加耗材</button>
       </div>
     </div>
   </section>
@@ -800,6 +815,7 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
 <div class="if-overlay" id="itemFormOverlay" onclick="if(event.target===this)IF_close()">
   <div class="if-box">
     <h4 id="ifTitle">添加生物</h4>
+    <div class="if-icon-display" id="ifIconDisplay" onclick="IP_open()" title="选择图标"><span class="if-icon-hint">图标</span></div>
     <div id="ifFields"></div>
     <div class="if-actions"><button class="btn-ghost" onclick="IF_close()">取消</button><button class="btn-del" id="ifDelBtn" style="display:none" onclick="IF_del()">删除</button><button class="btn" onclick="IF_save()">保存</button></div>
   </div>
@@ -871,15 +887,16 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
   <div class="ip-overlay" id="iconPickerOverlay">
     <div class="ip-box">
       <div class="ip-header"><span>选择图标</span><button class="modal-close" onclick="IP_close()">✕</button></div>
-      <div class="ip-body" id="ipGrid"></div>
-      <div class="ip-footer">
-        <div class="ip-color-row">
-          <span class="ip-color-label">颜色</span>
-          <input type="color" id="ipColorInput" value="#4a90d9" oninput="IP_onColor(this.value)">
-          <div class="ip-preview-box" id="ipPreview"></div>
+      <div class="ip-content">
+        <div class="ip-left" id="ipGrid"></div>
+        <div class="ip-right">
+          <div class="ip-right-top"><div class="ip-big-preview" id="ipPreview"><span class="ip-no">未选择</span></div></div>
+          <div class="ip-right-bottom">
+            <div class="ip-color-wrap"><span class="ip-color-label">颜色</span><input type="color" id="ipColorInput" value="#4a90d9" oninput="IP_onColor(this.value)"></div>
+          </div>
         </div>
-        <button class="btn" onclick="IP_confirm()">确认</button>
       </div>
+      <div class="ip-footer"><button class="btn" onclick="IP_confirm()">确认</button></div>
     </div>
   </div>
 </body>

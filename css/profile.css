@@ -213,3 +213,23 @@
 
 /* Breed badge */
 .inv-badge-breed{position:absolute;top:5px;left:6px;font-size:12px;line-height:1;z-index:1;opacity:.85}
+
+/* Children panel in edit form */
+#ifChildrenBox{margin-top:14px;border-top:1px solid var(--border);padding-top:12px}
+.if-children-title{font-size:13px;font-weight:600;color:var(--text3);margin-bottom:8px}
+.if-children-list{display:flex;flex-direction:column;gap:6px}
+.if-child-row{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:8px;background:var(--input-bg);font-size:13px}
+.if-child-st{font-size:12px;flex-shrink:0}
+.if-child-name{flex:1;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.if-child-actions{display:flex;gap:4px;flex-shrink:0}
+.if-child-btn{background:none;border:none;padding:2px 5px;font-size:12px;cursor:pointer;border-radius:4px;opacity:.6;transition:opacity .2s}
+.if-child-btn:hover{opacity:1}
+.if-child-del:hover{color:#e74c3c}
+
+/* Child inline editor */
+.if-child-edit{margin-top:10px;padding:12px;border-radius:10px;background:color-mix(in srgb,var(--accent) 5%,var(--card));border:1px solid var(--border2)}
+.if-child-edit-title{font-size:12px;font-weight:600;color:var(--accent);margin-bottom:10px}
+.if-child-edit-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
+
+/* Child count badge on card */
+.inv-badge-child{position:absolute;bottom:6px;right:6px;font-size:11px;line-height:1;z-index:1;color:var(--accent);opacity:.9}

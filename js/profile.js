@@ -218,7 +218,7 @@ function _glowCSS(level,color){
   if(level===2) return ';filter:drop-shadow(0 0 3px '+color+') drop-shadow(0 0 6px '+color+'90) brightness(1.1) saturate(1.2)';
   return ';filter:drop-shadow(0 0 3px '+color+') drop-shadow(0 0 7px '+color+'aa) drop-shadow(0 0 12px '+color+'40) brightness(1.2) saturate(1.4)';
 }
-function _renderCard(item,i,type){
+function _renderCard(item,i,type,childCount){
   const _iconRaw=item.icon||'';
   const _iconParts=_iconRaw.split('|');
   const iconKey=_iconParts[0]||'';
@@ -232,6 +232,7 @@ function _renderCard(item,i,type){
   if(item.status==='dead') badge='<span class="inv-badge inv-badge-dead" title="死亡">💀</span>';
   else if(item.status==='sold') badge='<span class="inv-badge inv-badge-sold" title="售出">💸</span>';
   if(item.origin==='breed') badge+='<span class="inv-badge inv-badge-breed" title="繁殖">🌱</span>';
+  if(childCount>0) badge+='<span class="inv-badge inv-badge-child" title="繁殖'+childCount+'个子体">🌱'+childCount+'</span>';
   let h='<div class="inv-card'+stClass+'" onclick="P_editItem(&#39;'+type+'&#39;,'+i+')">'+badge+iconHtml;
   if(type==='livestock'){
     h+='<div class="inv-name">'+item.name+'</div>';
@@ -276,8 +277,23 @@ function P_renderInvSection(prefix,items,type){
   const countEl=document.getElementById(prefix+'Count');
   const gridEl=document.getElementById(prefix+'Grid');
   const filter=_filterState[type]||'all';
-  const active=[], inactive=[];
+  // Build child count map (parentId -> count)
+  const childMap={};
+  if(type==='livestock'){
+    items.forEach((item)=>{
+      if(item.origin==='breed'&&item.parentId){
+        childMap[item.parentId]=(childMap[item.parentId]||0)+1;
+      }
+    });
+  }
+  // Exclude breed children from main grid
+  const mainItems=[];
   items.forEach((item,i)=>{
+    if(type==='livestock'&&item.origin==='breed') return;
+    mainItems.push({item,i});
+  });
+  const active=[], inactive=[];
+  mainItems.forEach(({item,i})=>{
     if(_INACTIVE_ST.includes(item.status)) inactive.push({item,i});
     else active.push({item,i});
   });
@@ -286,9 +302,9 @@ function P_renderInvSection(prefix,items,type){
   let filtered=[];
   if(filter==='all') filtered=active.concat(inactive);
   else if(filter==='active') filtered=active;
-  else filtered=items.map((item,i)=>({item,i})).filter(({item})=>item.status===filter);
+  else filtered=mainItems.filter(({item})=>item.status===filter);
   let h='<div class="inv-grid">';
-  filtered.forEach(({item,i})=>{ h+=_renderCard(item,i,type); });
+  filtered.forEach(({item,i})=>{ h+=_renderCard(item,i,type,childMap[i.toString()]||0); });
   h+='<div class="inv-card inv-card-add" onclick="P_openForm(&#39;'+type+'&#39;)"><span class="inv-add-plus">+</span><span class="inv-add-label">添加'+typeName+'</span></div>';
   h+='</div>';
   gridEl.innerHTML=h;
@@ -580,6 +596,8 @@ function P_openForm(type){
   document.getElementById('ifDelBtn').style.display='none';
   const breedBtn=document.getElementById('ifBreedBtn');
   if(breedBtn) breedBtn.style.display='none';
+  const childBox=document.getElementById('ifChildrenBox');
+  if(childBox){childBox.innerHTML='';childBox.style.display='none';}
   _ifRenderAll(type,{});
   _syncIconDisplay('');
   const ov=document.getElementById('itemFormOverlay');
@@ -594,9 +612,11 @@ function P_editItem(type,idx){
   document.getElementById('ifTitle').textContent='编辑'+IF_TITLES[type];
   document.getElementById('ifDelBtn').style.display='';
   const breedBtn=document.getElementById('ifBreedBtn');
-  if(breedBtn) breedBtn.style.display=(type==='livestock'&&item.status==='alive')?'':'none';
+  if(breedBtn) breedBtn.style.display=(type==='livestock'&&item.status==='alive'&&item.origin!=='breed')?'':'none';
   _ifRenderAll(type,item);
   _syncIconDisplay(item.icon||'');
+  if(type==='livestock'&&item.origin!=='breed') _renderChildrenPanel(idx);
+  else{const cb=document.getElementById('ifChildrenBox');if(cb){cb.innerHTML='';cb.style.display='none';}}
   const ov=document.getElementById('itemFormOverlay');
   ov.style.display='flex';requestAnimationFrame(()=>ov.classList.add('open'));
 }
@@ -630,7 +650,25 @@ function IF_del(){
   if(!confirm('确定删除？'))return;
   const inv=P_loadInv();
   const arrKey=IF_INV_KEYS[_ifType];
-  if(inv[arrKey])inv[arrKey].splice(_ifIdx,1);
+  if(!inv[arrKey])return;
+  // If deleting a livestock parent, also remove its children
+  if(_ifType==='livestock'){
+    const pidStr=_ifIdx.toString();
+    inv[arrKey]=inv[arrKey].filter((item,i)=>{
+      if(i===_ifIdx) return false;
+      if(item.origin==='breed'&&item.parentId===pidStr) return false;
+      return true;
+    });
+    // Reindex parentId for remaining items
+    inv[arrKey].forEach(item=>{
+      if(item.parentId){
+        const pid=parseInt(item.parentId);
+        if(pid>_ifIdx) item.parentId=(pid-1).toString();
+      }
+    });
+  }else{
+    inv[arrKey].splice(_ifIdx,1);
+  }
   P_saveInv(inv);
   IF_close();
   renderProfile();
@@ -639,7 +677,6 @@ function IF_del(){
 
 
 function P_breedItem(){
-  // Create a child item from current item being edited
   const inv=P_loadInv();
   const arr=inv.livestock||[];
   const parent=arr[_ifIdx];
@@ -650,18 +687,107 @@ function P_breedItem(){
     size:'',
     icon:parent.icon||'',
     addDate:new Date().toISOString().slice(0,10),
-    source:'',
-    price:0,
+    source:'',price:0,
     status:'alive',
     origin:'breed',
     parentId:_ifIdx.toString(),
-    notes:'繁殖自母体'
+    notes:''
   };
   arr.push(child);
   P_saveInv(inv);
-  IF_close();
-  renderProfile();
-  toast('已添加繁殖子体');
+  _renderChildrenPanel(_ifIdx);
+  toast('已添加子体');
+}
+function _renderChildrenPanel(parentIdx){
+  const box=document.getElementById('ifChildrenBox');
+  if(!box) return;
+  const inv=P_loadInv();
+  const arr=inv.livestock||[];
+  const children=[];
+  arr.forEach((item,i)=>{
+    if(item.origin==='breed'&&item.parentId===parentIdx.toString()) children.push({item,i});
+  });
+  if(!children.length){box.innerHTML='';box.style.display='none';return;}
+  box.style.display='';
+  const stLabels={alive:'存活',dead:'死亡',sold:'售出',moved:'转缸'};
+  const stIcons={alive:'✅',dead:'💀',sold:'💰',moved:'🔄'};
+  let h='<div class="if-children-title">🌱 子体 ('+children.length+')</div><div class="if-children-list">';
+  children.forEach(({item,i})=>{
+    const st=stLabels[item.status]||item.status;
+    const icon=stIcons[item.status]||'';
+    let info=item.size||'';
+    if(item.sellPrice) info+=' ¥'+item.sellPrice;
+    h+='<div class="if-child-row">';
+    h+='<span class="if-child-st">'+icon+'</span>';
+    h+='<span class="if-child-name">'+(item.name||'子体')+(info?' · '+info:'')+'</span>';
+    h+='<span class="if-child-actions">';
+    h+='<button class="if-child-btn" onclick="P_editChild('+i+')" title="编辑">✏️</button>';
+    h+='<button class="if-child-btn if-child-del" onclick="P_delChild('+i+')" title="删除">✕</button>';
+    h+='</span></div>';
+  });
+  h+='</div>';
+  box.innerHTML=h;
+}
+function P_editChild(idx){
+  // Open a mini editor for child item
+  const inv=P_loadInv();
+  const arr=inv.livestock||[];
+  const child=arr[idx];
+  if(!child) return;
+  const parentIdx=_ifIdx;
+  const html='<div class="if-child-edit" id="childEditPanel">'+
+    '<div class="if-child-edit-title">编辑子体</div>'+
+    '<div class="if-field"><label>状态</label><div class="if-tags" id="ce_status">'+
+    ['alive','dead','sold','moved'].map(s=>{
+      const labels={alive:'存活',dead:'死亡',sold:'售出',moved:'转缸'};
+      return '<span class="if-tag'+(child.status===s?' active':'')+'" data-val="'+s+'" onclick="IF_pickTag(this)">'+labels[s]+'</span>';
+    }).join('')+'</div></div>'+
+    '<div class="if-field"><label>尺寸</label><input id="ce_size" value="'+(child.size||'')+'" placeholder="如 3cm"></div>'+
+    '<div class="if-field"><label>售出价格</label><input id="ce_sellPrice" type="number" value="'+(child.sellPrice||'')+'" placeholder="¥"></div>'+
+    '<div class="if-field"><label>备注</label><input id="ce_notes" value="'+(child.notes||'')+'"></div>'+
+    '<div class="if-child-edit-actions"><button class="btn-ghost" onclick="P_closeChildEdit()">取消</button><button class="btn" onclick="P_saveChild('+idx+')">保存</button></div>'+
+    '</div>';
+  const box=document.getElementById('ifChildrenBox');
+  box.insertAdjacentHTML('beforeend',html);
+}
+function P_closeChildEdit(){
+  const el=document.getElementById('childEditPanel');
+  if(el) el.remove();
+}
+function P_saveChild(idx){
+  const inv=P_loadInv();
+  const arr=inv.livestock||[];
+  const child=arr[idx];
+  if(!child) return;
+  const stEl=document.getElementById('ce_status');
+  const activeTag=stEl?stEl.querySelector('.if-tag.active'):null;
+  if(activeTag) child.status=activeTag.dataset.val;
+  child.size=document.getElementById('ce_size').value.trim();
+  child.sellPrice=document.getElementById('ce_sellPrice').value.trim();
+  child.notes=document.getElementById('ce_notes').value.trim();
+  P_saveInv(inv);
+  P_closeChildEdit();
+  _renderChildrenPanel(_ifIdx);
+  toast('已保存');
+}
+function P_delChild(idx){
+  if(!confirm('删除此子体？')) return;
+  const inv=P_loadInv();
+  const arr=inv.livestock||[];
+  arr.splice(idx,1);
+  // Adjust current parent index if child was before parent
+  if(idx<_ifIdx) _ifIdx--;
+  // Reindex parentId references
+  arr.forEach(item=>{
+    if(item.parentId){
+      const pid=parseInt(item.parentId);
+      if(pid>idx) item.parentId=(pid-1).toString();
+      else if(pid===idx) item.parentId='';
+    }
+  });
+  P_saveInv(inv);
+  _renderChildrenPanel(_ifIdx);
+  toast('已删除');
 }
 function initProfile(){
   // Profile page is render-only, no special init needed

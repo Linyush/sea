@@ -158,7 +158,6 @@ function _renderInvestment(inv){
   let liveCount=livestock.filter(x=>x.origin!=='breed').length;
   let equipCount=equipment.length, cmCount=consumables.length;
   let deadCount=0, soldCount=0;
-  // Find first tab with dead/sold for jump targets
   let firstDeadTab='', firstSoldTab='';
   livestock.forEach(item=>{
     const p=parseFloat(item.price)||0;
@@ -172,26 +171,25 @@ function _renderInvestment(inv){
     if(item.status==='broken'){deathLoss+=p;deadCount++;if(!firstDeadTab)firstDeadTab='equipment';}
     if(item.status==='sold'){soldIncome+=parseFloat(item.sellPrice)||0;soldCount++;if(!firstSoldTab)firstSoldTab='equipment';}
   });
-  consumables.forEach(item=>{
-    cmCost+=parseFloat(item.price)||0;
-  });
+  consumables.forEach(item=>{cmCost+=parseFloat(item.price)||0;});
   const totalCost=liveCost+equipCost+cmCost;
+  const netCost=totalCost-soldIncome;
   const fmt=v=>v>=10000?'\u00a5'+(v/10000).toFixed(1)+'\u4e07':'\u00a5'+v.toFixed(0);
   const box=document.getElementById('pfInvestBox');
   if(!box) return;
-  // Dead filter map
   const deadFilter=firstDeadTab==='livestock'?'dead':'broken';
   box.innerHTML=
-    '<div class="pf-inv-summary">'+
-      '<div class="pf-inv-item pf-inv-big"><div class="pf-inv-val">'+fmt(totalCost)+'</div><div class="pf-inv-lbl">\u5408\u8ba1\u6295\u5165</div></div>'+
-      '<div class="pf-inv-item pf-inv-big accent"><div class="pf-inv-val">'+fmt(totalCost-soldIncome)+'</div><div class="pf-inv-lbl">\u51c0\u6295\u5165</div></div>'+
+    '<div class="pf-inv-left">'+
+      '<div class="pf-inv-big-val">'+fmt(netCost)+'</div>'+
+      '<div class="pf-inv-big-lbl">\u51c0\u6295\u5165</div>'+
+      '<div class="pf-inv-sub-val">\u603b\u6295\u5165 '+fmt(totalCost)+'</div>'+
     '</div>'+
-    '<div class="pf-inv-detail">'+
-      '<div class="pf-inv-item pf-inv-click" onclick="P_switchTab(\'livestock\')"><div class="pf-inv-val">'+fmt(liveCost)+'</div><div class="pf-inv-cnt">'+liveCount+'\u4e2a</div><div class="pf-inv-lbl">\u751f\u7269</div></div>'+
-      '<div class="pf-inv-item pf-inv-click" onclick="P_switchTab(\'equipment\')"><div class="pf-inv-val">'+fmt(equipCost)+'</div><div class="pf-inv-cnt">'+equipCount+'\u4e2a</div><div class="pf-inv-lbl">\u8bbe\u5907</div></div>'+
-      '<div class="pf-inv-item pf-inv-click" onclick="P_switchTab(\'consumable\')"><div class="pf-inv-val">'+fmt(cmCost)+'</div><div class="pf-inv-cnt">'+cmCount+'\u4e2a</div><div class="pf-inv-lbl">\u8017\u6750</div></div>'+
-      '<div class="pf-inv-item loss pf-inv-click" onclick="P_switchTab(\''+firstDeadTab+'\',\''+deadFilter+'\')"><div class="pf-inv-val">'+fmt(deathLoss)+'</div><div class="pf-inv-cnt">'+deadCount+'\u4e2a</div><div class="pf-inv-lbl">\u6b7b\u4ea1/\u635f\u574f</div></div>'+
-      '<div class="pf-inv-item gain pf-inv-click" onclick="P_switchTab(\''+firstSoldTab+'\',\'sold\')"><div class="pf-inv-val">'+fmt(soldIncome)+'</div><div class="pf-inv-cnt">'+soldCount+'\u4e2a</div><div class="pf-inv-lbl">\u552e\u51fa\u6536\u5165</div></div>'+
+    '<div class="pf-inv-right">'+
+      '<div class="pf-inv-row pf-inv-click" onclick="P_switchTab(\'livestock\')"><span class="pf-inv-row-name">\u751f\u7269</span><span class="pf-inv-row-cnt">'+liveCount+'\u4e2a</span><span class="pf-inv-row-val">'+fmt(liveCost)+'</span></div>'+
+      '<div class="pf-inv-row pf-inv-click" onclick="P_switchTab(\'equipment\')"><span class="pf-inv-row-name">\u8bbe\u5907</span><span class="pf-inv-row-cnt">'+equipCount+'\u4e2a</span><span class="pf-inv-row-val">'+fmt(equipCost)+'</span></div>'+
+      '<div class="pf-inv-row pf-inv-click" onclick="P_switchTab(\'consumable\')"><span class="pf-inv-row-name">\u8017\u6750</span><span class="pf-inv-row-cnt">'+cmCount+'\u4e2a</span><span class="pf-inv-row-val">'+fmt(cmCost)+'</span></div>'+
+      '<div class="pf-inv-row pf-inv-click loss" onclick="P_switchTab(\''+firstDeadTab+'\',\''+deadFilter+'\')"><span class="pf-inv-row-name">\u6b7b\u4ea1/\u635f\u574f</span><span class="pf-inv-row-cnt">'+deadCount+'\u4e2a</span><span class="pf-inv-row-val">'+fmt(deathLoss)+'</span></div>'+
+      '<div class="pf-inv-row pf-inv-click gain" onclick="P_switchTab(\''+firstSoldTab+'\',\'sold\')"><span class="pf-inv-row-name">\u552e\u51fa\u6536\u5165</span><span class="pf-inv-row-cnt">'+soldCount+'\u4e2a</span><span class="pf-inv-row-val">'+fmt(soldIncome)+'</span></div>'+
     '</div>';
 }
 
@@ -202,8 +200,11 @@ function P_switchTab(tab, filter){
   document.getElementById('panelLivestock').style.display=tab==='livestock'?'':'none';
   document.getElementById('panelEquipment').style.display=tab==='equipment'?'':'none';
   document.getElementById('panelConsumable').style.display=tab==='consumable'?'':'none';
+  // Toggle filter bar visibility
+  document.getElementById('lsFilter').style.display=tab==='livestock'?'':'none';
+  document.getElementById('eqFilter').style.display=tab==='equipment'?'':'none';
+  document.getElementById('cmFilter').style.display=tab==='consumable'?'':'none';
   if(filter){
-    // Click the corresponding filter button
     const typeMap={livestock:'lsFilter',equipment:'eqFilter',consumable:'cmFilter'};
     const bar=document.getElementById(typeMap[tab]);
     if(bar){const btn=bar.querySelector('[data-f="'+filter+'"]');if(btn){P_filter(btn);}}
@@ -272,7 +273,7 @@ function _renderMaintenance(tank){
     if(item.status==='dead'&&item.deathDate){const d=new Date(item.deathDate+'T00:00:00');if(d>=weekAgo)deadCount++;}
   });
   if(deadCount) h+='<div class="pf-maint-row warn"><span class="pf-maint-icon">🐠</span><span>近7天死亡 <b>'+deadCount+'</b> 个生物</span></div>';
-  else if(newCount) h+='<div class="pf-maint-row ok"><span class="pf-maint-icon">🐠</span><span>近7天新增 <b>'+newCount+'</b> 个生物</span></div>';
+
   // 4. Consumable replace reminders
   const cms=inv.consumables||[];
   const expiring=[];
@@ -363,14 +364,14 @@ function _renderCard(item,i,type,childCount){
     else endD=new Date();
     const startD=new Date(item.addDate+'T00:00:00');
     const days=Math.max(0,Math.floor((endD-startD)/86400000));
-    h+='<div class="inv-days">'+days+'天</div>';
+    if(!isNaN(days)) h+='<div class="inv-days">'+days+'天</div>';
   }
   h+='</div>';
   return h;
 }
 
 const _INACTIVE_ST=['sold','dead','empty','expired','broken'];
-const _filterState={livestock:'all',equipment:'all',consumable:'all'};
+const _filterState={livestock:'active',equipment:'active',consumable:'active'};
 function P_filter(btn){
   const bar=btn.parentElement;
   const type=bar.dataset.type;

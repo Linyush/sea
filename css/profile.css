@@ -223,14 +223,6 @@
 /* === Investment & Value Module === */
 .pf-mod-title{font-size:13px;font-weight:600;color:var(--text2);margin:18px 0 10px;display:flex;align-items:center;gap:6px}
 .pf-mod-title:first-child{margin-top:0}
-.pf-invest-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;margin-bottom:16px}
-.pf-inv-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 8px;text-align:center;transition:border-color .2s}
-.pf-inv-item:hover{border-color:var(--border2)}
-.pf-inv-val{font-size:16px;font-weight:700;color:var(--text);line-height:1.3}
-.pf-inv-lbl{font-size:10px;color:var(--text4);margin-top:3px;font-weight:500}
-.pf-inv-item.loss .pf-inv-val{color:#e74c3c}
-.pf-inv-item.gain .pf-inv-val{color:#22bb88}
-.pf-inv-item.accent .pf-inv-val{color:var(--accent)}
 
 /* === Maintenance Tips Module === */
 .pf-maint-row{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;background:var(--card);border:1px solid var(--border);margin-bottom:6px;font-size:13px;color:var(--text2);transition:border-color .2s}
@@ -246,9 +238,6 @@
 .pf-divider{height:1px;background:var(--border);margin:16px 0}
 
 /* Nav row - quick jump buttons */
-.pf-nav-row{display:flex;gap:8px;flex-wrap:wrap}
-.pf-nav-btn{background:var(--input-bg);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .2s}
-.pf-nav-btn:hover{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 5%,transparent)}
 
 /* Water quality values row */
 .pf-maint-vals{display:flex;flex-wrap:wrap;gap:6px 12px;padding:4px 12px 8px 36px;font-size:12px;color:var(--text3)}
@@ -279,10 +268,8 @@
 .pf-eye-btn:hover{opacity:1}
 
 /* Hidden values */
-.pf-invest-grid.pf-hidden .pf-inv-val{color:transparent;text-shadow:0 0 8px var(--text3);user-select:none}
 
 /* === Tab bar === */
-.pf-tab-bar{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:14px}
 .pf-tab{background:none;border:none;border-bottom:2px solid transparent;padding:8px 16px;font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;transition:all .2s;white-space:nowrap}
 .pf-tab:hover{color:var(--text2)}
 .pf-tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
@@ -290,13 +277,31 @@
 .pf-tab-panel{min-height:100px}
 
 /* Investment layout: summary + detail */
-.pf-inv-summary{display:flex;gap:10px;margin-bottom:10px}
-.pf-inv-summary .pf-inv-big{flex:1;padding:14px 10px;border-radius:10px;text-align:center;background:var(--card);border:1px solid var(--border)}
-.pf-inv-summary .pf-inv-big .pf-inv-val{font-size:18px}
-.pf-inv-detail{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px}
-.pf-inv-click{cursor:pointer;transition:border-color .2s,transform .15s}
-.pf-inv-click:hover{border-color:var(--accent);transform:translateY(-1px)}
-.pf-inv-cnt{font-size:10px;color:var(--text4);margin-top:1px}
 
 /* Card duration */
 .inv-days{font-size:10px;color:var(--text4);margin-top:3px;font-weight:400}
+
+/* === Investment: left big number + right rows === */
+.pf-invest-grid{display:flex;gap:16px;align-items:flex-start}
+.pf-invest-grid.pf-hidden .pf-inv-big-val,
+.pf-invest-grid.pf-hidden .pf-inv-sub-val,
+.pf-invest-grid.pf-hidden .pf-inv-row-val{color:transparent;text-shadow:0 0 8px var(--text3);user-select:none}
+.pf-inv-left{text-align:center;min-width:100px;padding:8px 0}
+.pf-inv-big-val{font-size:22px;font-weight:700;color:var(--accent);line-height:1.3}
+.pf-inv-big-lbl{font-size:11px;color:var(--text4);margin-top:2px}
+.pf-inv-sub-val{font-size:11px;color:var(--text3);margin-top:6px}
+.pf-inv-right{flex:1;min-width:0}
+.pf-inv-row{display:flex;align-items:center;padding:6px 10px;border-radius:6px;cursor:pointer;transition:background .15s;gap:8px}
+.pf-inv-row:hover{background:color-mix(in srgb,var(--accent) 5%,transparent)}
+.pf-inv-row-name{font-size:12px;color:var(--text2);font-weight:500;min-width:60px}
+.pf-inv-row-cnt{font-size:11px;color:var(--text4);min-width:36px}
+.pf-inv-row-val{font-size:13px;font-weight:600;color:var(--text);margin-left:auto}
+.pf-inv-row.loss .pf-inv-row-val{color:#e74c3c}
+.pf-inv-row.gain .pf-inv-row-val{color:#22bb88}
+
+/* === Tab row with filter on right === */
+.pf-tab-row{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);margin-bottom:14px}
+.pf-tab-bar{display:flex;gap:0}
+.pf-filter-slot{display:flex;align-items:center}
+
+@media(max-width:420px){.pf-invest-grid{flex-direction:column}.pf-inv-left{width:100%}}

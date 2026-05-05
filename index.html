@@ -7,15 +7,15 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a1628'/%3E%3Cpath d='M12 40Q20 20 32 30Q44 40 52 22' stroke='%2300d2ff' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='30' r='3' fill='%237b68ee'/%3E%3C/svg%3E">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<link rel="stylesheet" href="css/base.css?v=20260505ad">
-<link rel="stylesheet" href="css/header.css?v=20260505ad">
-<link rel="stylesheet" href="css/pages.css?v=20260505ad">
-<link rel="stylesheet" href="css/water.css?v=20260505ad">
-<link rel="stylesheet" href="css/light.css?v=20260505ad">
-<link rel="stylesheet" href="css/change.css?v=20260505ad">
-<link rel="stylesheet" href="css/titrate.css?v=20260505ad">
-<link rel="stylesheet" href="css/tank.css?v=20260505ad">
-<link rel="stylesheet" href="css/profile.css?v=20260505ad">
+<link rel="stylesheet" href="css/base.css?v=20260505ae">
+<link rel="stylesheet" href="css/header.css?v=20260505ae">
+<link rel="stylesheet" href="css/pages.css?v=20260505ae">
+<link rel="stylesheet" href="css/water.css?v=20260505ae">
+<link rel="stylesheet" href="css/light.css?v=20260505ae">
+<link rel="stylesheet" href="css/change.css?v=20260505ae">
+<link rel="stylesheet" href="css/titrate.css?v=20260505ae">
+<link rel="stylesheet" href="css/tank.css?v=20260505ae">
+<link rel="stylesheet" href="css/profile.css?v=20260505ae">
 </head>
 <body>
 <div class="container">
@@ -58,29 +58,21 @@
       </div>
     </div>
     <div class="card anim-in anim-d2" style="padding:20px;margin-top:12px">
-      <div class="pf-tab-bar" id="pfTabBar">
-        <button class="pf-tab active" data-tab="livestock" onclick="P_switchTab('livestock')">🐠 生物 <span class="count" id="lsCount"></span></button>
-        <button class="pf-tab" data-tab="equipment" onclick="P_switchTab('equipment')">⚙️ 设备 <span class="count" id="eqCount"></span></button>
-        <button class="pf-tab" data-tab="consumable" onclick="P_switchTab('consumable')">📦 耗材 <span class="count" id="cmCount"></span></button>
-      </div>
-      <div class="pf-tab-panel" id="panelLivestock">
-        <div class="inv-section">
-          <div class="inv-header"><div class="inv-filter-bar" id="lsFilter" data-type="livestock"><button class="inv-ft active" data-f="all" onclick="P_filter(this)" title="全部">📋</button><button class="inv-ft" data-f="active" onclick="P_filter(this)" title="存活">✅</button><button class="inv-ft" data-f="dead" onclick="P_filter(this)" title="死亡">💀</button><button class="inv-ft" data-f="sold" onclick="P_filter(this)" title="售出">💰</button></div></div>
-          <div id="lsGrid"></div>
+      <div class="pf-tab-row">
+        <div class="pf-tab-bar" id="pfTabBar">
+          <button class="pf-tab active" data-tab="livestock" onclick="P_switchTab('livestock')">🐠 生物 <span class="count" id="lsCount"></span></button>
+          <button class="pf-tab" data-tab="equipment" onclick="P_switchTab('equipment')">⚙️ 设备 <span class="count" id="eqCount"></span></button>
+          <button class="pf-tab" data-tab="consumable" onclick="P_switchTab('consumable')">📦 耗材 <span class="count" id="cmCount"></span></button>
+        </div>
+        <div class="pf-filter-slot" id="pfFilterSlot">
+          <div class="inv-filter-bar" id="lsFilter" data-type="livestock"><button class="inv-ft" data-f="all" onclick="P_filter(this)" title="全部">📋</button><button class="inv-ft active" data-f="active" onclick="P_filter(this)" title="存活">✅</button><button class="inv-ft" data-f="dead" onclick="P_filter(this)" title="死亡">💀</button><button class="inv-ft" data-f="sold" onclick="P_filter(this)" title="售出">💰</button></div>
+          <div class="inv-filter-bar" id="eqFilter" data-type="equipment" style="display:none"><button class="inv-ft" data-f="all" onclick="P_filter(this)" title="全部">📋</button><button class="inv-ft active" data-f="active" onclick="P_filter(this)" title="使用中">✅</button><button class="inv-ft" data-f="broken" onclick="P_filter(this)" title="损坏">💔</button><button class="inv-ft" data-f="sold" onclick="P_filter(this)" title="售出">💰</button></div>
+          <div class="inv-filter-bar" id="cmFilter" data-type="consumable" style="display:none"><button class="inv-ft" data-f="all" onclick="P_filter(this)" title="全部">📋</button><button class="inv-ft active" data-f="active" onclick="P_filter(this)" title="在用">⚡</button><button class="inv-ft" data-f="empty" onclick="P_filter(this)" title="用完">⭕</button><button class="inv-ft" data-f="expired" onclick="P_filter(this)" title="过期">⏰</button></div>
         </div>
       </div>
-      <div class="pf-tab-panel" id="panelEquipment" style="display:none">
-        <div class="inv-section">
-          <div class="inv-header"><div class="inv-filter-bar" id="eqFilter" data-type="equipment"><button class="inv-ft active" data-f="all" onclick="P_filter(this)" title="全部">📋</button><button class="inv-ft" data-f="active" onclick="P_filter(this)" title="使用中">✅</button><button class="inv-ft" data-f="broken" onclick="P_filter(this)" title="损坏">💔</button><button class="inv-ft" data-f="sold" onclick="P_filter(this)" title="售出">💰</button></div></div>
-          <div id="eqGrid"></div>
-        </div>
-      </div>
-      <div class="pf-tab-panel" id="panelConsumable" style="display:none">
-        <div class="inv-section">
-          <div class="inv-header"><div class="inv-filter-bar" id="cmFilter" data-type="consumable"><button class="inv-ft active" data-f="all" onclick="P_filter(this)" title="全部">📋</button><button class="inv-ft" data-f="active" onclick="P_filter(this)" title="在用">⚡</button><button class="inv-ft" data-f="empty" onclick="P_filter(this)" title="用完">⭕</button><button class="inv-ft" data-f="expired" onclick="P_filter(this)" title="过期">⏰</button></div></div>
-          <div id="cmGrid"></div>
-        </div>
-      </div>
+      <div class="pf-tab-panel" id="panelLivestock"><div id="lsGrid"></div></div>
+      <div class="pf-tab-panel" id="panelEquipment" style="display:none"><div id="eqGrid"></div></div>
+      <div class="pf-tab-panel" id="panelConsumable" style="display:none"><div id="cmGrid"></div></div>
     </div>
   </section>
 
@@ -504,16 +496,16 @@
   </div>
 </div>
 
-<script src="js/utils.js?v=20260505ad"></script>
-<script src="js/tank.js?v=20260505ad"></script>
-<script src="js/profile.js?v=20260505ad"></script>
-<script src="js/backup.js?v=20260505ad"></script>
-<script src="js/router.js?v=20260505ad"></script>
-<script src="js/water.js?v=20260505ad"></script>
-<script src="js/light.js?v=20260505ad"></script>
-<script src="js/change.js?v=20260505ad"></script>
-<script src="js/titrate.js?v=20260505ad"></script>
-<script src="js/init.js?v=20260505ad"></script>
+<script src="js/utils.js?v=20260505ae"></script>
+<script src="js/tank.js?v=20260505ae"></script>
+<script src="js/profile.js?v=20260505ae"></script>
+<script src="js/backup.js?v=20260505ae"></script>
+<script src="js/router.js?v=20260505ae"></script>
+<script src="js/water.js?v=20260505ae"></script>
+<script src="js/light.js?v=20260505ae"></script>
+<script src="js/change.js?v=20260505ae"></script>
+<script src="js/titrate.js?v=20260505ae"></script>
+<script src="js/init.js?v=20260505ae"></script>
 <!-- ========== Icon Picker Modal ========== -->
   <div class="ip-overlay" id="iconPickerOverlay" onclick="if(event.target===this)IP_close()">
     <div class="ip-box">

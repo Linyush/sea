@@ -46,14 +46,13 @@
 .if-overlay.open .if-box{transform:scale(1);opacity:1}
 .if-box h4{font-size:15px;font-weight:600;margin-bottom:16px}
 
-/* Form top area: core fields left + icon right */
-.if-top{display:flex;gap:16px;margin-bottom:12px;align-items:stretch}
-.if-top-fields{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
+/* Form top area: relative container, icon absolute right */
+.if-top{position:relative;padding-right:136px;margin-bottom:0}
+.if-top-fields{display:flex;flex-direction:column}
 .if-top-fields .if-row{margin-bottom:10px}
-.if-top-fields .if-row:last-child{margin-bottom:0}
 
-/* Icon display — 3 rows tall (~130px) */
-.if-icon-display{width:120px;height:130px;border:1.5px dashed var(--border2);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;color:var(--text4);gap:4px;flex-shrink:0}
+/* Icon display — absolute, 3 rows tall, doesn't affect flow below */
+.if-icon-display{position:absolute;top:0;right:0;width:120px;height:130px;border:1.5px dashed var(--border2);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;color:var(--text4);gap:4px}
 .if-icon-display:hover{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 4%,transparent)}
 .if-icon-display svg{width:70px;height:70px}
 .if-icon-display .if-icon-hint{font-size:10px;color:var(--text5);font-weight:500}
@@ -61,7 +60,7 @@
 
 /* Form fields */
 .if-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
-.if-row label{font-size:12px;color:var(--text3);width:64px;flex-shrink:0;text-align:right}
+.if-row label{font-size:12px;color:var(--text3);width:72px;flex-shrink:0;text-align:right}
 .if-row input,.if-row select,.if-row textarea{flex:1;background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:7px;font-size:13px;outline:none;transition:border-color .3s;font-family:inherit}
 .if-row input:focus,.if-row select:focus,.if-row textarea:focus{border-color:var(--accent)}
 .if-row textarea{resize:vertical;min-height:48px}
@@ -115,8 +114,8 @@
 .ip-trigger{display:none}
 /* Mobile responsive */
 @media(max-width:500px){
-  .if-top{flex-direction:column;align-items:stretch}
-  .if-icon-display{width:100%;height:80px;flex-direction:row;gap:8px}
+  .if-top{padding-right:0;padding-bottom:90px}
+  .if-icon-display{position:relative;width:100%;height:80px;flex-direction:row;gap:8px;margin-top:10px}
   .if-icon-display svg{width:50px;height:50px}
   .ip-content{flex-direction:column}
   .ip-left{border-right:none;border-bottom:1px solid var(--border);max-height:50vh}

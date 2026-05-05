@@ -181,31 +181,33 @@ const IF_FIELDS={
   ],
   equipment:[
     {key:'name',label:'名称',type:'text',required:true,top:true},
-    {key:'category',label:'类型',type:'select',opts:P_EQ_CATS,required:true,top:true},
-    {key:'icon',label:'图标',type:'icon_picker'},
     {key:'brand',label:'品牌',type:'text',top:true},
-    {key:'spec',label:'规格',type:'text'},
+    {key:'spec',label:'规格',type:'text',top:true},
+    {key:'icon',label:'图标',type:'icon_picker'},
     {key:'addDate',label:'购入日期',type:'date'},
     {key:'source',label:'购入渠道',type:'text'},
     {key:'price',label:'价格',type:'number',placeholder:'¥'},
-    {key:'status',label:'状态',type:'select',opts:['active','standby','broken','sold'],labels:['使用中','闲置','损坏','售出'],required:true,default:'active'},
-    {key:'statusDate',label:'状态日期',type:'date'},
-    {key:'sellPrice',label:'售价',type:'number',placeholder:'¥',showWhen:{status:'sold'}},
+    {key:'status',label:'状态',type:'select',opts:['active','broken','sold','moved'],labels:['使用中','损坏','售出','转让'],required:true,default:'active'},
+    {key:'brokenDate',label:'损坏时间',type:'date',showWhen:{status:'broken'}},
+    {key:'sellDate',label:'售出时间',type:'date',showWhen:{status:'sold'}},
+    {key:'sellPrice',label:'售出价格',type:'number',placeholder:'¥',showWhen:{status:'sold'}},
+    {key:'moveDate',label:'转让时间',type:'date',showWhen:{status:'moved'}},
     {key:'notes',label:'备注',type:'textarea'},
   ],
   consumable:[
     {key:'name',label:'名称',type:'text',required:true,top:true},
-    {key:'category',label:'类型',type:'select',opts:P_CM_CATS,required:true,top:true},
-    {key:'icon',label:'图标',type:'icon_picker'},
     {key:'brand',label:'品牌',type:'text',top:true},
-    {key:'spec',label:'规格',type:'text',placeholder:'如 22kg'},
+    {key:'spec',label:'规格',type:'text',placeholder:'如 22kg',top:true},
+    {key:'icon',label:'图标',type:'icon_picker'},
     {key:'addDate',label:'购入日期',type:'date'},
     {key:'source',label:'购入渠道',type:'text'},
     {key:'price',label:'价格',type:'number',placeholder:'¥'},
-    {key:'status',label:'状态',type:'select',opts:['sealed','inuse','empty','sold'],labels:['未开封','使用中','已用完','售出'],required:true,default:'inuse'},
-    {key:'statusDate',label:'状态日期',type:'date'},
-    {key:'sellPrice',label:'售价',type:'number',placeholder:'¥',showWhen:{status:'sold'}},
-    {key:'replaceInterval',label:'更换周期',type:'number',placeholder:'天'},
+    {key:'status',label:'状态',type:'select',opts:['sealed','inuse','empty','sold','expired'],labels:['未开封','使用中','已用完','已售出','已过期'],required:true,default:'sealed'},
+    {key:'replaceDate',label:'建议更换',type:'date',showWhen:{status:'inuse'}},
+    {key:'emptyDate',label:'用完时间',type:'date',showWhen:{status:'empty'}},
+    {key:'sellDate',label:'售出时间',type:'date',showWhen:{status:'sold'}},
+    {key:'sellPrice',label:'售出价格',type:'number',placeholder:'¥',showWhen:{status:'sold'}},
+    {key:'expireDate',label:'过期时间',type:'date',showWhen:{status:'expired'}},
     {key:'notes',label:'备注',type:'textarea'},
   ]
 };
@@ -288,22 +290,26 @@ function IP_close(){
 }
 function IP_render(){
   const box=document.getElementById('ipGrid');
-  /* Group icons by type */
+  /* Show only icons for current form type */
+  const typeMap={livestock:'livestock',equipment:'equipment',consumable:'consumable'};
+  const currentType=typeMap[_ifType]||'equipment';
   const groups=[
-    {label:'设备',keys:Object.values(P_ICON_MAP.equipment||{})},
-    {label:'生物',keys:Object.values(P_ICON_MAP.livestock||{})},
-    {label:'耗材',keys:Object.values(P_ICON_MAP.consumable||{})},
+    {type:'equipment',label:'设备',keys:Object.values(P_ICON_MAP.equipment||{})},
+    {type:'livestock',label:'生物',keys:Object.values(P_ICON_MAP.livestock||{})},
+    {type:'consumable',label:'耗材',keys:Object.values(P_ICON_MAP.consumable||{})},
   ];
   let h='';
-  groups.forEach(g=>{
-    h+='<div class="ip-group-label">'+g.label+'</div><div class="ip-group">';
-    g.keys.forEach(k=>{
+  /* Show current type first and only that type */
+  const group=groups.find(g=>g.type===currentType);
+  if(group){
+    h+='<div class="ip-group">';
+    group.keys.forEach(k=>{
       if(!P_ICONS[k])return;
       const active=(k===_ipIcon)?' active':'';
       h+='<div class="ip-opt'+active+'" data-k="'+k+'" onclick="IP_select(this)">'+P_ICONS[k]+'</div>';
     });
     h+='</div>';
-  });
+  }
   box.innerHTML=h;
   IP_renderColors();
   IP_updatePreview();

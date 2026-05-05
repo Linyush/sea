@@ -201,10 +201,11 @@ function _renderInvestment(inv){
     if(item.status==='sold'){soldIncome+=parseFloat(item.sellPrice)||0;soldCount++;if(!firstSoldTab)firstSoldTab='equipment';}
   });
   consumables.forEach(item=>{cmCost+=parseFloat(item.price)||0;});
-  const totalCost=liveCost+equipCost+cmCost;
+  const tankCost=parseFloat(TK_current().price)||0;
+  const totalCost=liveCost+equipCost+cmCost+tankCost;
   const netCost=totalCost-soldIncome;
-  // Calculate current value (alive livestock value + active equipment price)
-  let curValue=0;
+  // Calculate current value (tank + alive livestock value + active equipment price)
+  let curValue=tankCost;
   livestock.forEach(item=>{if(!['dead','sold'].includes(item.status)){curValue+=parseFloat(item.value||item.price)||0;}});
   equipment.forEach(item=>{if(!['broken','sold'].includes(item.status)){curValue+=parseFloat(item.value||item.price)||0;}});
   const fmt=v=>v>=10000?'\u00a5'+(v/10000).toFixed(1)+'\u4e07':'\u00a5'+v.toFixed(0);
@@ -383,6 +384,7 @@ function _renderCard(item,i,type,childCount){
   }else if(type==='consumable'){
     h+='<div class="inv-name">'+item.name+'</div>';
     let sub=[];
+    if(item.brand) sub.push(item.brand);
     if(item.spec) sub.push(item.spec);
     if(item.replaceDate){
       const days=_daysRemain(item.replaceDate);

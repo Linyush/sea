@@ -95,7 +95,6 @@ function P_loadInv(){
   if(inv.livestock) inv.livestock.sort((a,b)=>_parseDate(_getItemDate(a))-_parseDate(_getItemDate(b)));
   if(inv.equipment) inv.equipment.sort((a,b)=>_parseDate(_getItemDate(a))-_parseDate(_getItemDate(b)));
   if(inv.consumables) inv.consumables.sort((a,b)=>_parseDate(_getItemDate(a))-_parseDate(_getItemDate(b)));
-  console.log('[ReefSort] equipment order:', inv.equipment.map(x=>x.name+' '+(_getItemDate(x)||'无日期')).join(' | '));
   return inv;
 }
 function P_saveInv(inv){

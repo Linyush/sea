@@ -469,7 +469,14 @@
         <div class="ip-right">
           <div class="ip-right-top"><div class="ip-big-preview" id="ipPreview"><span class="ip-no">未选择</span></div></div>
           <div class="ip-right-bottom">
-            <div class="ip-color-wrap"><span class="ip-color-label">颜色</span><input type="color" id="ipColorInput" value="#4a90d9" oninput="IP_onColor(this.value)"></div>
+            <div class="ip-color-section">
+              <span class="ip-color-label">颜色</span>
+              <div class="ip-color-grid" id="ipColorGrid"></div>
+              <div class="ip-color-hex">
+                <input type="text" id="ipHexInput" value="#4a90d9" maxlength="7" placeholder="#hex" oninput="IP_onHex(this.value)">
+                <div class="ip-hex-preview" id="ipHexPreview" style="background:#4a90d9"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

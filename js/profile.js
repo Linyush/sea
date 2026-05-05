@@ -248,7 +248,7 @@ function _ifRenderAll(type,vals){
   const status=vals.status||(IF_FIELDS[type].find(f=>f.key==='status')||{}).default||'';
   const fields=IF_FIELDS[type];
   /* Core fields: first 2 (name + category/species) go to top area */
-  const coreKeys=['name','species','category'];
+  const coreKeys=['name','species','category','status'];
   let topH='',restH='';
   fields.forEach(f=>{
     if(f.key==='icon'||f.type==='icon_picker') return; /* icon handled by ifIconDisplay */
@@ -299,9 +299,37 @@ function IP_render(){
     h+='</div>';
   });
   box.innerHTML=h;
-  /* Update color and preview */
-  document.getElementById('ipColorInput').value=_ipColor;
+  IP_renderColors();
   IP_updatePreview();
+}
+const IP_PALETTE=['#4a90d9','#00d2ff','#7b68ee','#22bb88','#f59e0b','#ff6b6b','#ff85c0','#a855f7','#64748b','#e74c3c','#1abc9c','#f39c12','#2ecc71','#3498db','#9b59b6','#e91e63'];
+function IP_renderColors(){
+  const grid=document.getElementById('ipColorGrid');
+  grid.innerHTML=IP_PALETTE.map(c=>{
+    const active=(c===_ipColor)?' active':'';
+    return '<div class="ip-color-dot'+active+'" style="background:'+c+'" data-c="'+c+'" onclick="IP_pickColor(this)"></div>';
+  }).join('');
+  const hexIn=document.getElementById('ipHexInput');
+  const hexPv=document.getElementById('ipHexPreview');
+  if(hexIn) hexIn.value=_ipColor;
+  if(hexPv) hexPv.style.background=_ipColor;
+}
+function IP_pickColor(el){
+  _ipColor=el.dataset.c;
+  document.querySelectorAll('.ip-color-dot.active').forEach(e=>e.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('ipHexInput').value=_ipColor;
+  document.getElementById('ipHexPreview').style.background=_ipColor;
+  IP_updatePreview();
+}
+function IP_onHex(v){
+  v=v.trim();
+  if(/^#[0-9a-fA-F]{6}$/.test(v)){
+    _ipColor=v;
+    document.getElementById('ipHexPreview').style.background=v;
+    document.querySelectorAll('.ip-color-dot.active').forEach(e=>e.classList.remove('active'));
+    IP_updatePreview();
+  }
 }
 function IP_select(el){
   document.querySelectorAll('.ip-opt.active').forEach(e=>e.classList.remove('active'));
@@ -309,7 +337,6 @@ function IP_select(el){
   _ipIcon=el.dataset.k;
   IP_updatePreview();
 }
-function IP_onColor(v){_ipColor=v;IP_updatePreview();}
 function IP_updatePreview(){
   const pv=document.getElementById('ipPreview');
   if(_ipIcon&&P_ICONS[_ipIcon]){

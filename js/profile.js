@@ -584,6 +584,7 @@ function IMP_onFile(e){
 }
 
 function IMP_parseCSV(text){
+  text=text.replace(/^\uFEFF/,"");
   const lines=text.trim().split('\n').map(l=>l.trim()).filter(l=>l);
   if(lines.length<2) return [];
   const headers=lines[0].split(',').map(h=>h.trim().replace(/^"|"$/g,''));

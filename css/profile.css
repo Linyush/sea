@@ -18,7 +18,7 @@
 .inv-header h3{font-size:14px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:6px}
 .inv-header .count{font-size:11px;color:var(--text4);font-weight:400}
 .inv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
-.inv-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 10px;text-align:center;cursor:pointer;transition:all .25s ease;position:relative;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.inv-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 10px;text-align:center;cursor:pointer;transition:all .25s ease;position:relative;box-shadow:0 1px 3px rgba(0,0,0,.04);min-height:90px;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .inv-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
 .inv-card.inv-card-add{border:1.5px dashed var(--border2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--text4);min-height:90px;background:transparent;box-shadow:none}
 .inv-card.inv-card-add:hover{border-color:var(--accent);color:var(--accent);transform:none;background:color-mix(in srgb,var(--accent) 3%,transparent);box-shadow:none}
@@ -182,3 +182,12 @@
 .inv-header-actions{display:flex;gap:6px;align-items:center}
 .inv-clear-btn{background:none;border:1px solid var(--border2);color:var(--text4);padding:3px 10px;border-radius:6px;font-size:11px;cursor:pointer;transition:all .2s}
 .inv-clear-btn:hover{border-color:#e74c3c;color:#e74c3c}
+
+/* Inactive items toggle */
+.inv-inactive-toggle{display:flex;align-items:center;gap:6px;padding:8px 12px;margin-top:10px;cursor:pointer;color:var(--text4);font-size:12px;border-radius:8px;transition:all .2s;user-select:none}
+.inv-inactive-toggle:hover{background:var(--input-bg);color:var(--text3)}
+.inv-inactive-label{font-weight:500}
+.inv-inactive-arrow{font-size:10px;transition:transform .2s}
+.inv-inactive-toggle.open .inv-inactive-arrow{transform:rotate(90deg)}
+.inv-inactive-section{max-height:0;overflow:hidden;transition:max-height .3s ease;margin-top:0}
+.inv-inactive-section.open{max-height:2000px;margin-top:10px}

@@ -184,68 +184,69 @@ function _daysRemain(dateStr){
   return Math.ceil((d-today)/(86400000));
 }
 
+function _renderCard(item,i,type){
+  const _iconRaw=item.icon||'';
+  const _iconParts=_iconRaw.split('|');
+  const iconKey=_iconParts[0]||'';
+  const iconColor=_iconParts[1]||'var(--accent)';
+  const hasSvg=iconKey&&P_ICONS[iconKey];
+  const iconHtml=hasSvg?'<div class="inv-card-icon" style="color:'+iconColor+'">'+P_ICONS[iconKey]+'</div>':'<div class="inv-icon">📦</div>';
+  const stClass=item.status?' st-'+item.status:'';
+  let badge='';
+  if(item.status==='dead') badge='<span class="inv-badge inv-badge-dead" title="死亡">💀</span>';
+  else if(item.status==='sold') badge='<span class="inv-badge inv-badge-sold" title="售出">💸</span>';
+  let h='<div class="inv-card'+stClass+'" onclick="P_editItem(&#39;'+type+'&#39;,'+i+')">'+badge+iconHtml;
+  if(type==='livestock'){
+    h+='<div class="inv-name">'+item.name+'</div>';
+    let sub=[];
+    if(item.breed) sub.push(item.breed);
+    if(item.size) sub.push(item.size);
+    if(sub.length) h+='<div class="inv-sub">'+sub.join('·')+'</div>';
+  }else if(type==='equipment'){
+    h+='<div class="inv-name">'+item.name+'</div>';
+    let sub=[];
+    if(item.brand) sub.push(item.brand);
+    if(item.spec) sub.push(item.spec);
+    if(sub.length) h+='<div class="inv-sub">'+sub.join('·')+'</div>';
+  }else if(type==='consumable'){
+    h+='<div class="inv-name">'+item.name+'</div>';
+    let sub=[];
+    if(item.spec) sub.push(item.spec);
+    if(item.replaceDate){
+      const days=_daysRemain(item.replaceDate);
+      if(days!==null){
+        if(days<=0) sub.push('<span class="inv-overdue">已到期</span>');
+        else sub.push('剩余'+days+'天');
+      }
+    }
+    if(sub.length) h+='<div class="inv-sub">'+sub.join('·')+'</div>';
+  }
+  h+='</div>';
+  return h;
+}
+
+const _INACTIVE_ST=['sold','dead','moved','empty','expired','broken'];
 function P_renderInvSection(prefix,items,type){
   const countEl=document.getElementById(prefix+'Count');
   const gridEl=document.getElementById(prefix+'Grid');
-  const activeItems=items.filter(x=>x.status!=='sold'&&x.status!=='dead'&&x.status!=='moved'&&x.status!=='empty');
-  countEl.textContent=items.length?activeItems.length+'/'+items.length:'';
+  const active=[], inactive=[];
+  items.forEach((item,i)=>{
+    if(_INACTIVE_ST.includes(item.status)) inactive.push({item,i});
+    else active.push({item,i});
+  });
+  countEl.textContent=items.length?active.length+'/'+items.length:'';
   const typeName=IF_TITLES[type]||'';
   let h='<div class="inv-grid">';
-  items.forEach((item,i)=>{
-    const _iconRaw=item.icon||'';
-    const _iconParts=_iconRaw.split('|');
-    const iconKey=_iconParts[0]||'';
-    const iconColor=_iconParts[1]||'var(--accent)';
-    const hasSvg=iconKey&&P_ICONS[iconKey];
-    const iconHtml=hasSvg?'<div class="inv-card-icon" style="color:'+iconColor+'">'+P_ICONS[iconKey]+'</div>':'<div class="inv-icon">📦</div>';
-    
-    // Status class on card border/bg
-    const stClass=item.status?' st-'+item.status:'';
-
-    // Badge for dead/sold
-    let badge='';
-    if(item.status==='dead') badge='<span class="inv-badge inv-badge-dead" title="死亡">💀</span>';
-    else if(item.status==='sold') badge='<span class="inv-badge inv-badge-sold" title="售出">💸</span>';
-
-    h+='<div class="inv-card'+stClass+'" onclick="P_editItem(&#39;'+type+'&#39;,'+i+')">'+badge+iconHtml;
-    
-    if(type==='livestock'){
-      // 生物: 图标 → 名称 → 品种·尺寸
-      h+='<div class="inv-name">'+item.name+'</div>';
-      let subParts=[];
-      if(item.breed) subParts.push(item.breed);
-      if(item.size) subParts.push(item.size);
-      if(subParts.length) h+='<div class="inv-sub">'+subParts.join('·')+'</div>';
-    }else if(type==='equipment'){
-      // 设备: 图标 → 名称 → 品牌·规格
-      h+='<div class="inv-name">'+item.name+'</div>';
-      let subParts=[];
-      if(item.brand) subParts.push(item.brand);
-      if(item.spec) subParts.push(item.spec);
-      if(subParts.length) h+='<div class="inv-sub">'+subParts.join('·')+'</div>';
-    }else if(type==='consumable'){
-      // 耗材: 图标 → 名称 → 规格·剩余x天
-      h+='<div class="inv-name">'+item.name+'</div>';
-      let subParts=[];
-      if(item.spec) subParts.push(item.spec);
-      if(item.replaceDate){
-        const days=_daysRemain(item.replaceDate);
-        if(days!==null){
-          if(days<=0){
-            subParts.push('<span class="inv-overdue">已到期</span>');
-          }else{
-            subParts.push('剩余'+days+'天');
-          }
-        }
-      }
-      if(subParts.length) h+='<div class="inv-sub">'+subParts.join('·')+'</div>';
-    }
-    
-    h+='</div>';
-  });
-  /* Add card at the end */
+  active.forEach(({item,i})=>{ h+=_renderCard(item,i,type); });
   h+='<div class="inv-card inv-card-add" onclick="P_openForm(&#39;'+type+'&#39;)"><span class="inv-add-plus">+</span><span class="inv-add-label">添加'+typeName+'</span></div>';
   h+='</div>';
+  if(inactive.length){
+    h+='<div class="inv-inactive-toggle" onclick="this.nextElementSibling.classList.toggle(&#39;open&#39;);this.classList.toggle(&#39;open&#39;)">';
+    h+='<span class="inv-inactive-label">已失活 '+inactive.length+' 项</span><span class="inv-inactive-arrow">▸</span></div>';
+    h+='<div class="inv-inactive-section"><div class="inv-grid">';
+    inactive.forEach(({item,i})=>{ h+=_renderCard(item,i,type); });
+    h+='</div></div>';
+  }
   gridEl.innerHTML=h;
 }
 

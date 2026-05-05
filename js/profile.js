@@ -137,7 +137,7 @@ function P_renderInvSection(prefix,items,type){
   const activeItems=items.filter(x=>x.status!=='sold'&&x.status!=='dead'&&x.status!=='moved'&&x.status!=='empty');
   countEl.textContent='('+activeItems.length+'/'+items.length+')';
   if(!items.length){
-    gridEl.innerHTML='<div class="inv-empty">暂无'+({livestock:'生物',equipment:'设备',consumable:'耗材'}[type])+'，点击上方添加</div>';
+    gridEl.innerHTML='';
     return;
   }
   let h='<div class="inv-grid">';
@@ -321,7 +321,7 @@ function IP_confirm(){
     if(_ipIcon&&P_ICONS[_ipIcon]){
       disp.innerHTML='<span style="color:'+_ipColor+'">'+P_ICONS[_ipIcon]+'</span>';
     }else{
-      disp.innerHTML='<span class="if-icon-hint">图标</span>';
+      disp.innerHTML='<span class="if-icon-plus">+</span><span class="if-icon-hint">图标</span>';
     }
   }
   IP_close();
@@ -334,9 +334,9 @@ function _syncIconDisplay(val){
   if(val&&val.includes('|')){
     const k=val.split('|')[0],c=val.split('|')[1];
     if(P_ICONS[k]) disp.innerHTML='<span style="color:'+c+'">'+P_ICONS[k]+'</span>';
-    else disp.innerHTML='<span class="if-icon-hint">图标</span>';
+    else disp.innerHTML='<span class="if-icon-plus">+</span><span class="if-icon-hint">图标</span>';
   }else{
-    disp.innerHTML='<span class="if-icon-hint">图标</span>';
+    disp.innerHTML='<span class="if-icon-plus">+</span><span class="if-icon-hint">图标</span>';
   }
 }
 function IF_pickTag(el){

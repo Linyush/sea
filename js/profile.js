@@ -231,6 +231,7 @@ function _renderCard(item,i,type){
   let badge='';
   if(item.status==='dead') badge='<span class="inv-badge inv-badge-dead" title="死亡">💀</span>';
   else if(item.status==='sold') badge='<span class="inv-badge inv-badge-sold" title="售出">💸</span>';
+  if(item.origin==='breed') badge+='<span class="inv-badge inv-badge-breed" title="繁殖">🌱</span>';
   let h='<div class="inv-card'+stClass+'" onclick="P_editItem(&#39;'+type+'&#39;,'+i+')">'+badge+iconHtml;
   if(type==='livestock'){
     h+='<div class="inv-name">'+item.name+'</div>';
@@ -298,6 +299,8 @@ const IF_FIELDS={
     {key:'source',label:'购入渠道',type:'text'},
     {key:'price',label:'价格',type:'number',placeholder:'¥'},
     {key:'status',label:'状态',type:'select',opts:['alive','dead','sold','moved'],labels:['存活','死亡','售出','转缸'],required:true,default:'alive'},
+    {key:'origin',label:'来源',type:'select',opts:['purchase','breed','gift'],labels:['购买','繁殖','赠送'],default:'purchase'},
+    {key:'parentId',label:'',type:'hidden'},
     {key:'value',label:'价值',type:'number',placeholder:'¥',showWhen:{status:'alive'}},
     {key:'deathDate',label:'死亡时间',type:'date',showWhen:{status:'dead'}},
     {key:'sellDate',label:'售出时间',type:'date',showWhen:{status:'sold'}},
@@ -381,14 +384,17 @@ function IF_fmtDate(el){
   if(v.length>10) v=v.slice(0,10);
   el.value=v;
 }
+let _ifHiddenVals={};
 function _ifRenderAll(type,vals){
+  _ifHiddenVals={};
+  IF_FIELDS[type].forEach(f=>{if(f.type==="hidden")_ifHiddenVals[f.key]=vals[f.key]||"";});
   const topBox=document.getElementById('ifTopFields');
   const box=document.getElementById('ifFields');
   const status=vals.status||(IF_FIELDS[type].find(f=>f.key==='status')||{}).default||'';
   const fields=IF_FIELDS[type];
   let topH='',restH='';
   fields.forEach(f=>{
-    if(f.type==='icon_picker') return;
+    if(f.type==='icon_picker'||f.type==='hidden') return;
     if(f.showWhen){
       const k=Object.keys(f.showWhen)[0];
       const need=f.showWhen[k];
@@ -543,7 +549,7 @@ function IF_pickTag(el){
   }
 }
 function IF_collectVals(){
-  const vals={};
+  const vals=Object.assign({},_ifHiddenVals);
   IF_FIELDS[_ifType].forEach(f=>{
     if(f.type==='icon_picker'){
       const disp=document.getElementById('ifIconDisplay');
@@ -565,6 +571,8 @@ function P_openForm(type){
   _ifType=type;_ifIdx=-1;
   document.getElementById('ifTitle').textContent='添加'+IF_TITLES[type];
   document.getElementById('ifDelBtn').style.display='none';
+  const breedBtn=document.getElementById('ifBreedBtn');
+  if(breedBtn) breedBtn.style.display='none';
   _ifRenderAll(type,{});
   _syncIconDisplay('');
   const ov=document.getElementById('itemFormOverlay');
@@ -578,6 +586,8 @@ function P_editItem(type,idx){
   const item=arr[idx];if(!item)return;
   document.getElementById('ifTitle').textContent='编辑'+IF_TITLES[type];
   document.getElementById('ifDelBtn').style.display='';
+  const breedBtn=document.getElementById('ifBreedBtn');
+  if(breedBtn) breedBtn.style.display=(type==='livestock'&&item.status==='alive')?'':'none';
   _ifRenderAll(type,item);
   _syncIconDisplay(item.icon||'');
   const ov=document.getElementById('itemFormOverlay');
@@ -620,6 +630,32 @@ function IF_del(){
   toast('已删除');
 }
 
+
+function P_breedItem(){
+  // Create a child item from current item being edited
+  const inv=P_loadInv();
+  const arr=inv.livestock||[];
+  const parent=arr[_ifIdx];
+  if(!parent){toast('未找到母体');return;}
+  const child={
+    name:parent.name,
+    breed:parent.breed||'',
+    size:'',
+    icon:parent.icon||'',
+    addDate:new Date().toISOString().slice(0,10),
+    source:'',
+    price:0,
+    status:'alive',
+    origin:'breed',
+    parentId:_ifIdx.toString(),
+    notes:'繁殖自母体'
+  };
+  arr.push(child);
+  P_saveInv(inv);
+  IF_close();
+  renderProfile();
+  toast('已添加繁殖子体');
+}
 function initProfile(){
   // Profile page is render-only, no special init needed
 }

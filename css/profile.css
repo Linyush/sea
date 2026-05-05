@@ -213,3 +213,10 @@
 }
 /* Preview area glow enhancement */
 .ip-big-preview span{transition:filter .3s ease}
+
+/* Breed button */
+.btn-breed{background:#2d8a4e;color:#fff;border:none;padding:8px 14px;border-radius:8px;font-size:14px;cursor:pointer}
+.btn-breed:hover{background:#236b3d}
+
+/* Breed badge */
+.inv-badge-breed{position:absolute;top:5px;left:6px;font-size:12px;line-height:1;z-index:1;opacity:.85}

@@ -387,7 +387,7 @@ function IP_render(){
   IP_renderColors();
   IP_updatePreview();
 }
-const IP_PALETTE=['#4a90d9','#00d2ff','#7b68ee','#22bb88','#f59e0b','#ff6b6b','#ff85c0','#a855f7','#64748b','#e74c3c','#1abc9c','#f39c12','#2ecc71','#3498db','#9b59b6','#e91e63'];
+const IP_PALETTE=['#e74c3c','#e67e22','#f1c40f','#2ecc71','#00b894','#1abc9c','#0984e3','#00cec9','#3498db','#6c5ce7','#9b59b6','#e91e63','#fd79a8','#795548','#607d8b','#2c3e50'];
 function IP_renderColors(){
   const grid=document.getElementById('ipColorGrid');
   grid.innerHTML=IP_PALETTE.map(c=>{

@@ -169,7 +169,7 @@ function P_renderInvSection(prefix,items,type){
     // Badge for dead/sold
     let badge='';
     if(item.status==='dead') badge='<span class="inv-badge inv-badge-dead" title="死亡">💀</span>';
-    else if(item.status==='sold') badge='<span class="inv-badge inv-badge-sold" title="售出">💰</span>';
+    else if(item.status==='sold') badge='<span class="inv-badge inv-badge-sold" title="售出">💸</span>';
 
     h+='<div class="inv-card'+stClass+'" onclick="P_editItem(&#39;'+type+'&#39;,'+i+')">'+badge+iconHtml;
     

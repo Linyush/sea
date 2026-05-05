@@ -211,6 +211,12 @@ function _daysRemain(dateStr){
   return Math.ceil((d-today)/(86400000));
 }
 
+function _glowCSS(level,color){
+  if(!level)return '';
+  if(level===1) return ';filter:drop-shadow(0 0 3px '+color+') drop-shadow(0 0 6px '+color+'40)';
+  if(level===2) return ';filter:drop-shadow(0 0 4px '+color+') drop-shadow(0 0 8px '+color+') brightness(1.15) saturate(1.3)';
+  return ';filter:drop-shadow(0 0 4px '+color+') drop-shadow(0 0 10px '+color+') drop-shadow(0 0 18px '+color+'60) brightness(1.25) saturate(1.5)';
+}
 function _renderCard(item,i,type){
   const _iconRaw=item.icon||'';
   const _iconParts=_iconRaw.split('|');
@@ -218,8 +224,8 @@ function _renderCard(item,i,type){
   const iconColor=_iconParts[1]||'var(--accent)';
   const iconGlow=parseInt(_iconParts[2])||0;
   const hasSvg=iconKey&&P_ICONS[iconKey];
-  const glowStyle=iconGlow>0?';filter:drop-shadow(0 0 '+(iconGlow*3)+'px '+iconColor+')':'';
-  const iconHtml=hasSvg?'<div class="inv-card-icon" style="color:'+iconColor+glowStyle+'">'+P_ICONS[iconKey]+'</div>':'<div class="inv-icon">📦</div>';
+  const glowStyle=_glowCSS(iconGlow,iconColor);
+  const iconHtml=hasSvg?'<div class="inv-card-icon'+(iconGlow>0?' glow-'+iconGlow:'')+'" style="color:'+iconColor+glowStyle+'">'+P_ICONS[iconKey]+'</div>':'<div class="inv-icon">📦</div>';
   const stClass=item.status?' st-'+item.status:'';
   let badge='';
   if(item.status==='dead') badge='<span class="inv-badge inv-badge-dead" title="死亡">💀</span>';
@@ -489,7 +495,7 @@ function IP_select(el){
 function IP_updatePreview(){
   const pv=document.getElementById('ipPreview');
   if(_ipIcon&&P_ICONS[_ipIcon]){
-    const gf=_ipGlow>0?';filter:drop-shadow(0 0 '+(_ipGlow*3)+'px '+_ipColor+')':'';
+    const gf=_glowCSS(_ipGlow,_ipColor);
     pv.innerHTML='<span style="color:'+_ipColor+gf+'">'+P_ICONS[_ipIcon]+'</span>';
   }else{
     pv.innerHTML='<span class="ip-no">未选择</span>';
@@ -503,7 +509,7 @@ function IP_confirm(){
   if(disp) disp.dataset.val=val;
   if(disp){
     if(_ipIcon&&P_ICONS[_ipIcon]){
-      const gf2=_ipGlow>0?';filter:drop-shadow(0 0 '+(_ipGlow*3)+'px '+_ipColor+')':'';
+      const gf2=_glowCSS(_ipGlow,_ipColor);
       disp.innerHTML='<span style="color:'+_ipColor+gf2+'">'+P_ICONS[_ipIcon]+'</span>';
     }else{
       disp.innerHTML='<span class="if-icon-plus">+</span><span class="if-icon-hint">图标</span>';
@@ -518,7 +524,7 @@ function _syncIconDisplay(val){
   disp.dataset.val=val||'';
   if(val&&val.includes('|')){
     const pp=val.split('|'),k=pp[0],c=pp[1],g=parseInt(pp[2])||0;
-    const gf=g>0?';filter:drop-shadow(0 0 '+(g*3)+'px '+c+')':'';
+    const gf=_glowCSS(g,c);
     if(P_ICONS[k]) disp.innerHTML='<span style="color:'+c+gf+'">'+P_ICONS[k]+'</span>';
     else disp.innerHTML='<span class="if-icon-plus">+</span><span class="if-icon-hint">图标</span>';
   }else{

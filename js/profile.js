@@ -139,7 +139,7 @@ function renderProfile(){
   if(t.volume) metaParts.push(t.volume+'L');
   if(daysSince>=0) metaParts.push('开缸 '+daysSince+' 天');
   hdrHtml+=metaParts.join(' · ');
-  hdrHtml+='</div></div><button class="profile-edit-btn" onclick="TF_open(&#39;'+t.id+'&#39;)">编辑</button>';
+  hdrHtml+='</div></div><button class="profile-edit-btn" onclick="TF_open(&#39;'+t.id+'&#39;)">编辑</button><button class="profile-edit-btn" onclick="BK_open()" style="margin-left:6px">备份</button>';
   hdr.innerHTML=hdrHtml;
   // Investment & Value
   const inv=P_loadInv();
@@ -154,13 +154,12 @@ function renderProfile(){
 
 function _renderInvestment(inv){
   const livestock=inv.livestock||[], equipment=inv.equipment||[], consumables=inv.consumables||[];
-  let liveCost=0, equipCost=0, cmCost=0, deathLoss=0, soldIncome=0, curValue=0;
+  let liveCost=0, equipCost=0, cmCost=0, deathLoss=0, soldIncome=0;
   livestock.forEach(item=>{
     const p=parseFloat(item.price)||0;
     liveCost+=p;
     if(item.status==='dead') deathLoss+=p;
     if(item.status==='sold') soldIncome+=parseFloat(item.sellPrice)||0;
-    if(item.status==='alive') curValue+=parseFloat(item.value)||p;
   });
 
   equipment.forEach(item=>{
@@ -168,7 +167,6 @@ function _renderInvestment(inv){
     equipCost+=p;
     if(item.status==='broken') deathLoss+=p;
     if(item.status==='sold') soldIncome+=parseFloat(item.sellPrice)||0;
-    if(item.status==='active') curValue+=p;
   });
   consumables.forEach(item=>{
     cmCost+=parseFloat(item.price)||0;
@@ -184,8 +182,10 @@ function _renderInvestment(inv){
     '<div class="pf-inv-item"><div class="pf-inv-val">'+fmt(cmCost)+'</div><div class="pf-inv-lbl">耗材</div></div>'+
     '<div class="pf-inv-item loss"><div class="pf-inv-val">'+fmt(deathLoss)+'</div><div class="pf-inv-lbl">死亡/损坏</div></div>'+
     '<div class="pf-inv-item gain"><div class="pf-inv-val">'+fmt(soldIncome)+'</div><div class="pf-inv-lbl">售出收入</div></div>'+
-    '<div class="pf-inv-item accent"><div class="pf-inv-val">'+fmt(curValue)+'</div><div class="pf-inv-lbl">现价值</div></div>';
+    '<div class="pf-inv-item accent"><div class="pf-inv-val">'+fmt(totalCost-soldIncome)+'</div><div class="pf-inv-lbl">净投入</div></div>';
 }
+
+function P_scrollTo(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:"smooth",block:"start"});}
 
 function _renderMaintenance(tank){
   const box=document.getElementById('pfMaintBox');
@@ -217,18 +217,23 @@ function _renderMaintenance(tank){
   }else{
     h+='<div class="pf-maint-row"><span class="pf-maint-icon">🧪</span><span>暂无测水记录</span></div>';
   }
-  // 2. Recent water quality (last row, highlight out-of-range)
+  // 2. Recent water quality (last row - always show all values)
   if(lastRow&&wFields.length){
-    let alerts=[];
+    let hasAlert=false;
+    let vals=[];
     wFields.forEach(f=>{
       const v=parseFloat(lastRow[f.key]);
       if(isNaN(v)) return;
-      if(f.lo!=null&&v<f.lo) alerts.push(f.name+' '+v+' <span class="pf-maint-lo">↓低</span>');
-      else if(f.hi!=null&&v>f.hi) alerts.push(f.name+' '+v+' <span class="pf-maint-hi">↑高</span>');
+      let cls='',suffix='';
+      if(f.lo!=null&&v<f.lo){cls=' class="pf-maint-lo"';suffix='↓';hasAlert=true;}
+      else if(f.hi!=null&&v>f.hi){cls=' class="pf-maint-hi"';suffix='↑';hasAlert=true;}
+      vals.push('<span'+cls+'>'+f.name+' '+v+suffix+'</span>');
     });
-    if(alerts.length) h+='<div class="pf-maint-row warn"><span class="pf-maint-icon">💧</span><span>水质异常：'+alerts.join('、')+'</span></div>';
-    else h+='<div class="pf-maint-row ok"><span class="pf-maint-icon">💧</span><span>水质正常</span></div>';
+    const rowCls=hasAlert?'pf-maint-row warn':'pf-maint-row ok';
+    h+='<div class="'+rowCls+'"><span class="pf-maint-icon">💧</span><span>'+(hasAlert?'水质异常':'水质正常')+'</span></div>';
+    h+='<div class="pf-maint-vals">'+vals.join(' ')+'</div>';
   }
+
   // 3. Recent livestock events (7 days)
   const inv=P_loadInv();
   const ls=inv.livestock||[];

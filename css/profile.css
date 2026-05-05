@@ -151,8 +151,11 @@
 .inv-badge-sold{font-size:13px}
 
 /* Import button in header */
-.inv-import-btn{background:none;border:1px solid var(--border2);color:var(--text4);padding:3px 10px;border-radius:6px;font-size:11px;cursor:pointer;transition:all .2s}
-.inv-import-btn:hover{border-color:var(--accent);color:var(--accent)}
+/* Status filter bar */
+.inv-filter-bar{display:flex;gap:4px;align-items:center}
+.inv-ft{background:none;border:none;padding:3px 6px;border-radius:6px;font-size:14px;cursor:pointer;opacity:.45;transition:all .2s;line-height:1}
+.inv-ft:hover{opacity:.8;background:var(--border)}
+.inv-ft.active{opacity:1;background:color-mix(in srgb,var(--accent) 12%,transparent);box-shadow:0 0 0 1px color-mix(in srgb,var(--accent) 30%,transparent)}
 
 /* Import modal */
 .imp-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0);z-index:400;align-items:center;justify-content:center;transition:background .3s}
@@ -182,18 +185,8 @@
 .imp-preview-table td{padding:5px 8px;border-bottom:1px solid var(--border);color:var(--text)}
 
 /* Header actions group */
-.inv-header-actions{display:flex;gap:6px;align-items:center}
-.inv-clear-btn{background:none;border:1px solid var(--border2);color:var(--text4);padding:3px 10px;border-radius:6px;font-size:11px;cursor:pointer;transition:all .2s}
-.inv-clear-btn:hover{border-color:#e74c3c;color:#e74c3c}
 
 /* Inactive items toggle */
-.inv-inactive-toggle{display:flex;align-items:center;gap:6px;padding:8px 12px;margin-top:10px;cursor:pointer;color:var(--text4);font-size:12px;border-radius:8px;transition:all .2s;user-select:none}
-.inv-inactive-toggle:hover{background:var(--input-bg);color:var(--text3)}
-.inv-inactive-label{font-weight:500}
-.inv-inactive-arrow{font-size:10px;transition:transform .2s}
-.inv-inactive-toggle.open .inv-inactive-arrow{transform:rotate(90deg)}
-.inv-inactive-section{max-height:0;overflow:hidden;transition:max-height .3s ease;margin-top:0}
-.inv-inactive-section.open{max-height:2000px;margin-top:10px}
 
 /* Glow/Fluorescence controls */
 .ip-glow-section{margin-top:12px}

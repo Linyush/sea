@@ -263,9 +263,19 @@ function _renderCard(item,i,type){
 }
 
 const _INACTIVE_ST=['sold','dead','moved','empty','expired','broken'];
+const _filterState={livestock:'all',equipment:'all',consumable:'all'};
+function P_filter(btn){
+  const bar=btn.parentElement;
+  const type=bar.dataset.type;
+  const f=btn.dataset.f;
+  _filterState[type]=f;
+  bar.querySelectorAll('.inv-ft').forEach(b=>b.classList.toggle('active',b===btn));
+  renderProfile();
+}
 function P_renderInvSection(prefix,items,type){
   const countEl=document.getElementById(prefix+'Count');
   const gridEl=document.getElementById(prefix+'Grid');
+  const filter=_filterState[type]||'all';
   const active=[], inactive=[];
   items.forEach((item,i)=>{
     if(_INACTIVE_ST.includes(item.status)) inactive.push({item,i});
@@ -273,17 +283,14 @@ function P_renderInvSection(prefix,items,type){
   });
   countEl.textContent=items.length?active.length+'/'+items.length:'';
   const typeName=IF_TITLES[type]||'';
+  let filtered=[];
+  if(filter==='all') filtered=active.concat(inactive);
+  else if(filter==='active') filtered=active;
+  else filtered=items.map((item,i)=>({item,i})).filter(({item})=>item.status===filter);
   let h='<div class="inv-grid">';
-  active.forEach(({item,i})=>{ h+=_renderCard(item,i,type); });
+  filtered.forEach(({item,i})=>{ h+=_renderCard(item,i,type); });
   h+='<div class="inv-card inv-card-add" onclick="P_openForm(&#39;'+type+'&#39;)"><span class="inv-add-plus">+</span><span class="inv-add-label">添加'+typeName+'</span></div>';
   h+='</div>';
-  if(inactive.length){
-    h+='<div class="inv-inactive-toggle" onclick="this.nextElementSibling.classList.toggle(&#39;open&#39;);this.classList.toggle(&#39;open&#39;)">';
-    h+='<span class="inv-inactive-label">已失活 '+inactive.length+' 项</span><span class="inv-inactive-arrow">▸</span></div>';
-    h+='<div class="inv-inactive-section"><div class="inv-grid">';
-    inactive.forEach(({item,i})=>{ h+=_renderCard(item,i,type); });
-    h+='</div></div>';
-  }
   gridEl.innerHTML=h;
 }
 

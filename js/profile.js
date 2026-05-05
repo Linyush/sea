@@ -113,16 +113,16 @@ function _getItemDate(item){
   return item.addDate||item.date||item.purchaseDate||item.buyDate||'';
 }
 function _sortByDate(items){
-  return items.slice().sort((a,b)=>_parseDate(_getItemDate(a))-_parseDate(_getItemDate(b)));
+  return items.slice().sort((a,b)=>{const d=_parseDate(_getItemDate(a))-_parseDate(_getItemDate(b));return d!==0?d:(a.name||'').localeCompare(b.name||'','zh');});
 }
 function P_loadInv(){
   const s=_g(P_INV_KEY());
   let inv={livestock:[],equipment:[],consumables:[]};
   if(s){try{inv=JSON.parse(s);}catch(e){}}
   // Sort all arrays by addDate ascending (in place)
-  if(inv.livestock) inv.livestock.sort((a,b)=>_parseDate(_getItemDate(a))-_parseDate(_getItemDate(b)));
-  if(inv.equipment) inv.equipment.sort((a,b)=>_parseDate(_getItemDate(a))-_parseDate(_getItemDate(b)));
-  if(inv.consumables) inv.consumables.sort((a,b)=>_parseDate(_getItemDate(a))-_parseDate(_getItemDate(b)));
+  if(inv.livestock) inv.livestock.sort((a,b)=>{const d=_parseDate(_getItemDate(a))-_parseDate(_getItemDate(b));return d!==0?d:(a.name||'').localeCompare(b.name||'','zh');});
+  if(inv.equipment) inv.equipment.sort((a,b)=>{const d=_parseDate(_getItemDate(a))-_parseDate(_getItemDate(b));return d!==0?d:(a.name||'').localeCompare(b.name||'','zh');});
+  if(inv.consumables) inv.consumables.sort((a,b)=>{const d=_parseDate(_getItemDate(a))-_parseDate(_getItemDate(b));return d!==0?d:(a.name||'').localeCompare(b.name||'','zh');});
   return inv;
 }
 function P_saveInv(inv){

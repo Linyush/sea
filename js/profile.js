@@ -60,9 +60,9 @@ const P_DEF_ICONS={
 /* Sort items by addDate ascending (oldest first) */
 function _sortByDate(items){
   return items.slice().sort((a,b)=>{
-    const da=a.addDate||'9999-99-99';
-    const db=b.addDate||'9999-99-99';
-    return da.localeCompare(db);
+    const da=a.addDate?new Date(a.addDate+'T00:00:00').getTime():Infinity;
+    const db=b.addDate?new Date(b.addDate+'T00:00:00').getTime():Infinity;
+    return da-db;
   });
 }
 function P_loadInv(){

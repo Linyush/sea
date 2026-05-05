@@ -208,10 +208,11 @@ function _renderInvestment(inv){
   if(!box) return;
   const deadFilter=firstDeadTab==='livestock'?'dead':'broken';
   box.innerHTML=
-    '<div class="pf-inv-rows">'+
+    '<div class="pf-inv-left">'+
       '<div class="pf-inv-row pf-inv-row-accent"><span class="pf-inv-row-name">\u51c0\u6295\u5165</span><span class="pf-inv-row-val">'+fmt(netCost)+'</span></div>'+
       '<div class="pf-inv-row"><span class="pf-inv-row-name">\u603b\u6295\u5165</span><span class="pf-inv-row-val">'+fmt(totalCost)+'</span></div>'+
-      '<div class="pf-inv-sep"></div>'+
+    '</div>'+
+    '<div class="pf-inv-right">'+
       '<div class="pf-inv-row pf-inv-click" onclick="P_switchTab(\'livestock\')"><span class="pf-inv-row-name">\u751f\u7269</span><span class="pf-inv-row-cnt">'+liveCount+'</span><span class="pf-inv-row-val">'+fmt(liveCost)+'</span></div>'+
       '<div class="pf-inv-row pf-inv-click" onclick="P_switchTab(\'equipment\')"><span class="pf-inv-row-name">\u8bbe\u5907</span><span class="pf-inv-row-cnt">'+equipCount+'</span><span class="pf-inv-row-val">'+fmt(equipCost)+'</span></div>'+
       '<div class="pf-inv-row pf-inv-click" onclick="P_switchTab(\'consumable\')"><span class="pf-inv-row-name">\u8017\u6750</span><span class="pf-inv-row-cnt">'+cmCount+'</span><span class="pf-inv-row-val">'+fmt(cmCost)+'</span></div>'+

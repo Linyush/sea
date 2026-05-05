@@ -131,67 +131,129 @@ function P_saveInv(inv){
 
 function renderProfile(){
   const t=TK_current();
-  // Header
+  // Header - simplified: name, volume, days
   const hdr=document.getElementById('profileHeader');
   const daysSince=t.startDate?Math.floor((Date.now()-new Date(t.startDate+'T00:00:00').getTime())/(86400000)):-1;
-  hdr.innerHTML='<div class="profile-avatar">🐠</div><div class="profile-info"><h2>'+t.name+'</h2><div class="meta">'+t.type+(daysSince>=0?' · 开缸 '+daysSince+' 天':'')+'</div></div><button class="profile-edit-btn" onclick="TF_open(&#39;'+t.id+'&#39;)">编辑</button>';
-  // Grid
-  const grid=document.getElementById('profileGrid');
-  let gh='';
-  gh+='<div class="profile-field"><div class="pf-label">类型</div><div class="pf-value">'+t.type+'</div></div>';
-  gh+='<div class="profile-field"><div class="pf-label">水体</div><div class="pf-value accent">'+t.volume+' L</div></div>';
-  if(t.startDate)gh+='<div class="profile-field"><div class="pf-label">开缸日期</div><div class="pf-value">'+t.startDate+'</div></div>';
-  if(daysSince>=0)gh+='<div class="profile-field"><div class="pf-label">开缸天数</div><div class="pf-value accent">'+daysSince+' 天</div></div>';
-  if(t.source)gh+='<div class="profile-field"><div class="pf-label">购入渠道</div><div class="pf-value">'+t.source+'</div></div>';
-  if(t.price)gh+='<div class="profile-field"><div class="pf-label">价格</div><div class="pf-value">¥'+t.price+'</div></div>';
-  if(t.notes)gh+='<div class="profile-field" style="grid-column:1/-1"><div class="pf-label">备注</div><div class="pf-value" style="font-size:13px;font-weight:400">'+t.notes+'</div></div>';
-  grid.innerHTML=gh;
-  // Inventory
+  let hdrHtml='<div class="profile-avatar">🐠</div><div class="profile-info"><h2>'+t.name+'</h2><div class="meta">';
+  const metaParts=[t.type];
+  if(t.volume) metaParts.push(t.volume+'L');
+  if(daysSince>=0) metaParts.push('开缸 '+daysSince+' 天');
+  hdrHtml+=metaParts.join(' · ');
+  hdrHtml+='</div></div><button class="profile-edit-btn" onclick="TF_open(&#39;'+t.id+'&#39;)">编辑</button>';
+  hdr.innerHTML=hdrHtml;
+  // Investment & Value
   const inv=P_loadInv();
+  _renderInvestment(inv);
+  // Maintenance tips
+  _renderMaintenance(t);
+  // Inventory sections
   P_renderInvSection('ls',inv.livestock||[],'livestock');
   P_renderInvSection('eq',inv.equipment||[],'equipment');
   P_renderInvSection('cm',inv.consumables||[],'consumable');
 }
 
-
-function P_renderStats(){
-  const inv=JSON.parse(localStorage.getItem(P_INV_KEY())||'{}');
+function _renderInvestment(inv){
   const livestock=inv.livestock||[], equipment=inv.equipment||[], consumables=inv.consumables||[];
-  
-  const totalLive=livestock.length;
-  const alive=livestock.filter(x=>x.status==='alive').length;
-  const dead=livestock.filter(x=>x.status==='dead').length;
-  const survivalRate=totalLive>0?Math.round(alive/totalLive*100):0;
-  
-  const totalEquip=equipment.length;
-  const activeEquip=equipment.filter(x=>x.status==='active').length;
-  
-  let totalCost=0;
-  livestock.forEach(x=>{if(x.price)totalCost+=parseFloat(x.price)||0;});
-  equipment.forEach(x=>{if(x.price)totalCost+=parseFloat(x.price)||0;});
-  consumables.forEach(x=>{if(x.price)totalCost+=parseFloat(x.price)||0;});
-  
-  let waterCount=0;
-  try{const wd=JSON.parse(localStorage.getItem(W_SK())||'{}');waterCount=(wd.rows||[]).length;}catch(e){}
-  
-  const fmtCost=totalCost>=10000?(totalCost/10000).toFixed(1)+'万':totalCost.toFixed(0);
-  
-  const statsHtml='<div class="pf-stats">'+
-    '<div class="pf-stat-card"><div class="pf-stat-val">'+alive+'<span class="pf-stat-unit">/'+totalLive+'</span></div><div class="pf-stat-lbl">生物存活</div>'+(totalLive>0?'<div class="pf-stat-rate'+(survivalRate<70?' low':'')+'">'+survivalRate+'%</div>':'')+'</div>'+
-    '<div class="pf-stat-card"><div class="pf-stat-val">'+activeEquip+'<span class="pf-stat-unit">/'+totalEquip+'</span></div><div class="pf-stat-lbl">设备运行</div></div>'+
-    '<div class="pf-stat-card"><div class="pf-stat-val">'+consumables.length+'</div><div class="pf-stat-lbl">耗材种类</div></div>'+
-    '<div class="pf-stat-card"><div class="pf-stat-val">¥'+fmtCost+'</div><div class="pf-stat-lbl">累计投入</div></div>'+
-    '<div class="pf-stat-card"><div class="pf-stat-val">'+waterCount+'</div><div class="pf-stat-lbl">水质记录</div></div>'+
-  '</div>';
-  
-  const pfEl=document.getElementById('profilePage');
-  if(!pfEl)return;
-  const firstInvSec=pfEl.querySelector('.inv-section');
-  if(firstInvSec){
-    const d=document.createElement('div');d.innerHTML=statsHtml;
-    pfEl.insertBefore(d.firstElementChild,firstInvSec);
-  }
+  let liveCost=0, equipCost=0, cmCost=0, deathLoss=0, soldIncome=0, curValue=0;
+  livestock.forEach(item=>{
+    const p=parseFloat(item.price)||0;
+    liveCost+=p;
+    if(item.status==='dead') deathLoss+=p;
+    if(item.status==='sold') soldIncome+=parseFloat(item.sellPrice)||0;
+    if(item.status==='alive') curValue+=parseFloat(item.value)||p;
+  });
+
+  equipment.forEach(item=>{
+    const p=parseFloat(item.price)||0;
+    equipCost+=p;
+    if(item.status==='broken') deathLoss+=p;
+    if(item.status==='sold') soldIncome+=parseFloat(item.sellPrice)||0;
+    if(item.status==='active') curValue+=p;
+  });
+  consumables.forEach(item=>{
+    cmCost+=parseFloat(item.price)||0;
+  });
+  const totalCost=liveCost+equipCost+cmCost;
+  const fmt=v=>v>=10000?'¥'+(v/10000).toFixed(1)+'万':'¥'+v.toFixed(0);
+  const box=document.getElementById('pfInvestBox');
+  if(!box) return;
+  box.innerHTML=
+    '<div class="pf-inv-item"><div class="pf-inv-val">'+fmt(totalCost)+'</div><div class="pf-inv-lbl">合计投入</div></div>'+
+    '<div class="pf-inv-item"><div class="pf-inv-val">'+fmt(liveCost)+'</div><div class="pf-inv-lbl">生物</div></div>'+
+    '<div class="pf-inv-item"><div class="pf-inv-val">'+fmt(equipCost)+'</div><div class="pf-inv-lbl">设备</div></div>'+
+    '<div class="pf-inv-item"><div class="pf-inv-val">'+fmt(cmCost)+'</div><div class="pf-inv-lbl">耗材</div></div>'+
+    '<div class="pf-inv-item loss"><div class="pf-inv-val">'+fmt(deathLoss)+'</div><div class="pf-inv-lbl">死亡/损坏</div></div>'+
+    '<div class="pf-inv-item gain"><div class="pf-inv-val">'+fmt(soldIncome)+'</div><div class="pf-inv-lbl">售出收入</div></div>'+
+    '<div class="pf-inv-item accent"><div class="pf-inv-val">'+fmt(curValue)+'</div><div class="pf-inv-lbl">现价值</div></div>';
 }
+
+function _renderMaintenance(tank){
+  const box=document.getElementById('pfMaintBox');
+  if(!box) return;
+  let h='';
+  // 1. Last/next maintenance (based on water test log)
+  const wKey='reef_'+_activeTank+'_water_v10';
+  let lastTestDate=null, wFields=[], lastRow=null;
+  try{
+    const wd=JSON.parse(_g(wKey)||'{}');
+    wFields=wd.fields||[];
+    const wRows=wd.rows||[];
+    if(wRows.length){
+      wRows.sort((a,b)=>a.date.localeCompare(b.date));
+      lastRow=wRows[wRows.length-1];
+      lastTestDate=lastRow.date;
+    }
+  }catch(e){}
+  const today=new Date();today.setHours(0,0,0,0);
+  if(lastTestDate){
+    const lastD=new Date(lastTestDate+'T00:00:00');
+    const daysSinceMaint=Math.floor((today-lastD)/86400000);
+    h+='<div class="pf-maint-row"><span class="pf-maint-icon">🧪</span><span>上次测水：<b>'+daysSinceMaint+' 天前</b></span></div>';
+    if(tank.maintCycle&&tank.maintCycle>0){
+      const nextDays=tank.maintCycle-daysSinceMaint;
+      if(nextDays>0) h+='<div class="pf-maint-row"><span class="pf-maint-icon">⏰</span><span>下次维护：还剩 <b>'+nextDays+' 天</b></span></div>';
+      else h+='<div class="pf-maint-row warn"><span class="pf-maint-icon">⚠️</span><span>维护已超期 <b>'+Math.abs(nextDays)+' 天</b></span></div>';
+    }
+  }else{
+    h+='<div class="pf-maint-row"><span class="pf-maint-icon">🧪</span><span>暂无测水记录</span></div>';
+  }
+  // 2. Recent water quality (last row, highlight out-of-range)
+  if(lastRow&&wFields.length){
+    let alerts=[];
+    wFields.forEach(f=>{
+      const v=parseFloat(lastRow[f.key]);
+      if(isNaN(v)) return;
+      if(f.lo!=null&&v<f.lo) alerts.push(f.name+' '+v+' <span class="pf-maint-lo">↓低</span>');
+      else if(f.hi!=null&&v>f.hi) alerts.push(f.name+' '+v+' <span class="pf-maint-hi">↑高</span>');
+    });
+    if(alerts.length) h+='<div class="pf-maint-row warn"><span class="pf-maint-icon">💧</span><span>水质异常：'+alerts.join('、')+'</span></div>';
+    else h+='<div class="pf-maint-row ok"><span class="pf-maint-icon">💧</span><span>水质正常</span></div>';
+  }
+  // 3. Recent livestock events (7 days)
+  const inv=P_loadInv();
+  const ls=inv.livestock||[];
+  const weekAgo=new Date(today.getTime()-7*86400000);
+  let newCount=0, deadCount=0;
+  ls.forEach(item=>{
+    if(item.addDate){const d=new Date(item.addDate+'T00:00:00');if(d>=weekAgo)newCount++;}
+    if(item.status==='dead'&&item.deathDate){const d=new Date(item.deathDate+'T00:00:00');if(d>=weekAgo)deadCount++;}
+  });
+  if(deadCount) h+='<div class="pf-maint-row warn"><span class="pf-maint-icon">🐠</span><span>近7天死亡 <b>'+deadCount+'</b> 个生物</span></div>';
+  else if(newCount) h+='<div class="pf-maint-row ok"><span class="pf-maint-icon">🐠</span><span>近7天新增 <b>'+newCount+'</b> 个生物</span></div>';
+  // 4. Consumable replace reminders
+  const cms=inv.consumables||[];
+  const expiring=[];
+  cms.forEach(item=>{
+    if(item.status==='inuse'&&item.replaceDate){
+      const remain=_daysRemain(item.replaceDate);
+      if(remain!==null&&remain<=7) expiring.push(item.name+(remain<=0?' (已到期)':' ('+remain+'天)'));
+    }
+  });
+  if(expiring.length) h+='<div class="pf-maint-row warn"><span class="pf-maint-icon">📦</span><span>耗材提醒：'+expiring.join('、')+'</span></div>';
+  if(!h) h='<div class="pf-maint-row ok"><span class="pf-maint-icon">✅</span><span>一切正常</span></div>';
+  box.innerHTML=h;
+}
+
 
 /* Check if a date string is overdue (past today) */
 

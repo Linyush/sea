@@ -7,15 +7,15 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a1628'/%3E%3Cpath d='M12 40Q20 20 32 30Q44 40 52 22' stroke='%2300d2ff' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='30' r='3' fill='%237b68ee'/%3E%3C/svg%3E">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<link rel="stylesheet" href="css/base.css?v=20260505z">
-<link rel="stylesheet" href="css/header.css?v=20260505z">
-<link rel="stylesheet" href="css/pages.css?v=20260505z">
-<link rel="stylesheet" href="css/water.css?v=20260505z">
-<link rel="stylesheet" href="css/light.css?v=20260505z">
-<link rel="stylesheet" href="css/change.css?v=20260505z">
-<link rel="stylesheet" href="css/titrate.css?v=20260505z">
-<link rel="stylesheet" href="css/tank.css?v=20260505z">
-<link rel="stylesheet" href="css/profile.css?v=20260505z">
+<link rel="stylesheet" href="css/base.css?v=20260505aa">
+<link rel="stylesheet" href="css/header.css?v=20260505aa">
+<link rel="stylesheet" href="css/pages.css?v=20260505aa">
+<link rel="stylesheet" href="css/water.css?v=20260505aa">
+<link rel="stylesheet" href="css/light.css?v=20260505aa">
+<link rel="stylesheet" href="css/change.css?v=20260505aa">
+<link rel="stylesheet" href="css/titrate.css?v=20260505aa">
+<link rel="stylesheet" href="css/tank.css?v=20260505aa">
+<link rel="stylesheet" href="css/profile.css?v=20260505aa">
 </head>
 <body>
 <div class="container">
@@ -45,7 +45,14 @@
   <section class="page-section" id="page-profile">
     <div class="card anim-in anim-d1" style="padding:24px">
       <div class="profile-header" id="profileHeader"></div>
-      <div class="profile-grid" id="profileGrid"></div>
+    </div>
+    <div class="card anim-in anim-d1" style="padding:20px;margin-top:12px">
+      <div class="pf-mod-title">💰 投入与价值</div>
+      <div id="pfInvestBox" class="pf-invest-grid"></div>
+    </div>
+    <div class="card anim-in anim-d1" style="padding:20px;margin-top:12px">
+      <div class="pf-mod-title">🔔 维护提示</div>
+      <div id="pfMaintBox"></div>
     </div>
     <div class="card anim-in anim-d2" style="padding:24px;margin-top:16px">
       <div class="inv-section">
@@ -407,6 +414,7 @@
     <div class="if-row"><label class="req">类型</label><select id="tfType"><option value="LPS">LPS</option><option value="SPS">SPS</option><option value="FOT">FOT</option><option value="NPS">NPS</option><option value="其他">其他</option></select></div>
     <div class="if-row"><label class="req">水体</label><input type="number" id="tfVolume" placeholder="升" step="1"><span style="color:var(--text4);font-size:12px;margin-left:-4px">L</span></div>
     <div class="if-row"><label>开缸日期</label><input type="date" id="tfStart"></div>
+    <div class="if-row"><label>维护周期</label><input type="number" id="tfMaintCycle" placeholder="天" step="1"><span style="color:var(--text4);font-size:12px;margin-left:-4px">天</span></div>
     <div class="if-row"><label>购入渠道</label><input id="tfSource" placeholder="选填"></div>
     <div class="if-row"><label>价格</label><input type="number" id="tfPrice" placeholder="¥"></div>
     <div class="if-row"><label>备注</label><textarea id="tfNotes" rows="2" placeholder="选填"></textarea></div>
@@ -489,15 +497,15 @@
   </div>
 </div>
 
-<script src="js/utils.js?v=20260505z"></script>
-<script src="js/tank.js?v=20260505z"></script>
-<script src="js/profile.js?v=20260505z"></script>
-<script src="js/router.js?v=20260505z"></script>
-<script src="js/water.js?v=20260505z"></script>
-<script src="js/light.js?v=20260505z"></script>
-<script src="js/change.js?v=20260505z"></script>
-<script src="js/titrate.js?v=20260505z"></script>
-<script src="js/init.js?v=20260505z"></script>
+<script src="js/utils.js?v=20260505aa"></script>
+<script src="js/tank.js?v=20260505aa"></script>
+<script src="js/profile.js?v=20260505aa"></script>
+<script src="js/router.js?v=20260505aa"></script>
+<script src="js/water.js?v=20260505aa"></script>
+<script src="js/light.js?v=20260505aa"></script>
+<script src="js/change.js?v=20260505aa"></script>
+<script src="js/titrate.js?v=20260505aa"></script>
+<script src="js/init.js?v=20260505aa"></script>
 <!-- ========== Icon Picker Modal ========== -->
   <div class="ip-overlay" id="iconPickerOverlay" onclick="if(event.target===this)IP_close()">
     <div class="ip-box">

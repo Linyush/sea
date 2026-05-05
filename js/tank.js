@@ -168,9 +168,10 @@ function TF_open(editId){
       document.getElementById('tfSource').value=t.source||'';
       document.getElementById('tfPrice').value=t.price||'';
       document.getElementById('tfNotes').value=t.notes||'';
+      document.getElementById('tfMaintCycle').value=t.maintCycle||'';
     }
   }else{
-    ['tfName','tfVolume','tfStart','tfSource','tfPrice','tfNotes'].forEach(id=>{document.getElementById(id).value='';});
+    ['tfName','tfVolume','tfStart','tfSource','tfPrice','tfNotes','tfMaintCycle'].forEach(id=>{document.getElementById(id).value='';});
     document.getElementById('tfType').value='LPS';
   }
   ov.style.display='flex';requestAnimationFrame(()=>ov.classList.add('open'));
@@ -193,6 +194,7 @@ function TF_save(){
       t.source=document.getElementById('tfSource').value.trim();
       t.price=document.getElementById('tfPrice').value;
       t.notes=document.getElementById('tfNotes').value.trim();
+      t.maintCycle=parseInt(document.getElementById('tfMaintCycle').value)||0;
       TK_save();TK_renderBar();
       if(_currentPage==='profile')renderProfile();
       toast('已更新 '+name);
@@ -205,6 +207,7 @@ function TF_save(){
       source:document.getElementById('tfSource').value.trim(),
       price:document.getElementById('tfPrice').value,
       notes:document.getElementById('tfNotes').value.trim(),
+      maintCycle:parseInt(document.getElementById('tfMaintCycle').value)||0,
       order:_tanks.length
     };
     _tanks.push(tank);

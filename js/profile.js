@@ -300,7 +300,7 @@ function P_renderInvSection(prefix,items,type){
   countEl.textContent=items.length?active.length+'/'+items.length:'';
   const typeName=IF_TITLES[type]||'';
   let filtered=[];
-  if(filter==='all') filtered=active.concat(inactive);
+  if(filter==='all') filtered=mainItems;
   else if(filter==='active') filtered=active;
   else filtered=mainItems.filter(({item})=>item.status===filter);
   let h='<div class="inv-grid">';

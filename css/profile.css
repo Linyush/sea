@@ -19,12 +19,14 @@
 .inv-tab.active{color:var(--accent);border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent);font-weight:600}
 .inv-tab .count{font-size:10px;color:var(--text4);font-weight:400;margin-left:2px}
 .inv-tab.active .count{color:var(--accent)}
-.inv-tab-add{border:1px dashed var(--border2);color:var(--text4);font-size:14px;padding:4px 10px;font-weight:400}
-.inv-tab-add:hover{border-color:var(--accent);color:var(--accent)}
 .inv-panel{min-height:40px}
 .inv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
 .inv-card{background:var(--input-bg);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
 .inv-card:hover{border-color:var(--accent);transform:translateY(-1px)}
+.inv-card.inv-card-add{border:1.5px dashed var(--border2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--text4);min-height:90px}
+.inv-card.inv-card-add:hover{border-color:var(--accent);color:var(--accent);transform:none}
+.inv-add-plus{font-size:22px;line-height:1;font-weight:300}
+.inv-add-label{font-size:11px;font-weight:500}
 .inv-card .inv-icon{font-size:28px;margin-bottom:4px;line-height:1.2}
 .inv-card .inv-name{font-size:12px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .inv-card .inv-sub{font-size:10px;color:var(--text4);margin-top:2px}

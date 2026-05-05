@@ -137,10 +137,7 @@ function P_renderInvSection(prefix,items,type){
   const gridEl=document.getElementById(prefix+'Grid');
   const activeItems=items.filter(x=>x.status!=='sold'&&x.status!=='dead'&&x.status!=='moved'&&x.status!=='empty');
   countEl.textContent=items.length?activeItems.length+'/'+items.length:'';
-  if(!items.length){
-    gridEl.innerHTML='';
-    return;
-  }
+  const typeName=IF_TITLES[type]||'';
   let h='<div class="inv-grid">';
   items.forEach((item,i)=>{
     const statusCls='s-'+(item.status||'alive');
@@ -157,6 +154,8 @@ function P_renderInvSection(prefix,items,type){
     h+='<div class="inv-status '+statusCls+'">'+statusTxt+'</div>';
     h+='</div>';
   });
+  /* Add card at the end */
+  h+='<div class="inv-card inv-card-add" onclick="P_openForm(&#39;'+type+'&#39;)"><span class="inv-add-plus">+</span><span class="inv-add-label">添加'+typeName+'</span></div>';
   h+='</div>';
   gridEl.innerHTML=h;
 }

@@ -1,13 +1,17 @@
-/* === Tank Bar === */
-.tank-bar{display:flex;align-items:center;gap:6px;padding:8px 0;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;margin-bottom:8px}
-.tank-bar::-webkit-scrollbar{display:none}
-.tank-tab{padding:5px 14px;font-size:12px;font-weight:500;color:var(--text3);background:var(--card);border:1px solid var(--border);border-radius:20px;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0;display:flex;align-items:center;gap:4px}
+/* === App Layout === */
+.app-layout{display:flex;min-height:100vh}
+
+/* === Tank Sidebar === */
+.tank-sidebar{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px 6px;overflow-y:auto;scrollbar-width:none;background:var(--bg);border-right:1px solid var(--border);z-index:10;flex-shrink:0}
+.tank-sidebar::-webkit-scrollbar{display:none}
+.tank-tab{writing-mode:vertical-rl;text-orientation:mixed;padding:12px 6px;font-size:12px;font-weight:500;color:var(--text3);background:var(--card);border:1px solid var(--border);border-radius:8px;cursor:pointer;white-space:nowrap;transition:all .2s;display:flex;align-items:center;gap:4px;letter-spacing:2px}
 .tank-tab:hover{border-color:var(--accent);color:var(--text)}
 .tank-tab.active{color:var(--accent);border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent);font-weight:600}
-.tank-tab .t-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);display:none}
+.tank-tab .t-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);display:none}
 .tank-tab.active .t-dot{display:block}
-.tank-add{padding:5px 10px;font-size:13px;color:var(--text4);background:none;border:1px dashed var(--border);border-radius:20px;cursor:pointer;transition:all .2s;flex-shrink:0}
+.tank-add{writing-mode:vertical-rl;padding:8px 6px;font-size:13px;color:var(--text4);background:none;border:1px dashed var(--border);border-radius:8px;cursor:pointer;transition:all .2s}
 .tank-add:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:520px){.tank-sidebar{position:fixed;left:0;top:0;height:100vh;padding:12px 4px;z-index:100}.container{margin-left:36px}}
 .tank-ctx{position:fixed;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:4px;box-shadow:0 4px 16px var(--shadow);z-index:500;min-width:100px}
 .tank-ctx button{display:block;width:100%;text-align:left;background:none;border:none;color:var(--text2);font-size:12px;padding:6px 10px;border-radius:4px;cursor:pointer;transition:background .2s}
 .tank-ctx button:hover{background:var(--hover);color:var(--text)}

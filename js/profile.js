@@ -65,12 +65,14 @@ const P_DEF_ICONS={
 
 
 /* Sort items by addDate ascending (oldest first) */
+function _parseDate(s){
+  if(!s)return Infinity;
+  const p=s.split('-').map(Number);
+  if(p.length<3||isNaN(p[0]))return Infinity;
+  return p[0]*10000+p[1]*100+p[2];
+}
 function _sortByDate(items){
-  return items.slice().sort((a,b)=>{
-    const da=a.addDate?new Date(a.addDate+'T00:00:00').getTime():Infinity;
-    const db=b.addDate?new Date(b.addDate+'T00:00:00').getTime():Infinity;
-    return da-db;
-  });
+  return items.slice().sort((a,b)=>_parseDate(a.addDate)-_parseDate(b.addDate));
 }
 function P_loadInv(){
   const s=_g(P_INV_KEY());
@@ -394,7 +396,7 @@ function IP_render(){
   IP_renderColors();
   IP_updatePreview();
 }
-const IP_PALETTE=['#e74c3c','#e67e22','#f1c40f','#2ecc71','#00b894','#1abc9c','#0984e3','#00cec9','#3498db','#6c5ce7','#9b59b6','#e91e63','#fd79a8','#795548','#607d8b','#2c3e50'];
+const IP_PALETTE=['#e74c3c','#e67e22','#f1c40f','#2ecc71','#00b894','#1abc9c','#0984e3','#00cec9','#3498db','#6c5ce7','#9b59b6','#e91e63','#fd79a8','#795548','#607d8b','#2c3e50','#b0bec5','#cfd8dc','#ffb74d','#aed581'];
 function IP_renderColors(){
   const grid=document.getElementById('ipColorGrid');
   grid.innerHTML=IP_PALETTE.map(c=>{

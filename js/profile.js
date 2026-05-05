@@ -188,11 +188,11 @@ const IF_FIELDS={
     {key:'addDate',label:'购入日期',type:'date'},
     {key:'source',label:'购入渠道',type:'text'},
     {key:'price',label:'价格',type:'number',placeholder:'¥'},
-    {key:'status',label:'状态',type:'select',opts:['active','broken','sold','moved'],labels:['使用中','损坏','售出','转让'],required:true,default:'active'},
+    {key:'status',label:'状态',type:'select',opts:['active','broken','sold','moved'],labels:['使用中','损坏','售出','转缸'],required:true,default:'active'},
     {key:'brokenDate',label:'损坏时间',type:'date',showWhen:{status:'broken'}},
     {key:'sellDate',label:'售出时间',type:'date',showWhen:{status:'sold'}},
     {key:'sellPrice',label:'售出价格',type:'number',placeholder:'¥',showWhen:{status:'sold'}},
-    {key:'moveDate',label:'转让时间',type:'date',showWhen:{status:'moved'}},
+    {key:'moveDate',label:'转缸时间',type:'date',showWhen:{status:'moved'}},
     {key:'notes',label:'备注',type:'textarea'},
   ],
   consumable:[
@@ -241,11 +241,21 @@ function _ifRenderField(f,val){
       return '<option value="'+optVal+'"'+sel+'>'+txt+'</option>';
     }).join('');
     return '<select id="if_'+f.key+'">'+opts+'</select>';
+  }else if(f.type==='date'){
+    return '<input type="text" id="if_'+f.key+'" value="'+val+'" placeholder="YYYY-MM-DD" maxlength="10" oninput="IF_fmtDate(this)">';
   }else if(f.type==='textarea'){
     return '<textarea id="if_'+f.key+'" rows="2" placeholder="'+(f.placeholder||'')+'">'+val+'</textarea>';
   }else{
     return '<input type="'+(f.type||'text')+'" id="if_'+f.key+'" value="'+val+'" placeholder="'+(f.placeholder||'')+'">';
   }
+}
+/* Auto-format date: insert dashes as user types */
+function IF_fmtDate(el){
+  let v=el.value.replace(/[^0-9]/g,'');
+  if(v.length>4) v=v.slice(0,4)+'-'+v.slice(4);
+  if(v.length>7) v=v.slice(0,7)+'-'+v.slice(7);
+  if(v.length>10) v=v.slice(0,10);
+  el.value=v;
 }
 function _ifRenderAll(type,vals){
   const topBox=document.getElementById('ifTopFields');

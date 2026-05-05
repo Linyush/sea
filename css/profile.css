@@ -16,8 +16,8 @@
 .inv-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .inv-header h3{font-size:14px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:6px}
 .inv-header .count{font-size:11px;color:var(--text4);font-weight:400}
-.inv-add-btn{background:none;border:1.5px dashed var(--accent);color:var(--accent);padding:12px 0;border-radius:10px;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;width:100%;display:block;text-align:center;margin-top:12px;opacity:.7}
-.inv-add-btn:hover{opacity:1;background:color-mix(in srgb,var(--accent) 6%,transparent)}
+.inv-add-btn{background:none;border:1px solid var(--border2);color:var(--text3);padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;transition:all .2s;white-space:nowrap}
+.inv-add-btn:hover{border-color:var(--accent);color:var(--accent)}
 .inv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
 .inv-card{background:var(--input-bg);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
 .inv-card:hover{border-color:var(--accent);transform:translateY(-1px)}
@@ -47,25 +47,25 @@
 .if-box h4{font-size:15px;font-weight:600;margin-bottom:16px}
 
 /* Form top area: relative container, icon absolute right */
-.if-top{position:relative;padding-right:140px;margin-bottom:12px;min-height:130px}
-.if-top-fields{display:flex;flex-direction:column;justify-content:center;min-height:130px}
+.if-top{position:relative;padding-right:128px;margin-bottom:10px;min-height:112px}
+.if-top-fields{display:flex;flex-direction:column;justify-content:center}
 .if-top-fields .if-row{margin-bottom:10px}
 .if-top-fields .if-row:last-child{margin-bottom:0}
 
 /* Icon display — absolute right, contained within .if-top */
-.if-icon-display{position:absolute;top:0;right:0;width:120px;height:130px;border:1.5px dashed var(--border2);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;color:var(--text4);gap:4px}
+.if-icon-display{position:absolute;top:0;right:0;width:110px;height:112px;border:1.5px dashed var(--border2);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;color:var(--text4);gap:2px}
 .if-icon-display:hover{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 4%,transparent)}
-.if-icon-display svg{width:70px;height:70px}
+.if-icon-display svg{width:56px;height:56px}
 .if-icon-display .if-icon-hint{font-size:10px;color:var(--text5);font-weight:500}
 .if-icon-display .if-icon-plus{font-size:28px;line-height:1;color:var(--text4);font-weight:300}
 
 /* Form fields */
 .if-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
-.if-row label{font-size:12px;color:var(--text3);width:72px;flex-shrink:0;text-align:right;position:relative;padding-left:8px;box-sizing:border-box}
+.if-row label{font-size:12px;color:var(--text3);width:72px;flex-shrink:0;text-align:right}
 .if-row input,.if-row select,.if-row textarea{flex:1;background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:7px;font-size:13px;outline:none;transition:border-color .3s;font-family:inherit}
 .if-row input:focus,.if-row select:focus,.if-row textarea:focus{border-color:var(--accent)}
 .if-row textarea{resize:vertical;min-height:48px}
-.if-row .req::after{content:'*';color:var(--warn);position:absolute;left:-2px;top:0;font-size:11px}
+.if-row .req::after{content:'*';color:var(--warn);margin-left:2px;font-size:11px}
 .if-tags{display:flex;flex-wrap:wrap;gap:6px}
 .if-tag{padding:5px 12px;font-size:12px;border-radius:6px;border:1px solid var(--border);color:var(--text3);cursor:pointer;transition:all .2s;user-select:none}
 .if-tag:hover{border-color:var(--accent);color:var(--accent)}
@@ -127,8 +127,8 @@
   .ip-big-preview svg{width:56px;height:56px}
 }
 
-#ifFields select,#ifFields input[type=date],#ifTopFields select,#ifTopFields input[type=date]{appearance:none;-webkit-appearance:none;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;width:100%;outline:none;transition:border-color .2s;cursor:pointer}
-#ifFields select:focus,#ifFields input[type=date]:focus,#ifTopFields select:focus,#ifTopFields input[type=date]:focus{border-color:var(--accent)}
+#ifFields select,#ifTopFields select{appearance:none;-webkit-appearance:none;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;width:100%;outline:none;transition:border-color .2s;cursor:pointer}
+#ifFields select:focus,#ifTopFields select:focus{border-color:var(--accent)}
 #ifFields select,#ifTopFields select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2388888888' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
 
 /* Tank form */

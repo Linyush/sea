@@ -77,21 +77,24 @@ const P_DEF_ICONS={
 /* Sort items by addDate ascending (oldest first) */
 function _parseDate(s){
   if(!s)return Infinity;
-  const p=s.split('-').map(Number);
+  const p=String(s).split(/[-/.]/).map(Number);
   if(p.length<3||isNaN(p[0]))return Infinity;
   return p[0]*10000+p[1]*100+p[2];
 }
+function _getItemDate(item){
+  return item.addDate||item.date||item.purchaseDate||item.buyDate||'';
+}
 function _sortByDate(items){
-  return items.slice().sort((a,b)=>_parseDate(a.addDate)-_parseDate(b.addDate));
+  return items.slice().sort((a,b)=>_parseDate(_getItemDate(a))-_parseDate(_getItemDate(b)));
 }
 function P_loadInv(){
   const s=_g(P_INV_KEY());
   let inv={livestock:[],equipment:[],consumables:[]};
   if(s){try{inv=JSON.parse(s);}catch(e){}}
-  // Sort all arrays by addDate ascending
-  if(inv.livestock) inv.livestock=_sortByDate(inv.livestock);
-  if(inv.equipment) inv.equipment=_sortByDate(inv.equipment);
-  if(inv.consumables) inv.consumables=_sortByDate(inv.consumables);
+  // Sort all arrays by addDate ascending (in place)
+  if(inv.livestock) inv.livestock.sort((a,b)=>_parseDate(_getItemDate(a))-_parseDate(_getItemDate(b)));
+  if(inv.equipment) inv.equipment.sort((a,b)=>_parseDate(_getItemDate(a))-_parseDate(_getItemDate(b)));
+  if(inv.consumables) inv.consumables.sort((a,b)=>_parseDate(_getItemDate(a))-_parseDate(_getItemDate(b)));
   return inv;
 }
 function P_saveInv(inv){

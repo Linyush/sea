@@ -31,6 +31,6 @@ function switchPage(page){
     else if(page==='titrate') initTitrate();
   }
   if(page==='profile') renderProfile();
-  if(page==='water'){setTimeout(()=>{const cw=document.getElementById('chartWrap');if(cw&&W_chart){const innerW=parseInt(document.getElementById('chartInner').style.width)||0;if(innerW<cw.clientWidth||innerW===0){renderChart();}else{W_chart.resize();updateLaneLabels();}}},50);}
+  if(page==='water'){setTimeout(()=>{const cw=document.getElementById('chartWrap');if(cw&&W_chart){const curTheme=document.documentElement.classList.contains('light')?'light':'dark';const needRedraw=(typeof _chartTheme!=='undefined'&&_chartTheme!==curTheme);const innerW=parseInt(document.getElementById('chartInner').style.width)||0;if(needRedraw||innerW<cw.clientWidth||innerW===0){renderChart();}else{W_chart.resize();updateLaneLabels();}}},50);}
   if(page==='light'&&L_chart){setTimeout(()=>{L_chart.resize();},50);}
 }

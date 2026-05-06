@@ -17,7 +17,7 @@ const DEF_FIELDS=[
   {key:'mg', name:'Mg', color:'#22bbaa',tgt:1350,lo:1250,hi:1450},
 ];
 const SEED=[];
-let fields=[],rows=[],expanded=false,W_chart=null;
+let fields=[],rows=[],expanded=false,W_chart=null,_chartTheme=null;
 let _dateMap={};
 
 function _param(k){try{return new URLSearchParams(window.location.search).get(k)}catch(e){return null}}
@@ -235,6 +235,7 @@ function renderChart(){
   const canvas=document.getElementById('mainChart');
   canvas.onmousemove=function(e){if(!W_chart)return;const rect=canvas.getBoundingClientRect();const mouseX=e.clientX-rect.left;const mouseY=e.clientY;const li=findNearestLabelIndex(W_chart,mouseX);showCustomTooltip(W_chart,li,mouseX,mouseY);};
   canvas.onmouseleave=function(){document.getElementById('customTooltip').classList.remove('show');_hoverX=null;if(W_chart)W_chart.draw();};
+  _chartTheme=document.documentElement.classList.contains("light")?"light":"dark";
 }
 
 /* Import / Export */

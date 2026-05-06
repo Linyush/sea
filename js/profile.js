@@ -243,9 +243,7 @@ function P_switchTab(tab, filter){
     const bar=document.getElementById(typeMap[tab]);
     if(bar){const btn=bar.querySelector('[data-f="'+filter+'"]');if(btn){P_filter(btn);}}
   }
-  // Scroll tab area into view
-  const tabEl=document.getElementById('pfTabBar');
-  if(tabEl) tabEl.scrollIntoView({behavior:'smooth',block:'start'});
+
 }
 let _eyeOpen=false;
 function P_toggleEye(){
@@ -275,14 +273,14 @@ function _renderMaintenance(tank){
   if(lastTestDate){
     const lastD=new Date(lastTestDate+'T00:00:00');
     const daysSinceMaint=Math.floor((today-lastD)/86400000);
-    let maintText='上次测水：<b>'+daysSinceMaint+'天前</b>';
+    let maintText='上次维护：<b>'+daysSinceMaint+'天前</b>';
     if(tank.maintCycle&&tank.maintCycle>0){
       const nextDays=tank.maintCycle-daysSinceMaint;
       if(nextDays>0) maintText+=' · 下次：<b>'+nextDays+'天后</b>';
       else maintText+=' · <span class="pf-maint-hi">超期'+Math.abs(nextDays)+'天</span>';
     }
     const maintWarn=(tank.maintCycle&&tank.maintCycle>0&&(tank.maintCycle-daysSinceMaint)<=0);
-    h+='<div class="pf-maint-row'+(maintWarn?' warn':'')+' pf-maint-click" onclick="switchPage(\'water\')"><span class="pf-maint-icon">'+(maintWarn?'⚠️':'🧪')+'</span><span>'+maintText+'</span></div>';
+    h+='<div class="pf-maint-row'+(maintWarn?' warn':' ok')+' pf-maint-click" onclick="switchPage(\'water\')"><span class="pf-maint-icon">'+(maintWarn?'⚠️':'🧪')+'</span><span>'+maintText+'</span></div>';
   }else{
     h+='<div class="pf-maint-row"><span class="pf-maint-icon">🧪</span><span>暂无测水记录</span></div>';
   }

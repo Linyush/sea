@@ -19,7 +19,7 @@ function toggleTheme(){
   _s('reef_theme',darkMode?'dark':'light');
   // Delay chart re-render to let CSS vars settle
   setTimeout(()=>{
-    if(W_chart) renderChart();
+    if(W_chart&&_currentPage==='water') renderChart();
     if(L_chart){L_chart.options.scales.x.ticks.color=getCS('--text3');L_chart.options.scales.y.ticks.color=getCS('--text3');L_chart.options.scales.x.grid.color=getCS('--border')+'40';L_chart.options.scales.y.grid.color=getCS('--border')+'40';L_chart.options.plugins.legend.labels.color=getCS('--text3');L_chart.update();}
   },80);
 }

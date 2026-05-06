@@ -2,13 +2,13 @@
    SPA ROUTER
    ============================================================ */
 const PAGE_META={
-  profile:{title:'概览',badge:'OVERVIEW'},
-  water:{title:'水质记录',badge:'REEF MONITOR'},
-  change:{title:'换水计算',badge:'WATER CHANGE'},
-  titrate:{title:'滴定计算',badge:'TITRATION'},
-  light:{title:'光谱生成器',badge:'SPECTRUM'}
+  profile:{title:'概览',badge:'REEF LOG'},
+  water:{title:'水质记录',badge:'REEF LOG'},
+  change:{title:'换水计算',badge:'REEF LOG'},
+  titrate:{title:'滴定计算',badge:'REEF LOG'},
+  light:{title:'光谱生成器',badge:'REEF LOG'}
 };
-let _currentPage='water';
+let _currentPage='profile';
 let _pageInited={profile:false,water:false,light:false,change:false,titrate:false};
 
 function switchPage(page){
@@ -32,6 +32,6 @@ function switchPage(page){
     else if(page==='titrate') initTitrate();
   }
   if(page==='profile') renderProfile();
-  if(page==='water'&&W_chart){setTimeout(()=>{W_chart.resize();updateLaneLabels();},50);}
+  if(page==='water'){if(typeof _overviewMode!=='undefined')_overviewMode=false;const _ob=document.getElementById('overviewBtn');if(_ob)_ob.classList.remove('active');if(W_chart)setTimeout(()=>{W_chart.resize();updateLaneLabels();},50);}
   if(page==='light'&&L_chart){setTimeout(()=>{L_chart.resize();},50);}
 }

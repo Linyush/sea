@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded',function(){
   TK_renderBar();
   // Read hash to determine initial page
   const hash=window.location.hash.replace('#','');
-  const startPage=PAGE_META[hash]?hash:'water';
+  const startPage=PAGE_META[hash]?hash:'profile';
   _pageInited[startPage]=true;
   switchPage(startPage);
   if(startPage==='profile') initProfile();

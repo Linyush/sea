@@ -17,7 +17,7 @@ function switchPage(page){
   document.querySelectorAll('.nav-tab').forEach(b=>{
     b.classList.toggle('active',b.dataset.page===page);
   });
-  const _pb=document.getElementById('pageBadge');if(PAGE_META[page].badge){_pb.innerHTML=PAGE_META[page].badge+'<span class="brand-sub-en">'+PAGE_META[page].badgeEn+'</span>';_pb.style.display='';}else{_pb.innerHTML='';_pb.style.display='none';}
+  const _pb=document.getElementById('pageBadge');if(PAGE_META[page].badge){_pb.textContent=PAGE_META[page].badge;_pb.style.display='';}else{_pb.textContent='';_pb.style.display='none';}
   document.querySelectorAll('.page-section').forEach(s=>{
     s.classList.toggle('active',s.id==='page-'+page);
   });

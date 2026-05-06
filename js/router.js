@@ -2,11 +2,11 @@
    SPA ROUTER
    ============================================================ */
 const PAGE_META={
-  profile:{title:'概览',badge:'REEF LOG'},
-  water:{title:'水质记录',badge:'REEF LOG'},
-  change:{title:'换水计算',badge:'REEF LOG'},
-  titrate:{title:'滴定计算',badge:'REEF LOG'},
-  light:{title:'光谱生成器',badge:'REEF LOG'}
+  profile:{title:'礁岩日记',badge:'概览'},
+  water:{title:'礁岩日记',badge:'水质记录'},
+  change:{title:'礁岩日记',badge:'换水计算'},
+  titrate:{title:'礁岩日记',badge:'滴定计算'},
+  light:{title:'礁岩日记',badge:'光谱生成'}
 };
 let _currentPage='profile';
 let _pageInited={profile:false,water:false,light:false,change:false,titrate:false};
@@ -17,7 +17,6 @@ function switchPage(page){
   document.querySelectorAll('.nav-tab').forEach(b=>{
     b.classList.toggle('active',b.dataset.page===page);
   });
-  document.getElementById('pageTitle').textContent=PAGE_META[page].title;
   document.getElementById('pageBadge').textContent=PAGE_META[page].badge;
   document.querySelectorAll('.page-section').forEach(s=>{
     s.classList.toggle('active',s.id==='page-'+page);

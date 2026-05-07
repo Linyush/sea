@@ -271,29 +271,15 @@ function _showInvDetail(){
   const gains=merge(rawGains).sort((a,b)=>b.val-a.val);
   const losses=merge(rawLosses).sort((a,b)=>a.val-b.val);
   // Type dot colors
-  const dotColor={up:'#22bb88',dead:'#e05555',down:'#e8a735',broken:'#999',used:'#888'};
-  // Render list with fold
-  function renderList(items,cls,limit){
+  const typeLabel={up:'\u589e\u503c',dead:'\u6b7b\u4ea1',down:'\u8d2c\u503c',broken:'\u635f\u574f',used:'\u6d88\u8017'};
+  function renderList(items,cls){
     let h='';
-    const show=items.slice(0,limit),rest=items.slice(limit);
-    show.forEach(g=>{
-      const dot='<span class="inv-dot" style="background:'+dotColor[g.type]+'"></span>';
+    items.forEach(g=>{
+      const label='<span class="inv-detail-type '+g.type+'">'+typeLabel[g.type]+'</span>';
       const name=g.name+(g.cnt>1?' \u00d7'+g.cnt:'');
       const sign=cls==='gain'?'+':'';
-      h+='<div class="inv-detail-row">'+dot+'<span class="inv-detail-name">'+name+'</span><span class="inv-detail-val '+cls+'">'+sign+Math.abs(g.val).toFixed(0)+'</span></div>';
+      h+='<div class="inv-detail-row">'+label+'<span class="inv-detail-name">'+name+'</span><span class="inv-detail-val '+cls+'">'+sign+Math.abs(g.val).toFixed(0)+'</span></div>';
     });
-    if(rest.length){
-      const restVal=rest.reduce((s,g)=>s+Math.abs(g.val),0);
-      h+='<div class="inv-detail-fold" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display?\'\':\'none\';this.textContent=this.nextElementSibling.style.display?\'▶ 还有'+rest.length+'项 (\u00a5'+restVal.toFixed(0)+')\':\'▼ 收起\'">\u25b6 \u8fd8\u6709'+rest.length+'\u9879 (\u00a5'+restVal.toFixed(0)+')</div>';
-      h+='<div class="inv-detail-rest" style="display:none">';
-      rest.forEach(g=>{
-        const dot='<span class="inv-dot" style="background:'+dotColor[g.type]+'"></span>';
-        const name=g.name+(g.cnt>1?' \u00d7'+g.cnt:'');
-        const sign=cls==='gain'?'+':'';
-        h+='<div class="inv-detail-row">'+dot+'<span class="inv-detail-name">'+name+'</span><span class="inv-detail-val '+cls+'">'+sign+Math.abs(g.val).toFixed(0)+'</span></div>';
-      });
-      h+='</div>';
-    }
     return h;
   }
   let h='<div class="inv-detail-modal"><div class="inv-detail-inner">';
@@ -301,12 +287,12 @@ function _showInvDetail(){
   h+='<div class="inv-detail-cols">';
   h+='<div class="inv-detail-col">';
   h+='<div class="inv-detail-sec gain">\u2191 \u589e\u503c <span class="inv-detail-sum">+\u00a5'+gains.reduce((s,g)=>s+g.val,0).toFixed(0)+'</span></div>';
-  if(gains.length){h+=renderList(gains,'gain',8);}
+  if(gains.length){h+=renderList(gains,'gain');}
   else{h+='<div class="inv-detail-empty">\u6682\u65e0</div>';}
   h+='</div>';
   h+='<div class="inv-detail-col">';
   h+='<div class="inv-detail-sec loss">\u2193 \u51cf\u503c <span class="inv-detail-sum">\u00a5'+losses.reduce((s,g)=>s+Math.abs(g.val),0).toFixed(0)+'</span></div>';
-  if(losses.length){h+=renderList(losses,'loss',8);}
+  if(losses.length){h+=renderList(losses,'loss');}
   else{h+='<div class="inv-detail-empty">\u6682\u65e0</div>';}
   h+='</div>';
   h+='</div></div></div>';

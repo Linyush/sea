@@ -208,6 +208,7 @@ function _renderInvestment(inv){
   let curValue=tankCost;
   livestock.forEach(item=>{if(!['dead','sold'].includes(item.status)){curValue+=parseFloat(item.value||item.price)||0;}});
   equipment.forEach(item=>{if(!['broken','sold'].includes(item.status)){curValue+=parseFloat(item.value||item.price)||0;}});
+  consumables.forEach(item=>{curValue+=parseFloat(item.price)||0;});
   const fmt=v=>v>=10000?'\u00a5'+(v/10000).toFixed(1)+'\u4e07':'\u00a5'+v.toFixed(0);
   const box=document.getElementById('pfInvestBox');
   if(!box) return;
@@ -217,6 +218,7 @@ function _renderInvestment(inv){
       '<div class="pf-inv-card pf-inv-row-accent"><div class="pf-inv-card-name">\u51c0\u6295\u5165</div><div class="pf-inv-card-val">'+fmt(netCost)+'</div></div>'+
       '<div class="pf-inv-card pf-inv-card-cur"><div class="pf-inv-card-name">\u51c0\u4ef7\u503c</div><div class="pf-inv-card-val">'+fmt(curValue)+'</div></div>'+
       '<div class="pf-inv-card"><div class="pf-inv-card-name">\u603b\u6295\u5165</div><div class="pf-inv-card-val">'+fmt(totalCost)+'</div></div>'+
+      '<div class="pf-inv-detail-btn" onclick="_showInvDetail()">\u8be6\u60c5 \u203a</div>'+
     '</div>'+
     '<div class="pf-inv-right">'+
       '<div class="pf-inv-row pf-inv-click" onclick="P_switchTab(\'livestock\')"><span class="pf-inv-row-name">\u751f\u7269</span><span class="pf-inv-row-cnt">'+liveCount+'</span><span class="pf-inv-row-val">'+fmt(liveCost)+'</span></div>'+
@@ -225,6 +227,51 @@ function _renderInvestment(inv){
       '<div class="pf-inv-row pf-inv-click loss" onclick="P_switchTab(\''+firstDeadTab+'\',\''+deadFilter+'\')"><span class="pf-inv-row-name">\u6b7b\u4ea1/\u635f\u574f</span><span class="pf-inv-row-cnt">'+deadCount+'\u4e2a</span><span class="pf-inv-row-val">'+fmt(deathLoss)+'</span></div>'+
       '<div class="pf-inv-row pf-inv-click gain" onclick="P_switchTab(\''+firstSoldTab+'\',\'sold\')"><span class="pf-inv-row-name">\u552e\u51fa\u6536\u5165</span><span class="pf-inv-row-cnt">'+soldCount+'\u4e2a</span><span class="pf-inv-row-val">'+fmt(soldIncome)+'</span></div>'+
     '</div>';
+}
+
+
+function _showInvDetail(){
+  const inv=IF_getData();
+  const livestock=inv.livestock||[], equipment=inv.equipment||[], consumables=inv.consumables||[];
+  const tankCost=parseFloat(TK_current().price)||0;
+  // Build detail items
+  let gains=[],losses=[];
+  livestock.forEach(item=>{
+    const p=parseFloat(item.price)||0;
+    if(item.status==='dead'){losses.push({name:item.name||'?',type:'\u6b7b\u4ea1',val:-p});}
+    else if(!['sold'].includes(item.status)){
+      const v=parseFloat(item.value||item.price)||0;
+      const diff=v-p;
+      if(diff>0)gains.push({name:item.name||'?',type:'\u589e\u503c',val:diff});
+      else if(diff<0)losses.push({name:item.name||'?',type:'\u8d2c\u503c',val:diff});
+    }
+  });
+  equipment.forEach(item=>{
+    const p=parseFloat(item.price)||0;
+    if(item.status==='broken'){losses.push({name:item.name||'?',type:'\u635f\u574f',val:-p});}
+    else if(!['sold'].includes(item.status)){
+      const v=parseFloat(item.value||item.price)||0;
+      const diff=v-p;
+      if(diff>0)gains.push({name:item.name||'?',type:'\u589e\u503c',val:diff});
+      else if(diff<0)losses.push({name:item.name||'?',type:'\u8d2c\u503c',val:diff});
+    }
+  });
+  gains.sort((a,b)=>b.val-a.val);
+  losses.sort((a,b)=>a.val-b.val);
+  // Build HTML
+  let h='<div class="inv-detail-modal"><div class="inv-detail-inner">';
+  h+='<div class="inv-detail-hd"><span>\u4ef7\u503c\u660e\u7ec6</span><button class="inv-detail-close" onclick="this.closest(\'.inv-detail-modal\').remove()">\u2715</button></div>';
+  if(gains.length){
+    h+='<div class="inv-detail-sec gain">\u2191 \u589e\u503c\u9879\u76ee</div>';
+    gains.forEach(g=>{h+='<div class="inv-detail-row"><span class="inv-detail-name">'+g.name+'</span><span class="inv-detail-type">'+g.type+'</span><span class="inv-detail-val gain">+\u00a5'+g.val.toFixed(0)+'</span></div>';});
+  }
+  if(losses.length){
+    h+='<div class="inv-detail-sec loss">\u2193 \u51cf\u503c\u9879\u76ee</div>';
+    losses.forEach(g=>{h+='<div class="inv-detail-row"><span class="inv-detail-name">'+g.name+'</span><span class="inv-detail-type">'+g.type+'</span><span class="inv-detail-val loss">\u00a5'+g.val.toFixed(0)+'</span></div>';});
+  }
+  if(!gains.length&&!losses.length){h+='<div class="inv-detail-empty">\u6682\u65e0\u53d8\u52a8</div>';}
+  h+='</div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
 }
 
 let _activeTab='livestock';

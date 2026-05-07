@@ -318,3 +318,22 @@
 .pf-inv-card.pf-inv-card-cur .pf-inv-card-name{color:#22bb88;font-weight:500}
 .pf-inv-card.pf-inv-card-cur .pf-inv-card-val{color:#22bb88;font-size:14px;font-weight:600}
 @media(max-width:420px){.pf-invest-grid{flex-direction:column}.pf-inv-left,.pf-inv-right{width:100%}}
+
+/* Investment detail */
+.pf-inv-detail-btn{font-size:11px;color:var(--accent);cursor:pointer;text-align:center;padding:4px 0;opacity:.8;transition:opacity .2s}
+.pf-inv-detail-btn:hover{opacity:1}
+.inv-detail-modal{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:999;display:flex;align-items:center;justify-content:center;animation:fadeIn .15s}
+.inv-detail-inner{background:var(--card);border-radius:12px;padding:20px;width:90%;max-width:400px;max-height:70vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.2)}
+.inv-detail-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-size:16px;font-weight:600;color:var(--text)}
+.inv-detail-close{background:none;border:none;font-size:18px;color:var(--text3);cursor:pointer;padding:4px 8px;border-radius:4px}
+.inv-detail-close:hover{background:var(--hover);color:var(--text)}
+.inv-detail-sec{font-size:11px;font-weight:600;padding:8px 0 4px;border-top:1px solid var(--border);margin-top:8px;letter-spacing:1px}
+.inv-detail-sec.gain{color:#22bb88}
+.inv-detail-sec.loss{color:#e05555}
+.inv-detail-row{display:flex;align-items:center;padding:5px 0;font-size:13px}
+.inv-detail-name{flex:1;color:var(--text)}
+.inv-detail-type{font-size:10px;color:var(--text4);margin-right:10px;background:var(--hover);padding:1px 6px;border-radius:3px}
+.inv-detail-val{font-weight:600;font-size:12px}
+.inv-detail-val.gain{color:#22bb88}
+.inv-detail-val.loss{color:#e05555}
+.inv-detail-empty{text-align:center;color:var(--text4);padding:20px;font-size:13px}

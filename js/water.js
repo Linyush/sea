@@ -180,7 +180,7 @@ function renderChart(){
   if(outer)outer.style.display="";if(emptyEl)emptyEl.style.display="none";
   const bands=calcBands(),ds=[],cs=getComputedStyle(document.documentElement);
   const firstDate=rows[0].date,lastDate=rows[rows.length-1].date;
-  const scales={x:{type:'time',time:{unit:'day',tooltipFormat:'M/d',displayFormats:{day:'M/d',week:'M/d',month:'yyyy/M'}},min:firstDate,max:fd(new Date(pd(lastDate).getTime()+7*86400000)),ticks:{color:cs.getPropertyValue('--text3').trim(),font:{size:11,weight:'500'},maxRotation:45,autoSkip:true,maxTicksLimit:_overviewMode?20:15},grid:{color:cs.getPropertyValue('--border').trim()+'40'}}};
+  const scales={x:{type:'time',time:{unit:'day',tooltipFormat:'M/d',displayFormats:{day:'M/d',week:'M/d',month:'yyyy/M'}},min:firstDate,max:fd(new Date(pd(lastDate).getTime()+30*86400000)),ticks:{color:cs.getPropertyValue('--text3').trim(),font:{size:11,weight:'500'},maxRotation:45,autoSkip:true,maxTicksLimit:_overviewMode?20:15},grid:{color:cs.getPropertyValue('--border').trim()+'40'}}};
   fields.forEach(fi=>{
     const k=fi.key,c=fi.color,yId='y_'+k,ar=bandAxisRange(fi,bands);
     const pts=rows.filter(r=>r[k]!=null).map(r=>({x:r.date,y:r[k],_date:r.date,_dateLabel:fs(r.date)}));
@@ -194,7 +194,7 @@ function renderChart(){
     innerEl.style.width=wrapW+'px';
   } else {
     const totalDays=Math.max(1,Math.round((pd(lastDate).getTime()-pd(firstDate).getTime())/86400000));
-    const vis90=90;
+    const vis90=112;
     const perDay=wrapW/Math.min(totalDays,vis90);
     innerEl.style.width=Math.round(Math.max(totalDays*perDay,wrapW))+'px';
   }

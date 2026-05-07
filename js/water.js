@@ -233,7 +233,7 @@ function renderChart(){
   },plugins:[lanePlugin,dlPlugin,crosshairPlugin]});
   updateLaneLabels();
   const canvas=document.getElementById('mainChart');
-  canvas.onmousemove=function(e){if(!W_chart)return;const rect=canvas.getBoundingClientRect();const mouseX=e.clientX-rect.left;const mouseY=e.clientY;const li=findNearestLabelIndex(W_chart,mouseX);showCustomTooltip(W_chart,li,mouseX,mouseY);};
+  canvas.onmousemove=function(e){if(!W_chart)return;const rect=canvas.getBoundingClientRect();const mouseX=e.clientX-rect.left;const mouseY=e.clientY;const li=findNearestLabelIndex(W_chart,mouseX);const xScale=W_chart.scales.x;const lbl=xScale.getLabelForValue(li);if(!_dateMap[lbl]||!_dateMap[lbl].length){document.getElementById('customTooltip').classList.remove('show');_hoverX=null;W_chart.draw();return;}showCustomTooltip(W_chart,li,mouseX,mouseY);};
   canvas.onmouseleave=function(){document.getElementById('customTooltip').classList.remove('show');_hoverX=null;if(W_chart)W_chart.draw();};
   _chartTheme=document.documentElement.classList.contains("light")?"light":"dark";
 }

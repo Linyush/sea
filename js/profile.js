@@ -274,6 +274,10 @@ function _showInvDetail(){
   h+='</div>';
   h+='</div></div></div>';
   document.body.insertAdjacentHTML('beforeend',h);
+  const modal=document.body.lastElementChild;
+  modal.addEventListener('click',e=>{if(e.target===modal)modal.remove();});
+  const _escFn=e=>{if(e.key==='Escape'){modal.remove();document.removeEventListener('keydown',_escFn);}};
+  document.addEventListener('keydown',_escFn);
 }
 
 let _activeTab='livestock';

@@ -208,7 +208,7 @@ function _renderInvestment(inv){
   let curValue=tankCost;
   livestock.forEach(item=>{if(!['dead','sold'].includes(item.status)){curValue+=parseFloat(item.value||item.price)||0;}});
   equipment.forEach(item=>{if(!['broken','sold'].includes(item.status)){curValue+=parseFloat(item.value||item.price)||0;}});
-  consumables.forEach(item=>{curValue+=parseFloat(item.price)||0;});
+  consumables.forEach(item=>{if(!['empty','expired'].includes(item.status)){curValue+=parseFloat(item.price)||0;}});
   const fmt=v=>v>=10000?'\u00a5'+(v/10000).toFixed(1)+'\u4e07':'\u00a5'+v.toFixed(0);
   const box=document.getElementById('pfInvestBox');
   if(!box) return;
@@ -232,12 +232,10 @@ function _renderInvestment(inv){
 function _showInvDetail(){
   const inv=P_loadInv();
   const livestock=inv.livestock||[], equipment=inv.equipment||[], consumables=inv.consumables||[];
-  const tankCost=parseFloat(TK_current().price)||0;
-  // Build detail items
   let gains=[],losses=[];
   livestock.forEach(item=>{
     const p=parseFloat(item.price)||0;
-    if(item.status==='dead'){losses.push({name:item.name||'?',type:'\u6b7b\u4ea1',val:-p});}
+    if(item.status==='dead'){if(p)losses.push({name:item.name||'?',type:'\u6b7b\u4ea1',val:-p});}
     else if(!['sold'].includes(item.status)){
       const v=parseFloat(item.value||item.price)||0;
       const diff=v-p;
@@ -247,7 +245,7 @@ function _showInvDetail(){
   });
   equipment.forEach(item=>{
     const p=parseFloat(item.price)||0;
-    if(item.status==='broken'){losses.push({name:item.name||'?',type:'\u635f\u574f',val:-p});}
+    if(item.status==='broken'){if(p)losses.push({name:item.name||'?',type:'\u635f\u574f',val:-p});}
     else if(!['sold'].includes(item.status)){
       const v=parseFloat(item.value||item.price)||0;
       const diff=v-p;
@@ -255,21 +253,26 @@ function _showInvDetail(){
       else if(diff<0)losses.push({name:item.name||'?',type:'\u8d2c\u503c',val:diff});
     }
   });
+  consumables.forEach(item=>{
+    const p=parseFloat(item.price)||0;
+    if(['empty','expired'].includes(item.status)&&p){losses.push({name:item.name||'?',type:'\u6d88\u8017',val:-p});}
+  });
   gains.sort((a,b)=>b.val-a.val);
   losses.sort((a,b)=>a.val-b.val);
-  // Build HTML
   let h='<div class="inv-detail-modal"><div class="inv-detail-inner">';
   h+='<div class="inv-detail-hd"><span>\u4ef7\u503c\u660e\u7ec6</span><button class="inv-detail-close" onclick="this.closest(\'.inv-detail-modal\').remove()">\u2715</button></div>';
-  if(gains.length){
-    h+='<div class="inv-detail-sec gain">\u2191 \u589e\u503c\u9879\u76ee</div>';
-    gains.forEach(g=>{h+='<div class="inv-detail-row"><span class="inv-detail-name">'+g.name+'</span><span class="inv-detail-type">'+g.type+'</span><span class="inv-detail-val gain">+\u00a5'+g.val.toFixed(0)+'</span></div>';});
-  }
-  if(losses.length){
-    h+='<div class="inv-detail-sec loss">\u2193 \u51cf\u503c\u9879\u76ee</div>';
-    losses.forEach(g=>{h+='<div class="inv-detail-row"><span class="inv-detail-name">'+g.name+'</span><span class="inv-detail-type">'+g.type+'</span><span class="inv-detail-val loss">\u00a5'+g.val.toFixed(0)+'</span></div>';});
-  }
-  if(!gains.length&&!losses.length){h+='<div class="inv-detail-empty">\u6682\u65e0\u53d8\u52a8</div>';}
-  h+='</div></div>';
+  h+='<div class="inv-detail-cols">';
+  h+='<div class="inv-detail-col">';
+  h+='<div class="inv-detail-sec gain">\u2191 \u589e\u503c <span class="inv-detail-sum">+\u00a5'+gains.reduce((s,g)=>s+g.val,0).toFixed(0)+'</span></div>';
+  if(gains.length){gains.forEach(g=>{h+='<div class="inv-detail-row"><span class="inv-detail-name">'+g.name+'</span><span class="inv-detail-val gain">+'+g.val.toFixed(0)+'</span></div>';});}
+  else{h+='<div class="inv-detail-empty">\u6682\u65e0</div>';}
+  h+='</div>';
+  h+='<div class="inv-detail-col">';
+  h+='<div class="inv-detail-sec loss">\u2193 \u51cf\u503c <span class="inv-detail-sum">\u00a5'+losses.reduce((s,g)=>s+g.val,0).toFixed(0)+'</span></div>';
+  if(losses.length){losses.forEach(g=>{h+='<div class="inv-detail-row"><span class="inv-detail-name">'+g.name+'<span class="inv-detail-type">'+g.type+'</span></span><span class="inv-detail-val loss">'+g.val.toFixed(0)+'</span></div>';});}
+  else{h+='<div class="inv-detail-empty">\u6682\u65e0</div>';}
+  h+='</div>';
+  h+='</div></div></div>';
   document.body.insertAdjacentHTML('beforeend',h);
 }
 

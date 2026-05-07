@@ -337,3 +337,6 @@
 .inv-detail-val.gain{color:#22bb88}
 .inv-detail-val.loss{color:#e05555}
 .inv-detail-empty{text-align:center;color:var(--text4);padding:20px;font-size:13px}
+.inv-detail-cols{display:flex;gap:16px}
+.inv-detail-col{flex:1;min-width:0}
+.inv-detail-sum{font-size:11px;opacity:.7;margin-left:4px}

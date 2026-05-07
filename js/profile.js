@@ -218,8 +218,7 @@ function _renderInvestment(inv){
       '<div class="pf-inv-card pf-inv-row-accent"><div class="pf-inv-card-name">\u51c0\u6295\u5165</div><div class="pf-inv-card-val">'+fmt(netCost)+'</div></div>'+
       '<div class="pf-inv-card pf-inv-card-cur"><div class="pf-inv-card-name">\u51c0\u4ef7\u503c</div><div class="pf-inv-card-val">'+fmt(curValue)+'</div></div>'+
       '<div class="pf-inv-card"><div class="pf-inv-card-name">\u603b\u6295\u5165</div><div class="pf-inv-card-val">'+fmt(totalCost)+'</div></div>'+
-      '<div class="pf-inv-detail-btn" onclick="_showInvDetail()">\u8be6\u60c5 \u203a</div>'+
-    '</div>'+
+      '</div>'+
     '<div class="pf-inv-right">'+
       '<div class="pf-inv-row pf-inv-click" onclick="P_switchTab(\'livestock\')"><span class="pf-inv-row-name">\u751f\u7269</span><span class="pf-inv-row-cnt">'+liveCount+'</span><span class="pf-inv-row-val">'+fmt(liveCost)+'</span></div>'+
       '<div class="pf-inv-row pf-inv-click" onclick="P_switchTab(\'equipment\')"><span class="pf-inv-row-name">\u8bbe\u5907</span><span class="pf-inv-row-cnt">'+equipCount+'</span><span class="pf-inv-row-val">'+fmt(equipCost)+'</span></div>'+
@@ -231,7 +230,7 @@ function _renderInvestment(inv){
 
 
 function _showInvDetail(){
-  const inv=IF_getData();
+  const inv=P_loadInv();
   const livestock=inv.livestock||[], equipment=inv.equipment||[], consumables=inv.consumables||[];
   const tankCost=parseFloat(TK_current().price)||0;
   // Build detail items

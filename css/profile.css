@@ -320,7 +320,7 @@
 @media(max-width:420px){.pf-invest-grid{flex-direction:column}.pf-inv-left,.pf-inv-right{width:100%}}
 
 /* Investment detail */
-.pf-inv-detail-btn{font-size:11px;color:var(--accent);cursor:pointer;text-align:center;padding:4px 0;opacity:.8;transition:opacity .2s}
+.pf-inv-detail-btn{font-size:11px;color:var(--accent);cursor:pointer;padding:2px 8px;opacity:.7;transition:opacity .2s;margin-left:auto;font-weight:500}
 .pf-inv-detail-btn:hover{opacity:1}
 .inv-detail-modal{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:999;display:flex;align-items:center;justify-content:center;animation:fadeIn .15s}
 .inv-detail-inner{background:var(--card);border-radius:12px;padding:20px;width:90%;max-width:400px;max-height:70vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.2)}

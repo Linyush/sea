@@ -323,7 +323,7 @@
 .pf-inv-detail-btn{font-size:11px;color:var(--accent);cursor:pointer;padding:2px 8px;opacity:.7;transition:opacity .2s;margin-left:auto;font-weight:500}
 .pf-inv-detail-btn:hover{opacity:1}
 .inv-detail-modal{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:999;display:flex;align-items:center;justify-content:center;animation:fadeIn .15s}
-.inv-detail-inner{background:var(--card);border-radius:12px;padding:20px;width:90%;max-width:400px;max-height:70vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.2)}
+.inv-detail-inner{background:var(--card);border-radius:12px;padding:20px;width:92%;max-width:560px;max-height:75vh;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.2);display:flex;flex-direction:column}
 .inv-detail-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-size:16px;font-weight:600;color:var(--text)}
 .inv-detail-close{background:none;border:none;font-size:18px;color:var(--text3);cursor:pointer;padding:4px 8px;border-radius:4px}
 .inv-detail-close:hover{background:var(--hover);color:var(--text)}
@@ -337,6 +337,8 @@
 .inv-detail-val.gain{color:#22bb88}
 .inv-detail-val.loss{color:#e05555}
 .inv-detail-empty{text-align:center;color:var(--text4);padding:20px;font-size:13px}
-.inv-detail-cols{display:flex;gap:16px}
-.inv-detail-col{flex:1;min-width:0}
+.inv-detail-cols{display:flex;gap:16px;flex:1;min-height:0;overflow:hidden}
+.inv-detail-col{flex:1;min-width:0;overflow-y:auto;max-height:100%;padding-right:4px}
 .inv-detail-sum{font-size:11px;opacity:.7;margin-left:4px}
+.inv-detail-col::-webkit-scrollbar{width:3px}
+.inv-detail-col::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}

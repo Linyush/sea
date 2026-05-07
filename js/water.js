@@ -18,7 +18,7 @@ const DEF_FIELDS=[
 ];
 const SEED=[];
 let fields=[],rows=[],expanded=false,W_chart=null,_chartTheme=null;
-let _dateMap={};
+
 
 function _param(k){try{return new URLSearchParams(window.location.search).get(k)}catch(e){return null}}
 function _hasAutoBack(){return _param('autoBack')==='1';}
@@ -46,21 +46,6 @@ function _init(){fields=DEF_FIELDS.map(f=>({...f}));rows=[];}
 function save(){const sf=fields.map(f=>{const {color,...rest}=f;return rest;});_s(W_SK(),JSON.stringify({fields:sf,rows}));}
 function cutoff(){if(!rows.length)return new Date();const l=pd(rows[rows.length-1].date);return new Date(l.getFullYear(),l.getMonth()-3,l.getDate());}
 function isOOR(fk,v){if(v==null)return false;const fi=fields.find(x=>x.key===fk);if(!fi)return false;return v<fi.lo||v>fi.hi;}
-function buildLabels(){
-  if(!rows.length)return[];
-  const first=pd(rows[0].date),last=pd(rows[rows.length-1].date);
-  const start=new Date(first.getFullYear(),first.getMonth(),first.getDate()-7);
-  const end=new Date(last.getFullYear(),last.getMonth()+1,last.getDate());
-  const d=new Date(start);d.setDate(d.getDate()+(7-d.getDay())%7);
-  const labels=[];
-  while(d<=end){labels.push(fd(d));d.setDate(d.getDate()+7);}
-  return labels;
-}
-function mapToLabel(labels,dateStr){
-  const t=pd(dateStr).getTime();let bi=0,bd=Infinity;
-  labels.forEach((l,i)=>{const d=Math.abs(pd(l).getTime()-t);if(d<bd){bd=d;bi=i;}});
-  return bi;
-}
 function calcAxisRange(fi){
   const k=fi.key,vals=rows.filter(r=>r[k]!=null).map(r=>r[k]);
   const tgt=isFinite(fi.tgt)?fi.tgt:0,lo=isFinite(fi.lo)?fi.lo:tgt,hi=isFinite(fi.hi)?fi.hi:tgt;
@@ -140,40 +125,33 @@ const crosshairPlugin={
   }
 };
 
-function findNearestLabelIndex(chartInstance,mouseX){
-  const area=chartInstance.chartArea;
-  if(!area||mouseX<area.left||mouseX>area.right)return -1;
-  const xScale=chartInstance.scales.x;
-  let bestIdx=-1,bestDist=Infinity;
-  for(let i=0;i<xScale.ticks.length;i++){const px=xScale.getPixelForTick(i);const d=Math.abs(px-mouseX);if(d<bestDist){bestDist=d;bestIdx=i;}}
-  return bestIdx;
-}
-
-function showCustomTooltip(chartInstance,labelIdx,mouseX,mouseY){
+function _handleChartHover(mouseX,mouseY){
   const tt=document.getElementById('customTooltip');
-  if(labelIdx<0){tt.classList.remove('show');_hoverX=null;chartInstance.draw();return;}
-  const xScale=chartInstance.scales.x;
-  const labelPx=xScale.getPixelForTick(labelIdx);
-  const labelText=xScale.getLabelForValue(labelIdx);
-  const origDates=_dateMap[labelText];
-  if(!origDates||!origDates.length){tt.classList.remove('show');_hoverX=null;chartInstance.draw();return;}
+  const xScale=W_chart.scales.x;
+  let bestDist=Infinity,bestRow=null,bestPx=0;
+  rows.forEach(r=>{
+    const px=xScale.getPixelForValue(new Date(r.date+'T00:00:00'));
+    const d=Math.abs(px-mouseX);
+    if(d<bestDist){bestDist=d;bestRow=r;bestPx=px;}
+  });
+  if(!bestRow||bestDist>30){tt.classList.remove('show');_hoverX=null;W_chart.draw();return;}
+  const dateRows=rows.filter(r=>r.date===bestRow.date);
   let html='';
-  origDates.forEach(dateStr=>{
-    const row=rows.find(r=>r.date===dateStr);if(!row)return;
-    html+='<div class="tt-title">'+fs(dateStr)+'</div>';
+  dateRows.forEach(row=>{
+    html+='<div class="tt-title">'+fs(row.date)+'</div>';
     fields.forEach(fi=>{const v=row[fi.key];if(v==null)return;const oor=isOOR(fi.key,v);
-      html+='<div class="tt-row"><span class="tt-dot" style="background:'+fi.color+'"></span><span class="tt-name">'+fi.name+'</span><span class="tt-val'+(oor?' tt-warn':'')+'">'+ v+(oor?' ⚠':'')+'</span></div>';
+      html+='<div class="tt-row"><span class="tt-dot" style="background:'+fi.color+'"></span><span class="tt-name">'+fi.name+'</span><span class="tt-val'+(oor?' tt-warn':'')+'">'+v+(oor?' ⚠':'')+'</span></div>';
     });
   });
-  if(!html){tt.classList.remove('show');_hoverX=null;chartInstance.draw();return;}
+  if(!html){tt.classList.remove('show');_hoverX=null;W_chart.draw();return;}
   tt.innerHTML=html;tt.classList.add('show');
   const outer=document.getElementById('chartOuter'),wrap=document.getElementById('chartWrap');
   const outerRect=outer.getBoundingClientRect(),scrollLeft=wrap.scrollLeft;
-  const ttLeft=labelPx-scrollLeft+16,ttTop=mouseY-outerRect.top;
+  const ttLeft=bestPx-scrollLeft+16,ttTop=mouseY-outerRect.top;
   const ttW=tt.offsetWidth;
-  tt.style.left=(ttLeft+ttW>outer.clientWidth-10?(labelPx-scrollLeft-ttW-16):ttLeft)+'px';
+  tt.style.left=(ttLeft+ttW>outer.clientWidth-10?(bestPx-scrollLeft-ttW-16):ttLeft)+'px';
   tt.style.top=Math.max(10,Math.min(ttTop-20,outer.clientHeight-tt.offsetHeight-10))+'px';
-  _hoverX=labelPx;chartInstance.draw();
+  _hoverX=bestPx;W_chart.draw();
 }
 
 function updateLaneLabels(){
@@ -195,20 +173,19 @@ function toggleOverview(){
   renderChart();
 }
 function renderChart(){
-  const labels=buildLabels();
+  const labels=rows.map(r=>r.date);
   const outer=document.getElementById("chartOuter");
   const emptyEl=document.getElementById("chartEmpty");
   if(!rows.length||!labels.length){if(outer)outer.style.display="none";if(emptyEl)emptyEl.style.display="";return;}
   if(outer)outer.style.display="";if(emptyEl)emptyEl.style.display="none";
-  const lbls=labels.map(l=>fs(l)),bands=calcBands(),ds=[],cs=getComputedStyle(document.documentElement);
-  _dateMap={};
-  rows.forEach(r=>{const li=mapToLabel(labels,r.date);const lbl=lbls[li];if(!_dateMap[lbl])_dateMap[lbl]=[];if(!_dateMap[lbl].includes(r.date))_dateMap[lbl].push(r.date);});
-  const scales={x:{type:'category',labels:lbls,ticks:{color:cs.getPropertyValue('--text3').trim(),font:{size:11,weight:'500'},maxRotation:45,autoSkip:_overviewMode},grid:{color:cs.getPropertyValue('--border').trim()+'40'}}};
+  const bands=calcBands(),ds=[],cs=getComputedStyle(document.documentElement);
+  const firstDate=rows[0].date,lastDate=rows[rows.length-1].date;
+  const scales={x:{type:'time',time:{unit:'day',tooltipFormat:'M/d',displayFormats:{day:'M/d',week:'M/d',month:'yyyy/M'}},min:firstDate,max:fd(new Date(pd(lastDate).getTime()+7*86400000)),ticks:{color:cs.getPropertyValue('--text3').trim(),font:{size:11,weight:'500'},maxRotation:45,autoSkip:true,maxTicksLimit:_overviewMode?20:15},grid:{color:cs.getPropertyValue('--border').trim()+'40'}}};
   fields.forEach(fi=>{
     const k=fi.key,c=fi.color,yId='y_'+k,ar=bandAxisRange(fi,bands);
-    const pts=rows.filter(r=>r[k]!=null).map(r=>({x:lbls[mapToLabel(labels,r.date)],y:r[k],_date:r.date,_dateLabel:fs(r.date)}));
+    const pts=rows.filter(r=>r[k]!=null).map(r=>({x:r.date,y:r[k],_date:r.date,_dateLabel:fs(r.date)}));
     ds.push({label:fi.name,data:pts,borderColor:c,backgroundColor:c+'22',borderWidth:_overviewMode?1.8:2.5,pointRadius:_overviewMode?2.5:4.5,pointBackgroundColor:c,pointBorderColor:cs.getPropertyValue('--card').trim(),pointBorderWidth:_overviewMode?1:2,pointHoverRadius:_overviewMode?4:7,pointHitRadius:12,tension:.3,yAxisID:yId,spanGaps:true,_field:k});
-    if(fi.tgt!=null&&lbls.length>=2)ds.push({label:fi.name+' tgt',data:[{x:lbls[0],y:fi.tgt},{x:lbls[lbls.length-1],y:fi.tgt}],borderColor:c+'55',borderWidth:1.5,borderDash:[6,4],pointRadius:0,pointHitRadius:0,tension:0,yAxisID:yId,_isTgt:true});
+    if(fi.tgt!=null&&rows.length>=2)ds.push({label:fi.name+' tgt',data:[{x:firstDate,y:fi.tgt},{x:lastDate,y:fi.tgt}],borderColor:c+'55',borderWidth:1.5,borderDash:[6,4],pointRadius:0,pointHitRadius:0,tension:0,yAxisID:yId,_isTgt:true});
     scales[yId]={type:'linear',display:false,min:ar.min,max:ar.max};
   });
   const innerEl=document.getElementById('chartInner');
@@ -216,10 +193,10 @@ function renderChart(){
   if(_overviewMode){
     innerEl.style.width=wrapW+'px';
   } else {
-    const now=new Date(),vis3m=new Date(now.getFullYear(),now.getMonth()-3,now.getDate()),vis1m=new Date(now.getFullYear(),now.getMonth()+1,now.getDate());
-    let visCount=0;labels.forEach(l=>{const d=pd(l);if(d>=vis3m&&d<=vis1m)visCount++;});visCount=Math.max(visCount,8);
-    const perLabel=wrapW/visCount;
-    innerEl.style.width=Math.round(Math.max(lbls.length*perLabel,wrapW))+'px';
+    const totalDays=Math.max(1,Math.round((pd(lastDate).getTime()-pd(firstDate).getTime())/86400000));
+    const vis90=90;
+    const perDay=wrapW/Math.min(totalDays,vis90);
+    innerEl.style.width=Math.round(Math.max(totalDays*perDay,wrapW))+'px';
   }
   if(W_chart)W_chart.destroy();
   _hoverX=null;
@@ -233,7 +210,7 @@ function renderChart(){
   },plugins:[lanePlugin,dlPlugin,crosshairPlugin]});
   updateLaneLabels();
   const canvas=document.getElementById('mainChart');
-  canvas.onmousemove=function(e){if(!W_chart)return;const rect=canvas.getBoundingClientRect();const mouseX=e.clientX-rect.left;const mouseY=e.clientY;const li=findNearestLabelIndex(W_chart,mouseX);const xScale=W_chart.scales.x;const lbl=xScale.getLabelForValue(li);if(!_dateMap[lbl]||!_dateMap[lbl].length){document.getElementById('customTooltip').classList.remove('show');_hoverX=null;W_chart.draw();return;}showCustomTooltip(W_chart,li,mouseX,mouseY);};
+  canvas.onmousemove=function(e){if(!W_chart)return;const rect=canvas.getBoundingClientRect();const mouseX=e.clientX-rect.left;const mouseY=e.clientY;_handleChartHover(mouseX,mouseY);};
   canvas.onmouseleave=function(){document.getElementById('customTooltip').classList.remove('show');_hoverX=null;if(W_chart)W_chart.draw();};
   _chartTheme=document.documentElement.classList.contains("light")?"light":"dark";
 }

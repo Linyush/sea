@@ -110,6 +110,10 @@ function _parseDate(s){
   return p[0]*10000+p[1]*100+p[2];
 }
 function _getItemDate(item){
+  // Status-specific date for sorting
+  if(item.status==='dead'&&item.deathDate) return item.deathDate;
+  if(item.status==='sold'&&item.sellDate) return item.sellDate;
+  if(item.status==='inuse'&&item.replaceDate) return item.replaceDate;
   return item.addDate||item.date||item.purchaseDate||item.buyDate||'';
 }
 function _sortByDate(items){

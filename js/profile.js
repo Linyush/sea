@@ -350,8 +350,12 @@ function _renderMaintenance(tank){
     }
   }catch(e){}
   const today=new Date();today.setHours(0,0,0,0);
-  if(lastTestDate){
-    const lastD=new Date(lastTestDate+'T00:00:00');
+  // Use maintain log for "last maintenance" date
+  const mtLog=MT_loadLog();
+  const lastMaintEntry=mtLog.length?mtLog[mtLog.length-1]:null;
+  const lastMaintDate=lastMaintEntry?lastMaintEntry.date:lastTestDate;
+  if(lastMaintDate){
+    const lastD=new Date(lastMaintDate+'T00:00:00');
     const daysSinceMaint=Math.floor((today-lastD)/86400000);
     let maintText='上次维护：<b>'+daysSinceMaint+'天前</b>';
     if(tank.maintCycle&&tank.maintCycle>0){
@@ -360,9 +364,9 @@ function _renderMaintenance(tank){
       else maintText+=' · <span class="pf-maint-hi">超期'+Math.abs(nextDays)+'天</span>';
     }
     const maintWarn=(tank.maintCycle&&tank.maintCycle>0&&(tank.maintCycle-daysSinceMaint)<=0);
-    h+='<div class="pf-maint-row'+(maintWarn?' warn':' ok')+' pf-maint-click" onclick="switchPage(\'water\')"><span class="pf-maint-icon">'+(maintWarn?'⚠️':'🧪')+'</span><span>'+maintText+'</span></div>';
+    h+='<div class="pf-maint-row'+(maintWarn?' warn':' ok')+' pf-maint-click" onclick="switchPage(\'maintain\')"><span class="pf-maint-icon">'+(maintWarn?'⚠️':'🧪')+'</span><span>'+maintText+'</span></div>';
   }else{
-    h+='<div class="pf-maint-row"><span class="pf-maint-icon">🧪</span><span>暂无测水记录</span></div>';
+    h+='<div class="pf-maint-row pf-maint-click" onclick="switchPage(\'maintain\')"><span class="pf-maint-icon">🧪</span><span>暂无维护记录</span></div>';
   }
   // 2. Recent water quality (last row - always show all values)
   if(lastRow&&wFields.length){

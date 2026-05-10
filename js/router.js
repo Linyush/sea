@@ -4,12 +4,12 @@
 const PAGE_META={
   profile:{title:'礁岩日记',badge:'REEF LOG'},
   water:{title:'礁岩日记',badge:'水质记录'},
-  change:{title:'礁岩日记',badge:'换水计算'},
+  maintain:{title:'礁岩日记',badge:'维护'},
   titrate:{title:'礁岩日记',badge:'滴定计算'},
   light:{title:'礁岩日记',badge:'光谱生成'}
 };
 let _currentPage='profile';
-let _pageInited={profile:false,water:false,light:false,change:false,titrate:false};
+let _pageInited={profile:false,water:false,light:false,maintain:false,titrate:false};
 
 function switchPage(page){
   if(!PAGE_META[page])return;
@@ -27,7 +27,7 @@ function switchPage(page){
     if(page==='profile') initProfile();
     else if(page==='water') initWater();
     else if(page==='light') initLight();
-    else if(page==='change') initChange();
+    else if(page==='maintain') initMaintain();
     else if(page==='titrate') initTitrate();
   }
   if(page==='profile') renderProfile();

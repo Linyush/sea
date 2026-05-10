@@ -4,6 +4,10 @@
 document.addEventListener('keydown',function(e){
   if(e.key==='Escape'){
     /* Close modals from top layer to bottom */
+    const mtSet=document.getElementById('mtSettingsOverlay');
+    if(mtSet){MT_closeSettings();return;}
+    const mtHist=document.getElementById('mtHistoryOverlay');
+    if(mtHist){MT_closeHistory();return;}
     const ipOv=document.getElementById('iconPickerOverlay');
     if(ipOv&&ipOv.classList.contains('open')){IP_close();return;}
     const ceOv=document.getElementById('childFormOverlay');
@@ -33,7 +37,7 @@ document.addEventListener('DOMContentLoaded',function(){
   if(startPage==='profile') initProfile();
   else if(startPage==='water') initWater();
   else if(startPage==='light') initLight();
-  else if(startPage==='change') initChange();
+  else if(startPage==='maintain') initMaintain();
   else if(startPage==='titrate') initTitrate();
   if(startPage==='profile') renderProfile();
 });

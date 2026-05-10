@@ -385,7 +385,7 @@ function W_showEditModal(idx){
   });
   html+='</div>';
   html+='<div class="w-edit-actions">';
-  html+='<button class="btn-ghost" onclick="W_toggleEditHidden('+idx+')" id="wEditHideBtn">'+(r._hidden?'👁 显示此条':'🙈 隐藏此条')+'</button>';
+  html+='<button class="btn-ghost" onclick="W_toggleEditHidden('+idx+')" id="wEditHideBtn">'+(r._hidden?'👁':'🙈')+'</button>';
   html+='<span style="flex:1"></span>';
   html+='<button class="btn-ghost" onclick="W_deleteEditRow('+idx+')">🗑️ 删除</button>';
   html+='<button class="btn" onclick="W_saveEdit('+idx+')">保存</button>';
@@ -397,7 +397,7 @@ function W_showEditModal(idx){
 function W_toggleEditHidden(idx){
   rows[idx]._hidden=!rows[idx]._hidden;
   var btn=document.getElementById('wEditHideBtn');
-  if(btn) btn.textContent=rows[idx]._hidden?'👁 显示此条':'🙈 隐藏此条';
+  if(btn) btn.textContent=rows[idx]._hidden?'👁':'🙈';
   save();renderChart();renderTable();
 }
 

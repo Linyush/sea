@@ -29,7 +29,10 @@ document.addEventListener('keydown',function(e){
   }
 });
 
+if('scrollRestoration' in history) history.scrollRestoration='manual';
+
 document.addEventListener('DOMContentLoaded',function(){
+  window.scrollTo(0,0);
   loadTheme();
   // Multi-tank init
   TK_migrate();

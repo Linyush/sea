@@ -122,3 +122,15 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
 .auto-label .auto-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;animation:autoPulse 2s infinite}
 @keyframes autoPulse{0%,100%{opacity:.3}50%{opacity:1}}
 
+
+/* Edit row modal (dblclick on chart) */
+.w-edit-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px}
+.w-edit-item{display:flex;flex-direction:column;gap:5px}
+.w-edit-item label{font-size:12px;font-weight:600;letter-spacing:.3px}
+.w-edit-item input{background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:14px;font-weight:500;text-align:center;outline:none;transition:border-color .2s}
+.w-edit-item input:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 10%,transparent)}
+
+/* Hidden toggle in tgt card */
+.tgt-hide-row{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text4);cursor:pointer;margin-top:4px;padding-top:4px;border-top:1px solid color-mix(in srgb,var(--border) 50%,transparent)}
+.tgt-hide-row input[type="checkbox"]{width:13px;height:13px;accent-color:var(--accent);cursor:pointer}
+.tgt-hide-row span{user-select:none}

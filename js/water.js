@@ -26,10 +26,11 @@ function localDate(){const n=new Date();return n.getFullYear()+'-'+String(n.getM
 function pd(s){return new Date(s+'T00:00:00')}
 function fd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function fs(s){const d=pd(s);return(d.getMonth()+1)+'/'+d.getDate();}
+function chartFields(){return fields.filter(f=>!f.hidden);}
 function calcBands(){
-  const n=fields.length;if(!n)return{};
+  const cf=chartFields(),n=cf.length;if(!n)return{};
   const gap=0.04,totalGap=gap*(n-1),bandH=(1-totalGap)/n,bands={};
-  fields.forEach((f,i)=>{bands[f.key]={top:i*(bandH+gap),bot:i*(bandH+gap)+bandH};});
+  cf.forEach((f,i)=>{bands[f.key]={top:i*(bandH+gap),bot:i*(bandH+gap)+bandH};});
   return bands;
 }
 function load(){
@@ -68,9 +69,9 @@ function valToY(fi,v,area,bands){
 const lanePlugin={
   id:'lanes',
   beforeDatasetsDraw(c){
-    const ctx=c.ctx,area=c.chartArea,h=area.bottom-area.top,bands=calcBands(),n=fields.length;
+    const ctx=c.ctx,area=c.chartArea,h=area.bottom-area.top,bands=calcBands(),n=chartFields().length;
     ctx.save();
-    fields.forEach(fi=>{
+    chartFields().forEach(fi=>{
       const yHi=valToY(fi,fi.hi,area,bands),yLo=valToY(fi,fi.lo,area,bands);
       ctx.fillStyle=fi.color+'0D';ctx.fillRect(area.left,yHi,area.right-area.left,yLo-yHi);
       [yHi,yLo].forEach(y=>{ctx.beginPath();ctx.moveTo(area.left,y);ctx.lineTo(area.right,y);ctx.strokeStyle=fi.color+'20';ctx.lineWidth=1;ctx.setLineDash([3,4]);ctx.stroke();ctx.setLineDash([]);});
@@ -158,7 +159,7 @@ function updateLaneLabels(){
   if(!W_chart)return;const area=W_chart.chartArea;if(!area)return;
   const h=area.bottom-area.top,bands=calcBands(),el=document.getElementById('laneLabels');
   el.innerHTML='';
-  fields.forEach(fi=>{
+  chartFields().forEach(fi=>{
     const b=bands[fi.key],yTop=area.top+h*b.top+4;
     const lbl=document.createElement('div');lbl.className='lane-lbl';
     lbl.style.top=yTop+'px';lbl.style.color=fi.color;lbl.textContent=fi.name;
@@ -181,7 +182,7 @@ function renderChart(){
   const bands=calcBands(),ds=[],cs=getComputedStyle(document.documentElement);
   const firstDate=rows[0].date,lastDate=rows[rows.length-1].date;
   const scales={x:{type:'time',time:{unit:'day',tooltipFormat:'M/d',displayFormats:{day:'M/d',week:'M/d',month:'yyyy/M'}},min:firstDate,max:fd(new Date(pd(lastDate).getTime()+30*86400000)),ticks:{color:cs.getPropertyValue('--text3').trim(),font:{size:11,weight:'500'},maxRotation:45,autoSkip:true,maxTicksLimit:_overviewMode?20:15},grid:{color:cs.getPropertyValue('--border').trim()+'40'}}};
-  fields.forEach(fi=>{
+  chartFields().forEach(fi=>{
     const k=fi.key,c=fi.color,yId='y_'+k,ar=bandAxisRange(fi,bands);
     const pts=rows.filter(r=>r[k]!=null).map(r=>({x:r.date,y:r[k],_date:r.date,_dateLabel:fs(r.date)}));
     ds.push({label:fi.name,data:pts,borderColor:c,backgroundColor:c+'22',borderWidth:_overviewMode?1.8:2.5,pointRadius:_overviewMode?2.5:4.5,pointBackgroundColor:c,pointBorderColor:cs.getPropertyValue('--card').trim(),pointBorderWidth:_overviewMode?1:2,pointHoverRadius:_overviewMode?4:7,pointHitRadius:12,tension:.3,yAxisID:yId,spanGaps:true,_field:k});
@@ -212,6 +213,7 @@ function renderChart(){
   const canvas=document.getElementById('mainChart');
   canvas.onmousemove=function(e){if(!W_chart)return;const rect=canvas.getBoundingClientRect();const mouseX=e.clientX-rect.left;const mouseY=e.clientY;_handleChartHover(mouseX,mouseY);};
   canvas.onmouseleave=function(){document.getElementById('customTooltip').classList.remove('show');_hoverX=null;if(W_chart)W_chart.draw();};
+  canvas.ondblclick=function(e){if(!W_chart)return;const rect=canvas.getBoundingClientRect();const mouseX=e.clientX-rect.left;W_openEditRow(mouseX);};
   _chartTheme=document.documentElement.classList.contains("light")?"light":"dark";
 }
 
@@ -242,7 +244,7 @@ function renderTgtGrid(){
   let h='';
   fields.forEach((fi,i)=>{
     const custom=!DEF_FIELDS.some(d=>d.key===fi.key);
-    h+='<div class="tgt-card"><div class="tgt-hd"><div class="left"><span class="sw" style="background:'+fi.color+'"></span><span style="color:'+fi.color+'">'+fi.name+'</span></div>'+(custom?'<button class="del-field-btn" onclick="delField('+i+')" title="删除">✕</button>':'')+'</div><div class="tgt-row"><span class="rl">目标</span><input class="tgt-v" type="text" inputmode="decimal" value="'+fi.tgt+'" onchange="chgField('+i+',\'tgt\',this.value)"></div><div class="tgt-row"><span class="rl">下限</span><input type="text" inputmode="decimal" value="'+fi.lo+'" onchange="chgField('+i+',\'lo\',this.value)"></div><div class="tgt-row"><span class="rl">上限</span><input type="text" inputmode="decimal" value="'+fi.hi+'" onchange="chgField('+i+',\'hi\',this.value)"></div></div>';
+    h+='<div class="tgt-card"><div class="tgt-hd"><div class="left"><span class="sw" style="background:'+fi.color+'"></span><span style="color:'+fi.color+'">'+fi.name+'</span></div>'+(custom?'<button class="del-field-btn" onclick="delField('+i+')" title="删除">✕</button>':'')+'</div><div class="tgt-row"><span class="rl">目标</span><input class="tgt-v" type="text" inputmode="decimal" value="'+fi.tgt+'" onchange="chgField('+i+',\'tgt\',this.value)"></div><div class="tgt-row"><span class="rl">下限</span><input type="text" inputmode="decimal" value="'+fi.lo+'" onchange="chgField('+i+',\'lo\',this.value)"></div><div class="tgt-row"><span class="rl">上限</span><input type="text" inputmode="decimal" value="'+fi.hi+'" onchange="chgField('+i+',\'hi\',this.value)"></div><label class="tgt-hide-row"><input type="checkbox" '+(fi.hidden?'checked':'')+' onchange="toggleFieldHidden('+i+',this.checked)"><span>不在折线图显示</span></label></div>';
   });
   h+='<div class="add-field-card" onclick="openNf()"><span>+</span></div>';
   document.getElementById('tgtGrid').innerHTML=h;
@@ -343,6 +345,61 @@ function quickAdd(){
   rows.push(r);rows.sort((a,b)=>a.date.localeCompare(b.date));save();
   fields.forEach(fi=>{document.getElementById('q'+fi.key).value='';});
   renderChart();toast('已添加 '+fs(dv));autoBackup();
+}
+
+function toggleFieldHidden(i,checked){fields[i].hidden=checked;save();renderChart();updateLaneLabels();}
+
+/* --- Double-click edit modal for chart data --- */
+function W_openEditRow(mouseX){
+  const xScale=W_chart.scales.x;
+  let bestDist=Infinity,bestRow=null,bestIdx=-1;
+  rows.forEach((r,i)=>{
+    const px=xScale.getPixelForValue(new Date(r.date+'T00:00:00'));
+    const d=Math.abs(px-mouseX);
+    if(d<bestDist){bestDist=d;bestRow=r;bestIdx=i;}
+  });
+  if(!bestRow||bestDist>40)return;
+  W_showEditModal(bestIdx);
+}
+
+function W_showEditModal(idx){
+  const r=rows[idx];if(!r)return;
+  let ex=document.getElementById('wEditOverlay');if(ex)ex.remove();
+  let html='<div class="modal-overlay open" id="wEditOverlay" onclick="if(event.target===this)W_closeEdit()" style="z-index:150">';
+  html+='<div class="modal" style="max-width:440px;transform:scale(1);opacity:1">';
+  html+='<div class="modal-hd"><h3><span class="dot"></span>编辑数据 · '+fs(r.date)+'</h3><button class="modal-close" onclick="W_closeEdit()">✕</button></div>';
+  html+='<div class="modal-bd" style="padding:16px 20px">';
+  html+='<div class="w-edit-grid">';
+  fields.forEach(fi=>{
+    const v=r[fi.key]!=null?r[fi.key]:'';
+    html+='<div class="w-edit-item"><label style="color:'+fi.color+'">'+fi.name+'</label><input type="number" step="any" id="wEdit_'+fi.key+'" value="'+v+'" placeholder="-"></div>';
+  });
+  html+='</div>';
+  html+='<div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px">';
+  html+='<button class="btn-ghost" onclick="W_deleteEditRow('+idx+')">🗑️ 删除此条</button>';
+  html+='<button class="btn" onclick="W_saveEdit('+idx+')">保存</button>';
+  html+='</div>';
+  html+='</div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',html);
+  const escFn=function(e){if(e.key==='Escape'){W_closeEdit();document.removeEventListener('keydown',escFn);}};
+  document.addEventListener('keydown',escFn);
+}
+
+function W_closeEdit(){const el=document.getElementById('wEditOverlay');if(el)el.remove();}
+
+function W_saveEdit(idx){
+  fields.forEach(fi=>{
+    const el=document.getElementById('wEdit_'+fi.key);
+    if(!el)return;
+    const v=el.value.trim();
+    rows[idx][fi.key]=v===''?null:parseFloat(v);
+  });
+  save();renderChart();renderModal();W_closeEdit();toast('已更新');
+}
+
+function W_deleteEditRow(idx){
+  if(!confirm('确定删除 '+fs(rows[idx].date)+' 的记录？'))return;
+  rows.splice(idx,1);save();renderChart();renderModal();W_closeEdit();toast('已删除');
 }
 
 function initWater(){

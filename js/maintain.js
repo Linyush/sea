@@ -482,7 +482,7 @@ function MT_openSettings(){
   html+='<div class="mt-set-section"><div class="mt-set-label">开关设备（换水前关闭 · 换水后开启）</div>';
   html+='<div class="mt-set-chips">';
   (cfg.switchDevices||[]).forEach(function(name,i){
-    html+='<span class="mt-set-chip-item">'+name+'<button class="mt-chip-del" onclick="MT_cfgRemoveSwitch('+i+')">✕</button></span>';
+    html+='<span class="mt-set-chip-item"><span class="chip-order">'+(i+1)+'</span>'+name+'<button class="mt-chip-del" onclick="MT_cfgRemoveSwitch('+i+')">✕</button></span>';
   });
   html+='<button class="mt-set-add-chip" onclick="MT_cfgShowSwitchPicker()">+</button>';
   html+='</div>';

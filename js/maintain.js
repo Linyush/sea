@@ -316,13 +316,20 @@ function MT_renderWizTest(){
   html+='<div class="mt-test-item"><label>日期</label><input type="date" id="mtTestDate" value="'+new Date().toISOString().slice(0,10)+'"></div>';
   wFields.forEach(function(f){
     var val=_mt.testData[f.key]||'';
-    html+='<div class="mt-test-item"><label>'+f.name+'</label><input type="number" step="any" id="mtTest_'+f.key+'" value="'+val+'" placeholder="-" onchange="MT_saveTestVal(\''+f.key+'\',this.value)"></div>';
+    var isCaMg=(f.key==='ca'||f.key==='mg');
+    html+='<div class="mt-test-item"><label>'+f.name+'</label><input type="'+(isCaMg?'text':'number')+'" step="any" id="mtTest_'+f.key+'" value="'+val+'" placeholder="-" onchange="MT_saveTestVal(\''+f.key+'\',this.value)"'+(isCaMg?' onblur="MT_autoConvTest(\''+f.key+'\',this)"':'')+'></div>';
   });
   html+='</div>';
   html+='<p class="mt-hint">未检测的项目可留空</p>';
   return html;
 }
 function MT_saveTestVal(key,val){_mt.testData[key]=val;}
+function MT_autoConvTest(fk,el){
+  var v=parseFloat(el.value);if(isNaN(v)||v>=1)return;
+  var tbl=fk==='ca'?CA_TABLE:MG_TABLE;var ppm=lookupTable(tbl,v);
+  el.value=ppm;_mt.testData[fk]=String(ppm);
+  toast('读数 '+v+' → '+ppm+'ppm');
+}
 
 /* Checklist (close/maint/restore) */
 function MT_renderWizChecklist(stepId){

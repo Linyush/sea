@@ -29,15 +29,14 @@ function toast(m){const t=document.getElementById('toast');t.textContent=m;t.cla
 /* System confirm modal (replaces native confirm) */
 var _sysConfirmCb=null;
 function sysConfirm(msg,okText,cb){
-  let ov=document.getElementById('sysCfmOverlay');
-  if(!ov){
-    document.body.insertAdjacentHTML('beforeend','<div class="cfm-overlay" id="sysCfmOverlay" style="z-index:9999" onclick="if(event.target===this)sysConfirmCancel()"><div class="cfm-box"><p id="sysCfmMsg"></p><div class="cfm-btns"><button class="btn-ghost" onclick="sysConfirmCancel()">取消</button><button class="btn-del" id="sysCfmOk">确定</button></div></div></div>');
-    ov=document.getElementById('sysCfmOverlay');
-  }
-  document.getElementById('sysCfmMsg').textContent=msg;
-  const okBtn=document.getElementById('sysCfmOk');okBtn.textContent=okText||'确定';
   _sysConfirmCb=cb;
-  ov.style.display='flex';requestAnimationFrame(()=>ov.classList.add('open'));
-  okBtn.onclick=function(){var fn=_sysConfirmCb;sysConfirmCancel();if(fn)fn();};
+  var ov=document.getElementById('sysCfmOverlay');
+  if(ov)ov.remove();
+  var h='<div class="cfm-overlay open" id="sysCfmOverlay" style="z-index:9999"><div class="cfm-box" style="transform:scale(1);opacity:1"><p id="sysCfmMsg">'+msg+'</p><div class="cfm-btns"><button class="btn-ghost" id="sysCfmCancel">取消</button><button class="btn-del" id="sysCfmOk">'+(okText||'确定')+'</button></div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
+  ov=document.getElementById('sysCfmOverlay');
+  ov.addEventListener('click',function(e){if(e.target===ov)sysConfirmCancel();});
+  document.getElementById('sysCfmCancel').addEventListener('click',sysConfirmCancel);
+  document.getElementById('sysCfmOk').addEventListener('click',function(){var fn=_sysConfirmCb;sysConfirmCancel();if(fn)fn();});
 }
-function sysConfirmCancel(){const ov=document.getElementById('sysCfmOverlay');if(ov){ov.classList.remove('open');ov.style.display='none';}_sysConfirmCb=null;}
+function sysConfirmCancel(){var ov=document.getElementById('sysCfmOverlay');if(ov)ov.remove();_sysConfirmCb=null;}

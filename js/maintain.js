@@ -71,8 +71,8 @@ function MT_closeWizard(){
   var el=document.getElementById('mtWizardOverlay');
   if(el)el.remove();
   document.removeEventListener('keydown',MT_wizKeyHandler);
-function MT_doClose(){MT_closeWizard();}
 }
+function MT_doClose(){MT_closeWizard();}
 
 /* --- Render --- */
 function MT_renderWizard(){
@@ -469,28 +469,22 @@ function MT_closeHistory(){
 }
 
 /* --- Settings modal --- */
-function MT_openSettings(){
+function MT_buildSettingsHTML(){
   var cfg=MT_loadCfg();
   var inv=P_loadInv();
   var equipList=(inv.equipment||[]).filter(function(e){return !['broken','sold'].includes(e.status);}).map(function(e){return e.name;});
+  var html='<h4>⚙️ 维护设置</h4>';
 
-  var html='<div class="mt-settings-overlay open" id="mtSettingsOverlay" onclick="if(event.target===this)MT_closeSettings()">';
-  html+='<div class="mt-settings-box">';
-  html+='<h4>⚙️ 维护设置</h4>';
-
-  // Supply checks
-  html+='<div class="mt-set-section"><div class="mt-set-label">余量检查项</div><div>';
+  html+='<div class="mt-set-section"><div class="mt-set-label">余量检查项</div><div class="mt-drag-list" id="mtDragSupply">';
   (cfg.supplyChecks||[]).forEach(function(name,i){
-    html+='<div class="mt-set-row"><input class="mt-set-input" value="'+name+'" onchange="MT_cfgSetSupplyName('+i+',this.value)"><button class="mt-set-del" onclick="MT_cfgRemoveSupply('+i+')">✕</button></div>';
+    html+='<div class="mt-set-row mt-draggable" draggable="true" data-type="supply" data-idx="'+i+'"><span class="mt-drag-handle">⠿</span><input class="mt-set-input" value="'+name+'" onchange="MT_cfgSetSupplyName('+i+',this.value)"><button class="mt-set-del" onclick="MT_cfgRemoveSupply('+i+')">✕</button></div>';
   });
-  html+='<button class="mt-set-add" onclick="MT_cfgAddSupply()">+ 添加</button>';
-  html+='</div></div>';
+  html+='</div><button class="mt-set-add" onclick="MT_cfgAddSupply()">+ 添加</button></div>';
 
-  // Switch devices
   html+='<div class="mt-set-section"><div class="mt-set-label">开关设备（换水前关闭 · 换水后开启）</div>';
-  html+='<div class="mt-set-chips">';
+  html+='<div class="mt-set-chips mt-drag-list" id="mtDragSwitch">';
   (cfg.switchDevices||[]).forEach(function(name,i){
-    html+='<span class="mt-set-chip-item"><span class="chip-order">'+(i+1)+'</span>'+name+'<button class="mt-chip-del" onclick="MT_cfgRemoveSwitch('+i+')">✕</button></span>';
+    html+='<span class="mt-set-chip-item mt-draggable" draggable="true" data-type="switch" data-idx="'+i+'"><span class="mt-drag-handle">⠿</span><span class="chip-order">'+(i+1)+'</span>'+name+'<button class="mt-chip-del" onclick="MT_cfgRemoveSwitch('+i+')">✕</button></span>';
   });
   html+='<button class="mt-set-add-chip" onclick="MT_cfgShowSwitchPicker()">+</button>';
   html+='</div>';
@@ -498,25 +492,33 @@ function MT_openSettings(){
   var currentSwitch=cfg.switchDevices||[];
   var available=equipList.filter(function(n){return !currentSwitch.includes(n);});
   available.forEach(function(name){
-    html+='<div class="mt-pick-item" onclick="MT_cfgAddSwitch(\''+name.replace(/'/g,"\\'")+'\')">'+name+'</div>';
+    html+='<div class="mt-pick-item" onclick="MT_cfgAddSwitch(\''+name.replace(/'/g,"\\\'")+'\')">' +name+'</div>';
   });
   if(!available.length) html+='<div class="mt-pick-empty">无更多设备</div>';
   html+='</div></div>';
 
-  // Maint items
-  html+='<div class="mt-set-section"><div class="mt-set-label">维护项目</div><div>';
+  html+='<div class="mt-set-section"><div class="mt-set-label">维护项目</div><div class="mt-drag-list" id="mtDragMaint">';
   (cfg.maintDevices||[]).forEach(function(name,i){
-    html+='<div class="mt-set-row"><input class="mt-set-input" value="'+name+'" onchange="MT_cfgSetMaintName('+i+',this.value)"><button class="mt-set-del" onclick="MT_cfgRemoveMaint('+i+')">✕</button></div>';
+    html+='<div class="mt-set-row mt-draggable" draggable="true" data-type="maint" data-idx="'+i+'"><span class="mt-drag-handle">⠿</span><input class="mt-set-input" value="'+name+'" onchange="MT_cfgSetMaintName('+i+',this.value)"><button class="mt-set-del" onclick="MT_cfgRemoveMaint('+i+')">✕</button></div>';
   });
-  html+='<button class="mt-set-add" onclick="MT_cfgAddMaint()">+ 添加</button>';
-  html+='</div></div>';
+  html+='</div><button class="mt-set-add" onclick="MT_cfgAddMaint()">+ 添加</button></div>';
 
   html+='<div class="mt-actions" style="justify-content:flex-end"><button class="mt-btn mt-btn-primary" onclick="MT_closeSettings()">完成</button></div>';
-  html+='</div></div>';
+  return html;
+}
 
+function MT_openSettings(){
+  var html='<div class="mt-settings-overlay open" id="mtSettingsOverlay" onclick="if(event.target===this)MT_closeSettings()">';
+  html+='<div class="mt-settings-box">'+MT_buildSettingsHTML()+'</div></div>';
   document.body.insertAdjacentHTML('beforeend',html);
-  var escFn=function(e){if(e.key==='Escape'){MT_closeSettings();document.removeEventListener('keydown',escFn);}};
-  document.addEventListener('keydown',escFn);
+  MT_initDrag();
+}
+
+function MT_rerenderSettings(){
+  var box=document.querySelector('#mtSettingsOverlay .mt-settings-box');
+  if(!box)return;
+  box.innerHTML=MT_buildSettingsHTML();
+  MT_initDrag();
 }
 
 function MT_closeSettings(){
@@ -529,53 +531,63 @@ function MT_cfgShowSwitchPicker(){
   var picker=document.getElementById('mtSwitchPicker');
   if(picker) picker.style.display=picker.style.display==='none'?'flex':'none';
 }
+
+/* 拖拽排序 */
+var _mtDragEl=null,_mtDragType='',_mtDragFrom=-1;
+function MT_initDrag(){
+  document.querySelectorAll('#mtSettingsOverlay .mt-draggable').forEach(function(el){
+    el.addEventListener('dragstart',function(e){
+      _mtDragEl=el;_mtDragType=el.dataset.type;_mtDragFrom=parseInt(el.dataset.idx);
+      el.classList.add('mt-dragging');e.dataTransfer.effectAllowed='move';
+    });
+    el.addEventListener('dragend',function(){el.classList.remove('mt-dragging');_mtDragEl=null;});
+    el.addEventListener('dragover',function(e){
+      e.preventDefault();
+      if(_mtDragEl&&_mtDragType===el.dataset.type&&el!==_mtDragEl) el.classList.add('mt-drag-over');
+    });
+    el.addEventListener('dragleave',function(){el.classList.remove('mt-drag-over');});
+    el.addEventListener('drop',function(e){
+      e.preventDefault();el.classList.remove('mt-drag-over');
+      if(!_mtDragEl||_mtDragType!==el.dataset.type)return;
+      var to=parseInt(el.dataset.idx);if(_mtDragFrom===to)return;
+      MT_cfgReorder(_mtDragType,_mtDragFrom,to);
+    });
+  });
+}
+function MT_cfgReorder(type,from,to){
+  var cfg=MT_loadCfg();
+  var arr=type==='supply'?cfg.supplyChecks:type==='switch'?cfg.switchDevices:cfg.maintDevices;
+  if(!arr)return;
+  var item=arr.splice(from,1)[0];arr.splice(to,0,item);
+  MT_saveCfg(cfg);MT_rerenderSettings();
+}
+
 function MT_cfgAddSwitch(name){
   var cfg=MT_loadCfg();
   if(!cfg.switchDevices)cfg.switchDevices=[];
   if(!cfg.switchDevices.includes(name))cfg.switchDevices.push(name);
-  MT_saveCfg(cfg);
-  MT_closeSettings();MT_openSettings();
+  MT_saveCfg(cfg);MT_rerenderSettings();
 }
 function MT_cfgRemoveSwitch(i){
-  var cfg=MT_loadCfg();
-  cfg.switchDevices.splice(i,1);
-  MT_saveCfg(cfg);
-  MT_closeSettings();MT_openSettings();
+  var cfg=MT_loadCfg();cfg.switchDevices.splice(i,1);MT_saveCfg(cfg);MT_rerenderSettings();
 }
 function MT_cfgAddSupply(){
-  var cfg=MT_loadCfg();
-  cfg.supplyChecks.push('新检查项');
-  MT_saveCfg(cfg);
-  MT_closeSettings();MT_openSettings();
+  var cfg=MT_loadCfg();cfg.supplyChecks.push('新检查项');MT_saveCfg(cfg);MT_rerenderSettings();
 }
 function MT_cfgRemoveSupply(i){
-  var cfg=MT_loadCfg();
-  cfg.supplyChecks.splice(i,1);
-  MT_saveCfg(cfg);
-  MT_closeSettings();MT_openSettings();
+  var cfg=MT_loadCfg();cfg.supplyChecks.splice(i,1);MT_saveCfg(cfg);MT_rerenderSettings();
 }
 function MT_cfgSetSupplyName(i,val){
-  var cfg=MT_loadCfg();
-  cfg.supplyChecks[i]=val;
-  MT_saveCfg(cfg);
+  var cfg=MT_loadCfg();cfg.supplyChecks[i]=val;MT_saveCfg(cfg);
 }
 function MT_cfgAddMaint(){
-  var cfg=MT_loadCfg();
-  if(!cfg.maintDevices)cfg.maintDevices=[];
-  cfg.maintDevices.push('清洗蛋分');
-  MT_saveCfg(cfg);
-  MT_closeSettings();MT_openSettings();
+  var cfg=MT_loadCfg();if(!cfg.maintDevices)cfg.maintDevices=[];cfg.maintDevices.push('清洗蛋分');MT_saveCfg(cfg);MT_rerenderSettings();
 }
 function MT_cfgRemoveMaint(i){
-  var cfg=MT_loadCfg();
-  cfg.maintDevices.splice(i,1);
-  MT_saveCfg(cfg);
-  MT_closeSettings();MT_openSettings();
+  var cfg=MT_loadCfg();cfg.maintDevices.splice(i,1);MT_saveCfg(cfg);MT_rerenderSettings();
 }
 function MT_cfgSetMaintName(i,val){
-  var cfg=MT_loadCfg();
-  cfg.maintDevices[i]=val;
-  MT_saveCfg(cfg);
+  var cfg=MT_loadCfg();cfg.maintDevices[i]=val;MT_saveCfg(cfg);
 }
 
 /* --- Format days for profile display --- */

@@ -38,6 +38,6 @@ function sysConfirm(msg,okText,cb){
   const okBtn=document.getElementById('sysCfmOk');okBtn.textContent=okText||'确定';
   _sysConfirmCb=cb;
   ov.style.display='flex';requestAnimationFrame(()=>ov.classList.add('open'));
-  okBtn.onclick=function(){sysConfirmCancel();if(_sysConfirmCb)_sysConfirmCb();};
+  okBtn.onclick=function(){var fn=_sysConfirmCb;sysConfirmCancel();if(fn)fn();};
 }
 function sysConfirmCancel(){const ov=document.getElementById('sysCfmOverlay');if(ov){ov.classList.remove('open');ov.style.display='none';}_sysConfirmCb=null;}

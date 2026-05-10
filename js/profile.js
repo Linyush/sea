@@ -158,6 +158,7 @@ function P_saveInv(inv){
   _s(P_INV_KEY(),JSON.stringify(inv));
 }
 
+var _pfCoverKey="";
 function renderProfile(){
   const t=TK_current();
   // Header - simplified: name, volume, days
@@ -167,10 +168,9 @@ function renderProfile(){
   if(t.cover){
     var isVideo=/\.(mp4|webm|mov)(\?|$)/i.test(t.cover);
     var pos='center '+(t.coverPos||'50')+'%';
-    // 只有 cover/pos 变化时才重建，避免视频重新加载
-    var curMedia=bgEl?bgEl.querySelector('video,img'):null;
-    var sameSrc=curMedia&&curMedia.getAttribute('src')===t.cover&&curMedia.style.objectPosition===pos;
-    if(!sameSrc&&bgEl){
+    var coverKey=t.cover+'|'+pos;
+    if(coverKey!==_pfCoverKey&&bgEl){
+      _pfCoverKey=coverKey;
       if(isVideo){
         bgEl.innerHTML='<video src="'+t.cover+'" muted autoplay loop playsinline style="object-position:'+pos+'"></video>';
       }else{

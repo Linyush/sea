@@ -166,21 +166,14 @@ function renderProfile(){
   var bgEl=document.getElementById('pfCoverBg');
   if(t.cover){
     var isVideo=/\.(mp4|webm|mov)(\?|$)/i.test(t.cover);
+    var pos=t.coverPos||'center center';
     if(isVideo){
       if(bgEl){
-        bgEl.innerHTML='<video src="'+t.cover+'" muted autoplay loop playsinline></video>';
-        var vid=bgEl.querySelector('video');
-        vid.addEventListener('loadedmetadata',function(){
-          bgEl.classList.toggle('pf-cover-portrait',vid.videoHeight>vid.videoWidth);
-        });
+        bgEl.innerHTML='<video src="'+t.cover+'" muted autoplay loop playsinline style="object-position:'+pos+'"></video>';
       }
     }else{
       if(bgEl){
-        bgEl.innerHTML='<img src="'+t.cover+'">';
-        var img=bgEl.querySelector('img');
-        img.addEventListener('load',function(){
-          bgEl.classList.toggle('pf-cover-portrait',img.naturalHeight>img.naturalWidth);
-        });
+        bgEl.innerHTML='<img src="'+t.cover+'" style="object-position:'+pos+'">';
       }
     }
     if(bgEl) bgEl.classList.add('active');

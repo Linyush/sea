@@ -359,18 +359,14 @@
 
 
 /* 封面背景 - 卡片内绝对定位，底部渐变消失 */
-.pf-cover-bg{display:none;position:absolute;top:0;left:0;right:0;height:100%;z-index:0;overflow:hidden}
+.pf-cover-bg{display:none;position:absolute;top:0;left:0;right:0;height:220px;z-index:0;overflow:hidden;border-radius:14px 14px 0 0}
 .pf-cover-bg.active{display:block}
 .pf-cover-bg img,.pf-cover-bg video{width:100%;height:100%;object-fit:cover}
-.pf-cover-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 10%,color-mix(in srgb,var(--card) 50%,transparent) 45%,color-mix(in srgb,var(--card) 85%,transparent) 70%,var(--card) 92%);pointer-events:none}
+.pf-cover-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,var(--card) 100%);pointer-events:none}
 
-.pf-cover-bg.active~.profile-header{padding-top:120px}
+.pf-cover-bg.active~.profile-header{padding-top:140px}
 .profile-header,.pf-divider,.pf-columns{position:relative;z-index:1}
 
 /* 全屏预览 */
 .pf-cover-fullscreen{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:9999;cursor:pointer;animation:mtFadeIn .2s}
 
-/* 竖屏视频/图片适配：居右显示，左侧内容不受遮挡 */
-.pf-cover-bg.pf-cover-portrait{width:45%;left:auto;right:0;height:100%}
-.pf-cover-bg.pf-cover-portrait img,.pf-cover-bg.pf-cover-portrait video{object-fit:cover;object-position:center}
-.pf-cover-bg.pf-cover-portrait::after{background:linear-gradient(to right,var(--card) 0%,color-mix(in srgb,var(--card) 60%,transparent) 30%,transparent 70%),linear-gradient(to bottom,transparent 60%,var(--card) 95%)}

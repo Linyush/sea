@@ -166,6 +166,7 @@ function TF_open(editId){
       document.getElementById('tfVolume').value=t.volume||'';
       document.getElementById('tfStart').value=t.startDate||'';
       document.getElementById('tfCover').value=t.cover||'';
+      document.getElementById('tfCoverPos').value=t.coverPos||'center center';
       document.getElementById('tfSource').value=t.source||'';
       document.getElementById('tfPrice').value=t.price||'';
       document.getElementById('tfNotes').value=t.notes||'';
@@ -173,6 +174,7 @@ function TF_open(editId){
     }
   }else{
     ['tfName','tfVolume','tfStart','tfSource','tfPrice','tfNotes','tfMaintCycle'].forEach(id=>{document.getElementById(id).value='';});
+    document.getElementById('tfCoverPos').value='center center';
     document.getElementById('tfType').value='LPS';
   }
   ov.style.display='flex';requestAnimationFrame(()=>ov.classList.add('open'));
@@ -196,6 +198,7 @@ function TF_save(){
       t.price=document.getElementById('tfPrice').value;
       t.notes=document.getElementById('tfNotes').value.trim();
       t.cover=document.getElementById('tfCover').value.trim();
+      t.coverPos=document.getElementById('tfCoverPos').value;
       t.maintCycle=parseInt(document.getElementById('tfMaintCycle').value)||0;
       TK_save();TK_renderBar();
       if(_currentPage==='profile')renderProfile();
@@ -210,6 +213,7 @@ function TF_save(){
       price:document.getElementById('tfPrice').value,
       notes:document.getElementById('tfNotes').value.trim(),
       cover:document.getElementById('tfCover').value.trim(),
+      coverPos:document.getElementById('tfCoverPos').value,
       maintCycle:parseInt(document.getElementById('tfMaintCycle').value)||0,
       order:_tanks.length
     };

@@ -167,9 +167,21 @@ function renderProfile(){
   if(t.cover){
     var isVideo=/\.(mp4|webm|mov)(\?|$)/i.test(t.cover);
     if(isVideo){
-      if(bgEl) bgEl.innerHTML='<video src="'+t.cover+'" muted autoplay loop playsinline></video>';
+      if(bgEl){
+        bgEl.innerHTML='<video src="'+t.cover+'" muted autoplay loop playsinline></video>';
+        var vid=bgEl.querySelector('video');
+        vid.addEventListener('loadedmetadata',function(){
+          bgEl.classList.toggle('pf-cover-portrait',vid.videoHeight>vid.videoWidth);
+        });
+      }
     }else{
-      if(bgEl) bgEl.innerHTML='<img src="'+t.cover+'">';
+      if(bgEl){
+        bgEl.innerHTML='<img src="'+t.cover+'">';
+        var img=bgEl.querySelector('img');
+        img.addEventListener('load',function(){
+          bgEl.classList.toggle('pf-cover-portrait',img.naturalHeight>img.naturalWidth);
+        });
+      }
     }
     if(bgEl) bgEl.classList.add('active');
   }else{

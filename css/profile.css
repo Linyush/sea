@@ -369,3 +369,8 @@
 
 /* 全屏预览 */
 .pf-cover-fullscreen{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:9999;cursor:pointer;animation:mtFadeIn .2s}
+
+/* 竖屏视频/图片适配：居右显示，左侧内容不受遮挡 */
+.pf-cover-bg.pf-cover-portrait{width:45%;left:auto;right:0;height:100%}
+.pf-cover-bg.pf-cover-portrait img,.pf-cover-bg.pf-cover-portrait video{object-fit:cover;object-position:center}
+.pf-cover-bg.pf-cover-portrait::after{background:linear-gradient(to right,var(--card) 0%,color-mix(in srgb,var(--card) 60%,transparent) 30%,transparent 70%),linear-gradient(to bottom,transparent 60%,var(--card) 95%)}

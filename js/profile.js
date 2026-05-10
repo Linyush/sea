@@ -163,7 +163,18 @@ function renderProfile(){
   // Header - simplified: name, volume, days
   const hdr=document.getElementById('profileHeader');
   const daysSince=t.startDate?Math.floor((Date.now()-new Date(t.startDate+'T00:00:00').getTime())/(86400000)):-1;
-  let hdrHtml='<div class="profile-avatar">🐠</div><div class="profile-info"><h2>'+t.name+'</h2><div class="meta">';
+  var coverHtml='';
+  if(t.cover){
+    var isVideo=/\.(mp4|webm|mov)(\?|$)/i.test(t.cover);
+    if(isVideo){
+      coverHtml='<div class="profile-avatar pf-cover"><video src="'+t.cover+'" muted autoplay loop playsinline onclick="PF_fullCover(this)"></video></div>';
+    }else{
+      coverHtml='<div class="profile-avatar pf-cover"><img src="'+t.cover+'" onclick="PF_fullCover(this)"></div>';
+    }
+  }else{
+    coverHtml='<div class="profile-avatar">🐠</div>';
+  }
+  let hdrHtml=coverHtml+'<div class="profile-info"><h2>'+t.name+'</h2><div class="meta">';
   const metaParts=[t.type];
   if(t.volume) metaParts.push(t.volume+'L');
   if(daysSince>=0) metaParts.push('开缸 '+daysSince+' 天');
@@ -1175,4 +1186,22 @@ function P_clearAll(type){
   renderProfile();
   toast('已清空'+typeName);
   });
+}
+
+
+/* 封面全屏预览 */
+function PF_fullCover(el){
+  var src=el.src||el.querySelector('source')&&el.querySelector('source').src;
+  if(!src) src=el.currentSrc;
+  var isVideo=el.tagName==='VIDEO';
+  var ov=document.createElement('div');
+  ov.className='pf-cover-fullscreen';
+  ov.onclick=function(){ov.remove();};
+  if(isVideo){
+    ov.innerHTML='<video src="'+src+'" autoplay loop playsinline controls style="max-width:95vw;max-height:90vh;border-radius:12px"></video>';
+  }else{
+    ov.innerHTML='<img src="'+src+'" style="max-width:95vw;max-height:90vh;border-radius:12px;object-fit:contain">';
+  }
+  document.body.appendChild(ov);
+  document.addEventListener('keydown',function handler(e){if(e.key==='Escape'){ov.remove();document.removeEventListener('keydown',handler);}});
 }

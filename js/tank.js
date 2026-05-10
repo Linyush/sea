@@ -18,7 +18,7 @@ function TK_migrate(){
   const hasOld=oldW||oldL||oldC||oldT;
   // Create default tank
   const id='t'+Date.now();
-  const tank={id:id,name:'',type:'',volume:'',startDate:'',source:'',price:'',notes:'',order:0};
+  const tank={id:id,name:'',type:'',volume:'',startDate:'',source:'',price:'',notes:'',cover:'',order:0};
   _s(TK_LIST_KEY,JSON.stringify([tank]));
   _s(TK_ACTIVE_KEY,id);
   // Copy old data to new keys
@@ -41,7 +41,7 @@ function TK_load(){
   _tanks=s?JSON.parse(s):[];
   if(!_tanks.length){
     const id='t'+Date.now();
-    _tanks=[{id:id,name:'',type:'',volume:'',startDate:'',source:'',price:'',notes:'',order:0}];
+    _tanks=[{id:id,name:'',type:'',volume:'',startDate:'',source:'',price:'',notes:'',cover:'',order:0}];
     _s(TK_LIST_KEY,JSON.stringify(_tanks));
     _s('reef_'+id+'_inventory',JSON.stringify({livestock:[],equipment:[],consumables:[]}));
   }
@@ -165,6 +165,7 @@ function TF_open(editId){
       document.getElementById('tfType').value=t.type||'LPS';
       document.getElementById('tfVolume').value=t.volume||'';
       document.getElementById('tfStart').value=t.startDate||'';
+      document.getElementById('tfCover').value=t.cover||'';
       document.getElementById('tfSource').value=t.source||'';
       document.getElementById('tfPrice').value=t.price||'';
       document.getElementById('tfNotes').value=t.notes||'';
@@ -194,6 +195,7 @@ function TF_save(){
       t.source=document.getElementById('tfSource').value.trim();
       t.price=document.getElementById('tfPrice').value;
       t.notes=document.getElementById('tfNotes').value.trim();
+      t.cover=document.getElementById('tfCover').value.trim();
       t.maintCycle=parseInt(document.getElementById('tfMaintCycle').value)||0;
       TK_save();TK_renderBar();
       if(_currentPage==='profile')renderProfile();
@@ -207,6 +209,7 @@ function TF_save(){
       source:document.getElementById('tfSource').value.trim(),
       price:document.getElementById('tfPrice').value,
       notes:document.getElementById('tfNotes').value.trim(),
+      cover:document.getElementById('tfCover').value.trim(),
       maintCycle:parseInt(document.getElementById('tfMaintCycle').value)||0,
       order:_tanks.length
     };

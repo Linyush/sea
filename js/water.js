@@ -385,11 +385,20 @@ function W_showEditModal(idx){
   });
   html+='</div>';
   html+='<div class="w-edit-actions">';
+  html+='<button class="btn-ghost" onclick="W_toggleEditHidden('+idx+')" id="wEditHideBtn">'+(r._hidden?'👁 显示此条':'🙈 隐藏此条')+'</button>';
+  html+='<span style="flex:1"></span>';
   html+='<button class="btn-ghost" onclick="W_deleteEditRow('+idx+')">🗑️ 删除</button>';
   html+='<button class="btn" onclick="W_saveEdit('+idx+')">保存</button>';
   html+='</div>';
   html+='</div></div></div>';
   document.body.insertAdjacentHTML('beforeend',html);
+}
+
+function W_toggleEditHidden(idx){
+  rows[idx]._hidden=!rows[idx]._hidden;
+  var btn=document.getElementById('wEditHideBtn');
+  if(btn) btn.textContent=rows[idx]._hidden?'👁 显示此条':'🙈 隐藏此条';
+  save();renderChart();renderTable();
 }
 
 function W_closeEdit(){const el=document.getElementById('wEditOverlay');if(el)el.remove();}

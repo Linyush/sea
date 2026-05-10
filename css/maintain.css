@@ -1,32 +1,49 @@
 /* === Maintenance SOP Styles === */
 
 /* Wizard overlay */
-.mt-wizard-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000;animation:mtFadeIn .2s}
+.mt-wizard-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:1000;animation:mtFadeIn .15s}
 @keyframes mtFadeIn{from{opacity:0}to{opacity:1}}
-.mt-wizard-box{background:var(--card);border:1px solid var(--border);border-radius:16px;width:92%;max-width:580px;max-height:85vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.3)}
 
-.mt-wiz-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)}
-.mt-wiz-progress{display:flex;align-items:center;gap:10px}
-.mt-wiz-step-num{font-size:11px;color:var(--text4);background:color-mix(in srgb,var(--accent) 10%,transparent);padding:3px 8px;border-radius:10px;font-weight:600}
-.mt-wiz-step-title{font-size:15px;font-weight:600;color:var(--text)}
+/* Fixed size box - does NOT change between steps */
+.mt-wizard-box{background:var(--card);border:1px solid var(--border);border-radius:16px;width:92%;max-width:640px;height:520px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+
+/* Header */
+.mt-wiz-header{flex-shrink:0;border-bottom:1px solid var(--border)}
+.mt-wiz-prog-bar{height:3px;background:var(--border);width:100%}
+.mt-wiz-prog-fill{height:100%;background:var(--accent);transition:width .3s ease}
+.mt-wiz-title-row{display:flex;align-items:center;gap:10px;padding:14px 20px}
+.mt-wiz-step-num{font-size:11px;color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent);padding:3px 8px;border-radius:10px;font-weight:600}
+.mt-wiz-step-title{font-size:15px;font-weight:600;color:var(--text);flex:1}
 .mt-wiz-close{border:none;background:none;font-size:18px;color:var(--text4);cursor:pointer;padding:4px 8px;border-radius:6px}
 .mt-wiz-close:hover{background:color-mix(in srgb,var(--border) 40%,transparent);color:var(--text)}
 
-.mt-wiz-body{flex:1;overflow-y:auto;padding:20px;min-height:200px}
+/* Body - scrollable, fills remaining space */
+.mt-wiz-body{flex:1;overflow-y:auto;padding:20px;min-height:0}
 
-.mt-wiz-footer{display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:14px 20px;border-top:1px solid var(--border)}
+/* Footer - fixed at bottom, never moves */
+.mt-wiz-footer{flex-shrink:0;display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:14px 20px;border-top:1px solid var(--border);background:var(--card)}
 
 /* Buttons */
-.mt-btn{padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s}
+.mt-btn{padding:9px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s}
 .mt-btn-primary{background:var(--accent);color:#fff}
 .mt-btn-primary:hover{opacity:.85}
-.mt-btn-primary.disabled{opacity:.4;cursor:not-allowed}
 .mt-btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text3)}
 .mt-btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
 .mt-btn-del-sm{border:none;background:none;color:var(--text4);font-size:11px;cursor:pointer;padding:2px 6px;border-radius:4px}
 .mt-btn-del-sm:hover{color:#e05555;background:rgba(224,85,85,.08)}
 
-/* Supply list */
+/* Checklist */
+.mt-checklist{list-style:none;padding:0;margin:0}
+.mt-checklist li{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:8px;margin-bottom:5px;transition:all .15s;border:1px solid transparent}
+.mt-checklist li.mt-highlight{background:color-mix(in srgb,var(--accent) 8%,transparent);border-color:color-mix(in srgb,var(--accent) 25%,transparent);transform:scale(1.01)}
+.mt-checklist li .mt-ck{width:22px;height:22px;border-radius:6px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;font-size:12px;color:transparent}
+.mt-checklist li.checked .mt-ck{border-color:#22bb88;background:#22bb88;color:#fff}
+.mt-checklist li .mt-ck.mt-ck-warn{border-color:#e8a735;background:#e8a735;color:#fff}
+.mt-checklist li .mt-ck-label{font-size:13px;color:var(--text2);font-weight:500}
+.mt-checklist li.checked .mt-ck-label{color:var(--text4);text-decoration:line-through}
+.mt-ck-warn-badge{margin-left:auto;font-size:10px;color:#e8a735;background:color-mix(in srgb,#e8a735 10%,transparent);padding:2px 7px;border-radius:4px;font-weight:500}
+
+/* Supply list (same as checklist style) */
 .mt-supply-list{display:flex;flex-direction:column;gap:6px}
 .mt-supply-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:color-mix(in srgb,var(--border) 12%,transparent);transition:all .15s}
 .mt-supply-row.mt-highlight{background:color-mix(in srgb,var(--accent) 8%,transparent);border:1px solid color-mix(in srgb,var(--accent) 20%,transparent)}
@@ -36,15 +53,9 @@
 .mt-supply-btn.active-ok{border-color:#22bb88;background:color-mix(in srgb,#22bb88 10%,transparent);color:#22bb88;font-weight:600}
 .mt-supply-btn.active-warn{border-color:#e8a735;background:color-mix(in srgb,#e8a735 10%,transparent);color:#e8a735;font-weight:600}
 
-/* Checklist */
-.mt-checklist{list-style:none;padding:0;margin:0}
-.mt-checklist li{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;margin-bottom:4px;cursor:pointer;transition:all .15s}
-.mt-checklist li:hover{background:color-mix(in srgb,var(--border) 25%,transparent)}
-.mt-checklist li.mt-highlight{background:color-mix(in srgb,var(--accent) 8%,transparent);border:1px solid color-mix(in srgb,var(--accent) 20%,transparent)}
-.mt-checklist li .mt-ck{width:22px;height:22px;border-radius:6px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;font-size:12px;color:transparent}
-.mt-checklist li.checked .mt-ck{border-color:#22bb88;background:#22bb88;color:#fff}
-.mt-checklist li .mt-ck-label{font-size:13px;color:var(--text2)}
-.mt-checklist li.checked .mt-ck-label{color:var(--text4);text-decoration:line-through}
+/* Hints */
+.mt-hint{font-size:11px;color:var(--text4);margin-top:12px}
+.mt-empty-hint{font-size:13px;color:var(--text4)}
 
 /* Test grid */
 .mt-test-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
@@ -58,11 +69,11 @@
 .mt-exec-row input{background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:7px;font-size:13px;font-weight:500;text-align:center;width:80px;outline:none}
 .mt-exec-row input:focus{border-color:var(--accent)}
 .mt-exec-row .unit{font-size:12px;color:var(--text4)}
-.mt-note{margin-top:10px}
-.mt-note textarea{width:100%;background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:7px;font-size:12px;resize:vertical;min-height:40px;outline:none;box-sizing:border-box}
+.mt-note{margin-top:12px}
+.mt-note textarea{width:100%;background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:7px;font-size:12px;resize:vertical;min-height:50px;outline:none;box-sizing:border-box}
 .mt-note textarea:focus{border-color:var(--accent)}
 
-/* Calc section reusing change styles */
+/* Calc section */
 .mt-calc-section .config-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;padding:10px 14px;background:color-mix(in srgb,var(--border) 20%,transparent);border-radius:8px}
 .mt-calc-section .config-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text3)}
 .mt-calc-section .config-item label{white-space:nowrap}
@@ -70,17 +81,17 @@
 .mt-calc-section .config-item input:focus{border-color:var(--accent)}
 .mt-calc-section .config-item .unit{color:var(--text4);font-size:11px}
 .mt-calc-section .input-row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
-.mt-calc-section .input-group{display:flex;flex-direction:column;gap:4px;flex:1;min-width:100px}
+.mt-calc-section .input-group{display:flex;flex-direction:column;gap:4px;flex:1;min-width:95px}
 .mt-calc-section .input-group label{font-size:12px;color:var(--text3);font-weight:500}
 .mt-calc-section .input-group label .unit{color:var(--text4);font-weight:400}
 .mt-calc-section .input-group input{background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:14px;font-weight:500;outline:none;text-align:center;width:100%}
 .mt-calc-section .input-group input:focus{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 10%,transparent)}
 .mt-calc-section .sep{height:1px;background:var(--border);margin:14px 0}
-.mt-calc-section .result-row{display:flex;gap:12px;flex-wrap:wrap}
-.mt-calc-section .result-card{flex:1;min-width:80px;background:color-mix(in srgb,var(--accent) 4%,transparent);border:1px solid color-mix(in srgb,var(--accent) 12%,transparent);border-radius:10px;padding:12px 10px;text-align:center}
-.mt-calc-section .result-card .r-icon{font-size:18px;margin-bottom:3px}
+.mt-calc-section .result-row{display:flex;gap:10px;flex-wrap:wrap}
+.mt-calc-section .result-card{flex:1;min-width:75px;background:color-mix(in srgb,var(--accent) 4%,transparent);border:1px solid color-mix(in srgb,var(--accent) 12%,transparent);border-radius:10px;padding:12px 8px;text-align:center}
+.mt-calc-section .result-card .r-icon{font-size:16px;margin-bottom:3px}
 .mt-calc-section .result-card .r-label{font-size:10px;color:var(--text3);margin-bottom:4px;font-weight:500}
-.mt-calc-section .result-card .r-value{font-size:20px;font-weight:700;color:var(--accent);line-height:1.2}
+.mt-calc-section .result-card .r-value{font-size:18px;font-weight:700;color:var(--accent);line-height:1.2}
 .mt-calc-section .result-card .r-unit{font-size:11px;font-weight:500;color:var(--text3);margin-left:2px}
 .mt-calc-section .rc-blue{background:color-mix(in srgb,#4488ff 6%,transparent);border-color:color-mix(in srgb,#4488ff 15%,transparent)}
 .mt-calc-section .rc-blue .r-value{color:#4488ff}
@@ -94,7 +105,6 @@
 
 /* Settings modal */
 .mt-settings-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:1000}
-.mt-settings-overlay.open{opacity:1}
 .mt-settings-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;width:90%;max-width:520px;max-height:80vh;overflow-y:auto}
 .mt-settings-box h4{font-size:15px;font-weight:600;margin-bottom:16px;color:var(--text)}
 .mt-set-section{margin-bottom:18px}
@@ -106,8 +116,6 @@
 .mt-set-del:hover{color:#e05555}
 .mt-set-add{border:none;background:none;color:var(--accent);font-size:11px;cursor:pointer;padding:4px 0;font-weight:500}
 .mt-set-add:hover{text-decoration:underline}
-
-/* Chip-based device selection */
 .mt-set-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .mt-set-chip-item{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:6px;background:color-mix(in srgb,var(--accent) 8%,transparent);border:1px solid color-mix(in srgb,var(--accent) 20%,transparent);font-size:12px;color:var(--accent);font-weight:500}
 .mt-chip-del{border:none;background:none;color:var(--accent);cursor:pointer;font-size:12px;opacity:.6}
@@ -125,5 +133,5 @@
 .mt-history-item .mt-h-date{font-weight:600;color:var(--text)}
 .mt-history-item .mt-h-detail{color:var(--text3);margin-top:2px}
 
-/* Actions row */
+/* Actions */
 .mt-actions{display:flex;gap:8px;margin-top:14px}

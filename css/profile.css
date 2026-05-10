@@ -370,3 +370,9 @@
 /* 全屏预览 */
 .pf-cover-fullscreen{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:9999;cursor:pointer;animation:mtFadeIn .2s}
 
+.pf-btn-group{display:flex;gap:6px;flex-shrink:0}
+.pf-btn-group.has-cover{background:rgba(0,0,0,.35);backdrop-filter:blur(6px);border-radius:8px;padding:4px 8px}
+.pf-btn-group.has-cover .profile-edit-btn{border-color:rgba(255,255,255,.4);color:rgba(255,255,255,.9)}
+.pf-btn-group.has-cover .profile-edit-btn:hover{border-color:#fff;color:#fff}
+.profile-info.has-cover h2{color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.6)}
+.profile-info.has-cover .meta{color:rgba(255,255,255,.85);text-shadow:0 1px 3px rgba(0,0,0,.5)}

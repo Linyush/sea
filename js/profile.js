@@ -180,12 +180,14 @@ function renderProfile(){
   }else{
     if(bgEl){bgEl.innerHTML='';bgEl.classList.remove('active');}
   }
-  let hdrHtml='<div class="profile-avatar">🐠</div><div class="profile-info"><h2>'+t.name+'</h2><div class="meta">';
+  let hdrHtml='';
+  if(!t.cover) hdrHtml+='<div class="profile-avatar">🐠</div>';
+  hdrHtml+='<div class="profile-info'+(t.cover?' has-cover':'')+'"><h2>'+t.name+'</h2><div class="meta">';
   const metaParts=[t.type];
   if(t.volume) metaParts.push(t.volume+'L');
   if(daysSince>=0) metaParts.push('开缸 '+daysSince+' 天');
   hdrHtml+=metaParts.join(' · ');
-  hdrHtml+='</div></div><button class="profile-edit-btn" onclick="TF_open(&#39;'+t.id+'&#39;)">编辑</button><button class="profile-edit-btn" onclick="BK_export()" style="margin-left:6px">备份</button><button class="profile-edit-btn" onclick="document.getElementById(&#39;bkFileInput&#39;).click()" style="margin-left:6px">恢复</button>';
+  hdrHtml+='</div></div><div class="pf-btn-group'+(t.cover?' has-cover':'')+'"><button class="profile-edit-btn" onclick="TF_open(&#39;'+t.id+'&#39;)">编辑</button><button class="profile-edit-btn" onclick="BK_export()">备份</button><button class="profile-edit-btn" onclick="document.getElementById(&#39;bkFileInput&#39;).click()">恢复</button></div>';
   hdr.innerHTML=hdrHtml;
   // Investment & Value
   const inv=P_loadInv();

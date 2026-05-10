@@ -24,7 +24,7 @@ function MT_saveLog(log){_s(MT_LOG_SK(),JSON.stringify(log));}
 /* --- Session state --- */
 let _mtState={};
 function MT_resetState(){
-  _mtState={step:0,supply:{},calcVol:'',testData:{},closeDone:[],execVol:'',execNote:'',maintDone:[],restoreDone:[],done:false};
+  _mtState={step:0,supply:{},testData:{},closeDone:[],execVol:'',execNote:'',maintDone:[],restoreDone:[],done:false};
 }
 
 /* --- Init --- */
@@ -45,7 +45,7 @@ function MT_render(){
   // Top bar
   html+='<div class="mt-top-bar">';
   html+='<div class="mt-last">';
-  if(lastLog) html+='上次维护：<strong>'+lastLog.date+'</strong>';
+  if(lastLog) html+='上次维护：<strong>'+MT_fmtDaysAgo(lastLog.date)+'</strong>';
   else html+='<span style="color:var(--text5)">暂无维护记录</span>';
   html+='</div>';
   html+='<div class="mt-top-btns">';
@@ -53,7 +53,7 @@ function MT_render(){
   html+='<button class="mt-top-btn" onclick="MT_openSettings()">⚙️ 设置</button>';
   html+='</div></div>';
 
-  // Cards
+  // Steps config
   const steps=[
     {id:'supply',title:'余量确认',icon:'📦'},
     {id:'calc',title:'换水计算',icon:'🧮'},
@@ -80,13 +80,18 @@ function MT_render(){
   });
   html+='</div>';
 
-  // Done summary
+  // Fixed bottom action bar
+  html+='<div class="mt-fixed-bar">';
   if(_mtState.done){
-    html+='<div class="mt-actions" style="justify-content:center;margin-top:20px">';
     html+='<button class="mt-btn mt-btn-primary" onclick="MT_finish()">✅ 提交维护记录</button>';
     html+='<button class="mt-btn mt-btn-ghost" onclick="MT_resetAndRender()">重新开始</button>';
-    html+='</div>';
+  }else{
+    const stepName=steps[_mtState.step]?steps[_mtState.step].title:'';
+    html+='<span class="mt-bar-info">'+(_mtState.step+1)+'/7 '+stepName+'</span>';
+    html+='<button class="mt-btn mt-btn-ghost" onclick="MT_skip()">跳过</button>';
+    html+='<button class="mt-btn mt-btn-primary" onclick="MT_next()">确认 →</button>';
   }
+  html+='</div>';
 
   container.innerHTML=html;
 }
@@ -104,10 +109,20 @@ function MT_renderStep(idx,cfg){
   }
 }
 
+/* --- Format days ago --- */
+function MT_fmtDaysAgo(dateStr){
+  const today=new Date();today.setHours(0,0,0,0);
+  const d=new Date(dateStr+'T00:00:00');
+  const days=Math.floor((today-d)/86400000);
+  if(days===0) return '今天';
+  if(days===1) return '昨天';
+  return days+'天前';
+}
+
 /* --- Step 1: Supply check --- */
 function MT_renderSupply(cfg){
   const items=cfg.supplyChecks||[];
-  if(!items.length) return '<p style="font-size:12px;color:var(--text4)">未配置检查项，请前往设置添加</p><div class="mt-actions"><button class="mt-btn mt-btn-ghost" onclick="MT_next()">跳过</button></div>';
+  if(!items.length) return '<p style="font-size:12px;color:var(--text4)">未配置检查项，请前往设置添加</p>';
   let html='<div class="mt-supply-list">';
   items.forEach(function(name,i){
     const st=_mtState.supply[i]||'';
@@ -119,44 +134,99 @@ function MT_renderSupply(cfg){
     html+='</div></div>';
   });
   html+='</div>';
-  html+='<div class="mt-actions"><button class="mt-btn mt-btn-primary" onclick="MT_next()">下一步</button></div>';
   return html;
 }
 
-/* --- Step 2: Calc --- */
+/* --- Step 2: Calc (full version matching original) --- */
 function MT_renderCalc(){
   const tank=TK_current();
-  const vol=_mtState.calcVol||'12';
-  const tankTotal=tank.volume||70;
-  let html='<div class="mt-calc-row">';
-  html+='<div class="mt-calc-item"><label>缸水量(L)</label><input type="number" id="mtTankVol" value="'+tankTotal+'" oninput="MT_recalc()"></div>';
-  html+='<div class="mt-calc-item"><label>换水量(L)</label><input type="number" id="mtChgVol" value="'+vol+'" oninput="MT_recalc()"></div>';
-  html+='<div class="mt-calc-item"><label>盐度(‰)</label><input type="number" id="mtSal" value="35" oninput="MT_recalc()"></div>';
+  const csk=C_SK();
+  let saved={};try{saved=JSON.parse(_g(csk))||{};}catch(e){}
+  const tankTotal=saved.tankTotal||tank.volume||70;
+  const salinity=saved.salinity||'35';
+  const sg=saved.sg||(1+parseFloat(salinity)*0.000753).toFixed(3);
+  const waterVol=saved.waterVolume||'12';
+  const roomTemp=saved.roomTemp||'25';
+  const adjTemp=saved.adjTemp||'2';
+  const targetTemp=saved.targetTemp||'25';
+
+  let html='<div class="mt-calc-section">';
+  // Config row
+  html+='<div class="config-row">';
+  html+='<div class="config-item"><label>🐠 缸总水体</label><input type="number" id="mtTankTotal" value="'+tankTotal+'" step="1" oninput="MT_calc()"><span class="unit">L</span></div>';
+  html+='<div class="config-item"><label>🧂 盐度</label><input type="number" id="mtSalinity" value="'+salinity+'" step="0.5" oninput="MT_salFromPPT()"><span class="unit">‰</span>';
+  html+='<span class="unit" style="margin:0 2px;color:var(--text5)">/</span>';
+  html+='<input type="number" id="mtSG" value="'+sg+'" step="0.001" oninput="MT_salFromSG()" style="width:64px"><span class="unit">SG</span></div>';
   html+='</div>';
-  html+='<div class="mt-calc-result" id="mtCalcResult">'+MT_calcResultHTML(tankTotal,parseFloat(vol),35)+'</div>';
-  html+='<div class="mt-actions"><button class="mt-btn mt-btn-primary" onclick="MT_next()">下一步</button></div>';
+  // Input row
+  html+='<div class="sec-label" style="margin-top:14px">📝 本次换水参数</div>';
+  html+='<div class="input-row">';
+  html+='<div class="input-group"><label>换水量 <span class="unit">(L)</span></label><input type="number" id="mtWaterVol" value="'+waterVol+'" step="1" oninput="MT_calc()"></div>';
+  html+='<div class="input-group"><label>室内温度 <span class="unit">(°C)</span></label><input type="number" id="mtRoomTemp" value="'+roomTemp+'" step="0.5" oninput="MT_calc()"></div>';
+  html+='<div class="input-group"><label>调温水温度 <span class="unit">(°C)</span></label><input type="number" id="mtAdjTemp" value="'+adjTemp+'" step="0.5" oninput="MT_calc()"></div>';
+  html+='<div class="input-group"><label>目标温度 <span class="unit">(°C)</span></label><input type="number" id="mtTargetTemp" value="'+targetTemp+'" step="0.5" oninput="MT_calc()"></div>';
+  html+='</div>';
+  // Results
+  html+='<div class="sep"></div>';
+  html+='<div class="sec-label">📊 计算结果</div>';
+  html+='<div class="result-row" id="mtCalcResults">'+MT_calcHTML(parseFloat(waterVol),parseFloat(tankTotal),parseFloat(salinity),parseFloat(roomTemp),parseFloat(adjTemp),parseFloat(targetTemp))+'</div>';
+  html+='<div class="tip"><strong>💡 说明</strong>　室温水与调温水（热水/冰水）混合达到目标温度</div>';
+  html+='</div>';
   return html;
 }
-function MT_calcResultHTML(tankTotal,vol,sal){
-  const salt=Math.round(vol*sal);
-  const ratio=tankTotal>0?(vol/tankTotal*100).toFixed(1):'0.0';
-  _mtState.calcVol=String(vol);
-  return '<div class="mt-r"><div class="val">'+salt+'g</div><div class="lbl">需要盐量</div></div>'+
-         '<div class="mt-r"><div class="val">'+ratio+'%</div><div class="lbl">换水比例</div></div>';
+
+function MT_calcHTML(vol,tankTotal,salinity,roomT,adjT,targetT){
+  let roomW,adjW;
+  const denom=adjT-roomT;
+  if(Math.abs(denom)<0.01){roomW=vol;adjW=0;}
+  else{roomW=vol*(adjT-targetT)/denom;adjW=vol-roomW;}
+  const impossible=roomW<-0.01||adjW<-0.01;
+  roomW=Math.max(0,roomW);adjW=Math.max(0,adjW);
+  const salt=vol*salinity;
+  const ratio=tankTotal>0?(vol/tankTotal*100):0;
+
+  let html='';
+  html+='<div class="result-card rc-blue"><div class="r-icon">🚰</div><div class="r-label">室温水</div><div class="r-value">';
+  if(impossible) html+='<span class="result-warn">⚠️</span>';
+  else html+=MT_cfmt(roomW)+'<span class="r-unit">L</span>';
+  html+='</div></div>';
+  html+='<div class="result-card rc-orange"><div class="r-icon">🌡️</div><div class="r-label">调温水</div><div class="r-value">';
+  if(impossible) html+='<span class="result-warn">⚠️</span>';
+  else html+=MT_cfmt(adjW)+'<span class="r-unit">L</span>';
+  html+='</div></div>';
+  html+='<div class="result-card rc-green"><div class="r-icon">🧂</div><div class="r-label">盐量</div><div class="r-value">'+Math.round(salt)+'<span class="r-unit">g</span></div></div>';
+  html+='<div class="result-card rc-purple"><div class="r-icon">📐</div><div class="r-label">换水比例</div><div class="r-value">'+ratio.toFixed(1)+'<span class="r-unit">%</span></div></div>';
+  return html;
 }
-function MT_recalc(){
-  const vol=parseFloat(document.getElementById('mtChgVol').value)||0;
-  const sal=parseFloat(document.getElementById('mtSal').value)||35;
-  const tankTotal=parseFloat(document.getElementById('mtTankVol').value)||70;
-  const el=document.getElementById('mtCalcResult');
-  if(el) el.innerHTML=MT_calcResultHTML(tankTotal,vol,sal);
+function MT_cfmt(v){return v%1===0?String(v):v.toFixed(1);}
+
+function MT_salFromPPT(){
+  const ppt=parseFloat(document.getElementById('mtSalinity').value)||0;
+  document.getElementById('mtSG').value=(1+ppt*0.000753).toFixed(3);
+  MT_calc();
+}
+function MT_salFromSG(){
+  const sg=parseFloat(document.getElementById('mtSG').value)||1;
+  document.getElementById('mtSalinity').value=Math.round((sg-1)/0.000753*10)/10;
+  MT_calc();
+}
+function MT_calc(){
+  const vol=parseFloat(document.getElementById('mtWaterVol').value)||0;
+  const tankTotal=parseFloat(document.getElementById('mtTankTotal').value)||70;
+  const salinity=parseFloat(document.getElementById('mtSalinity').value)||35;
+  const roomT=parseFloat(document.getElementById('mtRoomTemp').value)||25;
+  const adjT=parseFloat(document.getElementById('mtAdjTemp').value)||0;
+  const targetT=parseFloat(document.getElementById('mtTargetTemp').value)||25;
+  const el=document.getElementById('mtCalcResults');
+  if(el) el.innerHTML=MT_calcHTML(vol,tankTotal,salinity,roomT,adjT,targetT);
+  _mtState.calcVol=String(vol);
 }
 
 /* --- Step 3: Water test --- */
 function MT_renderTest(){
   const wsk='reef_'+_activeTank+'_water_v10';
   let wData;try{wData=JSON.parse(_g(wsk))||{};}catch(e){wData={};}
-  const wFields=wData.fields||[{key:'kh',name:'KH',color:'#f59e0b'},{key:'ca',name:'Ca',color:'#22bbaa'},{key:'mg',name:'Mg',color:'#6366f1'},{key:'no3',name:'NO3',color:'#ef4444'},{key:'po4',name:'PO4',color:'#8b5cf6'}];
+  const wFields=wData.fields||[{key:'kh',name:'KH'},{key:'ca',name:'Ca'},{key:'mg',name:'Mg'},{key:'no3',name:'NO3'},{key:'po4',name:'PO4'}];
   let html='<div class="mt-test-grid">';
   html+='<div class="mt-test-item"><label>日期</label><input type="date" id="mtTestDate" value="'+new Date().toISOString().slice(0,10)+'"></div>';
   wFields.forEach(function(f){
@@ -164,7 +234,6 @@ function MT_renderTest(){
     html+='<div class="mt-test-item"><label>'+f.name+'</label><input type="number" step="any" id="mtTest_'+f.key+'" value="'+val+'" placeholder="-" onchange="MT_saveTest(\''+f.key+'\',this.value)"></div>';
   });
   html+='</div>';
-  html+='<div class="mt-actions"><button class="mt-btn mt-btn-primary" onclick="MT_next()">下一步</button><button class="mt-btn-skip" onclick="MT_next()">跳过</button></div>';
   return html;
 }
 function MT_saveTest(key,val){_mtState.testData[key]=val;}
@@ -172,55 +241,51 @@ function MT_saveTest(key,val){_mtState.testData[key]=val;}
 /* --- Step 4: Close devices --- */
 function MT_renderClose(cfg){
   const items=cfg.closeDevices||[];
-  if(!items.length) return '<p style="font-size:12px;color:var(--text4)">未配置需关闭的设备，请在设置中选择</p><div class="mt-actions"><button class="mt-btn mt-btn-ghost" onclick="MT_next()">跳过</button></div>';
+  if(!items.length) return '<p style="font-size:12px;color:var(--text4)">未配置需关闭的设备，请在设置中选择</p>';
   let html='<ul class="mt-checklist">';
   items.forEach(function(name,i){
     const ck=_mtState.closeDone.includes(i);
     html+='<li class="'+(ck?'checked':'')+'" onclick="MT_toggleCk(\'close\','+i+')"><div class="mt-ck">✓</div><span class="mt-ck-label">关闭 '+name+'</span></li>';
   });
   html+='</ul>';
-  html+='<div class="mt-actions"><button class="mt-btn mt-btn-primary" onclick="MT_next()">下一步</button></div>';
   return html;
 }
 
 /* --- Step 5: Execute --- */
 function MT_renderExec(){
-  const vol=_mtState.calcVol||'12';
+  const vol=_mtState.calcVol||document.getElementById('mtWaterVol')?.value||'12';
   let html='<div class="mt-exec-row">';
   html+='<span style="font-size:13px;color:var(--text2)">实际换水量</span>';
   html+='<input type="number" id="mtExecVol" value="'+(_mtState.execVol||vol)+'" onchange="_mtState.execVol=this.value">';
   html+='<span class="unit">L</span>';
   html+='</div>';
   html+='<div class="mt-note"><textarea id="mtExecNote" placeholder="备注（选填，如：顺便吸了底砂）" onchange="_mtState.execNote=this.value">'+(_mtState.execNote||'')+'</textarea></div>';
-  html+='<div class="mt-actions"><button class="mt-btn mt-btn-primary" onclick="MT_next()">换水完成 →</button></div>';
   return html;
 }
 
 /* --- Step 6: Maintenance --- */
 function MT_renderMaint(cfg){
   const items=cfg.maintDevices||[];
-  if(!items.length) return '<p style="font-size:12px;color:var(--text4)">未配置维护项目，请在设置中添加</p><div class="mt-actions"><button class="mt-btn mt-btn-ghost" onclick="MT_next()">跳过</button></div>';
+  if(!items.length) return '<p style="font-size:12px;color:var(--text4)">未配置维护项目，请在设置中添加</p>';
   let html='<ul class="mt-checklist">';
   items.forEach(function(name,i){
     const ck=_mtState.maintDone.includes(i);
     html+='<li class="'+(ck?'checked':'')+'" onclick="MT_toggleCk(\'maint\','+i+')"><div class="mt-ck">✓</div><span class="mt-ck-label">'+name+'</span></li>';
   });
   html+='</ul>';
-  html+='<div class="mt-actions"><button class="mt-btn mt-btn-primary" onclick="MT_next()">下一步</button><button class="mt-btn-skip" onclick="MT_next()">本次跳过</button></div>';
   return html;
 }
 
 /* --- Step 7: Restore --- */
 function MT_renderRestore(cfg){
   const items=(cfg.restoreDevices&&cfg.restoreDevices.length)?cfg.restoreDevices:(cfg.closeDevices||[]);
-  if(!items.length) return '<p style="font-size:12px;color:var(--text4)">无需恢复的设备</p><div class="mt-actions"><button class="mt-btn mt-btn-primary" onclick="MT_completeAll()">完成维护</button></div>';
+  if(!items.length) return '<p style="font-size:12px;color:var(--text4)">无需恢复的设备</p>';
   let html='<ul class="mt-checklist">';
   items.forEach(function(name,i){
     const ck=_mtState.restoreDone.includes(i);
     html+='<li class="'+(ck?'checked':'')+'" onclick="MT_toggleCk(\'restore\','+i+')"><div class="mt-ck">✓</div><span class="mt-ck-label">开启 '+name+'</span></li>';
   });
   html+='</ul>';
-  html+='<div class="mt-actions"><button class="mt-btn mt-btn-primary" onclick="MT_completeAll()">完成维护</button></div>';
   return html;
 }
 
@@ -241,6 +306,10 @@ function MT_next(){
   _mtState.step++;
   if(_mtState.step>=7){MT_completeAll();return;}
   MT_render();
+}
+
+function MT_skip(){
+  MT_next();
 }
 
 function MT_completeAll(){
@@ -272,7 +341,8 @@ function MT_resetAndRender(){
 /* --- Finish: save log + sync water data --- */
 function MT_finish(){
   const log=MT_loadLog();
-  const date=document.getElementById('mtTestDate')?document.getElementById('mtTestDate').value:new Date().toISOString().slice(0,10);
+  const dateEl=document.getElementById('mtTestDate');
+  const date=dateEl?dateEl.value:new Date().toISOString().slice(0,10);
   const cfg=MT_loadCfg();
 
   const entry={
@@ -306,6 +376,45 @@ function MT_syncWaterData(entry,date){
   }
   wData.rows.sort(function(a,b){return a.date.localeCompare(b.date);});
   _s(wsk,JSON.stringify(wData));
+}
+
+/* --- Delete log entry + corresponding water row --- */
+function MT_deleteLogEntry(idx){
+  const log=MT_loadLog();
+  if(idx<0||idx>=log.length)return;
+  const entry=log[idx];
+
+  // Remove corresponding water data row (only if date matches AND the test data matches)
+  if(entry.date&&entry.testData&&Object.keys(entry.testData).some(function(k){return entry.testData[k];})){
+    const wsk='reef_'+_activeTank+'_water_v10';
+    let wData;try{wData=JSON.parse(_g(wsk))||{};}catch(e){wData={};}
+    if(wData.rows){
+      const rowIdx=wData.rows.findIndex(function(r){return r.date===entry.date;});
+      if(rowIdx>=0){
+        // Verify this row was created by this maintenance entry (check values match)
+        const row=wData.rows[rowIdx];
+        let match=true;
+        for(var k in entry.testData){
+          if(entry.testData[k]){
+            const entryVal=parseFloat(entry.testData[k]);
+            const rowVal=parseFloat(row[k]);
+            if(!isNaN(entryVal)&&!isNaN(rowVal)&&Math.abs(entryVal-rowVal)>0.001){match=false;break;}
+          }
+        }
+        if(match){
+          wData.rows.splice(rowIdx,1);
+          _s(wsk,JSON.stringify(wData));
+        }
+      }
+    }
+  }
+
+  log.splice(idx,1);
+  MT_saveLog(log);
+  toast('已删除维护记录');
+  MT_closeHistory();
+  MT_openHistory();
+  MT_render();
 }
 
 /* --- Settings modal --- */
@@ -361,7 +470,6 @@ function MT_openSettings(){
   html+='</div></div>';
 
   document.body.insertAdjacentHTML('beforeend',html);
-  const overlay=document.getElementById('mtSettingsOverlay');
   const escFn=function(e){if(e.key==='Escape'){MT_closeSettings();document.removeEventListener('keydown',escFn);}};
   document.addEventListener('keydown',escFn);
 }
@@ -420,7 +528,7 @@ function MT_cfgSetMaintName(i,val){
   MT_saveCfg(cfg);
 }
 
-/* --- History modal --- */
+/* --- History modal (with delete) --- */
 function MT_openHistory(){
   const log=MT_loadLog();
   let html='<div class="mt-settings-overlay open" id="mtHistoryOverlay" onclick="if(event.target===this)MT_closeHistory()">';
@@ -430,9 +538,10 @@ function MT_openHistory(){
     html+='<p style="font-size:13px;color:var(--text4)">暂无维护记录</p>';
   }else{
     html+='<div class="mt-history-list">';
-    log.slice().reverse().forEach(function(entry){
+    log.slice().reverse().forEach(function(entry,ri){
+      const realIdx=log.length-1-ri;
       html+='<div class="mt-history-item">';
-      html+='<div class="mt-h-date">'+entry.date+'</div>';
+      html+='<div style="display:flex;align-items:center;justify-content:space-between"><div class="mt-h-date">'+entry.date+'</div><button class="mt-btn-skip" style="color:var(--text4);font-size:11px" onclick="if(confirm(\'确认删除 '+entry.date+' 的维护记录？对应水质数据也会清除。\'))MT_deleteLogEntry('+realIdx+')">删除</button></div>';
       var details=[];
       if(entry.vol) details.push('换水 '+entry.vol+'L');
       if(entry.testData){

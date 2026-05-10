@@ -357,7 +357,7 @@ function _renderMaintenance(tank){
   if(lastMaintDate){
     const lastD=new Date(lastMaintDate+'T00:00:00');
     const daysSinceMaint=Math.floor((today-lastD)/86400000);
-    let maintText='上次维护：<b>'+daysSinceMaint+'天前</b>';
+    let maintText='上次维护：<b>'+(daysSinceMaint===0?'今天':daysSinceMaint===1?'昨天':daysSinceMaint+'天前')+'</b>';
     if(tank.maintCycle&&tank.maintCycle>0){
       const nextDays=tank.maintCycle-daysSinceMaint;
       if(nextDays>0) maintText+=' · 下次：<b>'+nextDays+'天后</b>';

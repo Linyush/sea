@@ -163,18 +163,19 @@ function renderProfile(){
   // Header - simplified: name, volume, days
   const hdr=document.getElementById('profileHeader');
   const daysSince=t.startDate?Math.floor((Date.now()-new Date(t.startDate+'T00:00:00').getTime())/(86400000)):-1;
-  var coverHtml='';
+  var bgEl=document.getElementById('pfCoverBg');
   if(t.cover){
     var isVideo=/\.(mp4|webm|mov)(\?|$)/i.test(t.cover);
     if(isVideo){
-      coverHtml='<div class="profile-avatar pf-cover"><video src="'+t.cover+'" muted autoplay loop playsinline onclick="PF_fullCover(this)"></video></div>';
+      if(bgEl) bgEl.innerHTML='<video src="'+t.cover+'" muted autoplay loop playsinline></video>';
     }else{
-      coverHtml='<div class="profile-avatar pf-cover"><img src="'+t.cover+'" onclick="PF_fullCover(this)"></div>';
+      if(bgEl) bgEl.innerHTML='<img src="'+t.cover+'">';
     }
+    if(bgEl) bgEl.classList.add('active');
   }else{
-    coverHtml='<div class="profile-avatar">🐠</div>';
+    if(bgEl){bgEl.innerHTML='';bgEl.classList.remove('active');}
   }
-  let hdrHtml=coverHtml+'<div class="profile-info"><h2>'+t.name+'</h2><div class="meta">';
+  let hdrHtml='<div class="profile-avatar">🐠</div><div class="profile-info"><h2>'+t.name+'</h2><div class="meta">';
   const metaParts=[t.type];
   if(t.volume) metaParts.push(t.volume+'L');
   if(daysSince>=0) metaParts.push('开缸 '+daysSince+' 天');

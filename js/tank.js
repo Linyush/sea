@@ -166,7 +166,8 @@ function TF_open(editId){
       document.getElementById('tfVolume').value=t.volume||'';
       document.getElementById('tfStart').value=t.startDate||'';
       document.getElementById('tfCover').value=t.cover||'';
-      document.getElementById('tfCoverPos').value=t.coverPos||'center center';
+      document.getElementById('tfCoverPos').value=t.coverPos||'50';
+      document.getElementById('tfCoverPosVal').textContent=document.getElementById('tfCoverPos').value+'%';
       document.getElementById('tfSource').value=t.source||'';
       document.getElementById('tfPrice').value=t.price||'';
       document.getElementById('tfNotes').value=t.notes||'';
@@ -174,7 +175,8 @@ function TF_open(editId){
     }
   }else{
     ['tfName','tfVolume','tfStart','tfSource','tfPrice','tfNotes','tfMaintCycle'].forEach(id=>{document.getElementById(id).value='';});
-    document.getElementById('tfCoverPos').value='center center';
+    document.getElementById('tfCoverPos').value='50';
+    document.getElementById('tfCoverPosVal').textContent='50%';
     document.getElementById('tfType').value='LPS';
   }
   ov.style.display='flex';requestAnimationFrame(()=>ov.classList.add('open'));

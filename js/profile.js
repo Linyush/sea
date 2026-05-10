@@ -166,13 +166,14 @@ function renderProfile(){
   var bgEl=document.getElementById('pfCoverBg');
   if(t.cover){
     var isVideo=/\.(mp4|webm|mov)(\?|$)/i.test(t.cover);
-    var pos=t.coverPos||'center center';
-    if(isVideo){
-      if(bgEl){
+    var pos='center '+(t.coverPos||'50')+'%';
+    // 只有 cover/pos 变化时才重建，避免视频重新加载
+    var curMedia=bgEl?bgEl.querySelector('video,img'):null;
+    var sameSrc=curMedia&&curMedia.getAttribute('src')===t.cover&&curMedia.style.objectPosition===pos;
+    if(!sameSrc&&bgEl){
+      if(isVideo){
         bgEl.innerHTML='<video src="'+t.cover+'" muted autoplay loop playsinline style="object-position:'+pos+'"></video>';
-      }
-    }else{
-      if(bgEl){
+      }else{
         bgEl.innerHTML='<img src="'+t.cover+'" style="object-position:'+pos+'">';
       }
     }

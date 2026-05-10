@@ -295,6 +295,7 @@ function parseDate(s){
   return null;
 }
 function addRow(){
+  fields.forEach(fi=>{if(fi.key==="ca"||fi.key==="mg"){var el=document.getElementById("i"+fi.key);if(el)autoConvert(fi.key,el);}});
   const raw=document.getElementById('iDate').value.trim(),dv=parseDate(raw);
   if(!dv){toast('日期格式不正确');return;}
   if(rows.some(r=>r.date===dv)){toast('该日期已存在');return;}
@@ -340,6 +341,7 @@ function renderQuickBar(){
   document.getElementById('qDate').value=localDate();
 }
 function quickAdd(){
+  fields.forEach(fi=>{if(fi.key==="ca"||fi.key==="mg"){var el=document.getElementById("q"+fi.key);if(el)autoConvert(fi.key,el);}});
   const raw=document.getElementById('qDate').value.trim(),dv=parseDate(raw);
   if(!dv){toast('日期格式不正确');return;}
   if(rows.some(r=>r.date===dv)){toast('该日期已存在');return;}

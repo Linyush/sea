@@ -64,7 +64,7 @@ function TK_switchTo(id){
   _activeTank=id;
   _s(TK_ACTIVE_KEY,id);
   // Reset init flags for data pages
-  _pageInited.water=false;_pageInited.light=false;_pageInited.change=false;_pageInited.maintain=false;_pageInited.titrate=false;_pageInited.profile=false;
+  _pageInited.water=false;_pageInited.light=false;_pageInited.change=false;_pageInited.titrate=false;_pageInited.profile=false;
   // Destroy charts
   if(W_chart){W_chart.destroy();W_chart=null;}
   if(L_chart){L_chart.destroy();L_chart=null;}
@@ -80,7 +80,6 @@ function TK_switchTo(id){
   else if(page==='water') initWater();
   else if(page==='light') initLight();
   else if(page==='change') initChange();
-  else if(page==='maintain') initMaintain();
   else if(page==='titrate') initTitrate();
   if(page==='profile') renderProfile();
 }

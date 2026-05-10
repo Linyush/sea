@@ -36,7 +36,8 @@
     <div class="nav-right">
       <button class="nav-tab active" data-page="profile" onclick="switchPage('profile')">📋 概览</button>
       <button class="nav-tab" data-page="water" onclick="switchPage('water')">💧 水质</button>
-      <button class="nav-tab" data-page="maintain" onclick="switchPage('maintain')">🔧 维护</button>
+      <button class="nav-tab" data-page="change" onclick="switchPage('change')">🔄 换水</button>
+      
       <button class="nav-tab" data-page="titrate" onclick="switchPage('titrate')">🧪 滴定</button>
       <button class="nav-tab" data-page="light" onclick="switchPage('light')">🌈 光谱</button>
       <span class="nav-sep"></span>
@@ -52,7 +53,7 @@
       <div class="pf-divider"></div>
       <div class="pf-columns">
         <div class="pf-col-left">
-          <div class="pf-mod-title">🔔 维护提示</div>
+          <div class="pf-mod-title">🔔 维护提示 <span class="pf-mod-actions"><button class="pf-mod-btn" onclick="MT_openHistory()">📋</button><button class="pf-mod-btn" onclick="MT_openSettings()">⚙️</button></span></div>
           <div id="pfMaintBox"></div>
         </div>
         <div class="pf-col-right">
@@ -194,14 +195,7 @@
     </div>
   </section>
 
-  <!-- ========== PAGE: Maintain ========== -->
-  <section class="page-section" id="page-maintain">
-    <div class="card anim-in anim-d1" style="padding:24px">
-      <div id="mtContainer"></div>
-    </div>
-  </section>
-
-  <!-- ========== PAGE: Change (hidden, kept for calc logic) ========== -->
+  <!-- ========== PAGE: Change ========== -->
   <section class="page-section" id="page-change">
     <div class="card anim-in anim-d1" style="padding:24px">
       <div class="config-row">

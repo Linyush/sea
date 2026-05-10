@@ -347,3 +347,10 @@
 .inv-detail-sum{font-size:11px;opacity:.7;margin-left:4px}
 .inv-detail-col::-webkit-scrollbar{width:3px}
 .inv-detail-col::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+/* Maintenance module actions */
+.pf-mod-actions{margin-left:auto;display:inline-flex;gap:4px}
+.pf-mod-btn{border:none;background:none;cursor:pointer;font-size:13px;padding:2px 5px;border-radius:4px;opacity:.6;transition:opacity .15s}
+.pf-mod-btn:hover{opacity:1;background:color-mix(in srgb,var(--border) 30%,transparent)}
+.pf-maint-start{margin-left:auto;padding:3px 10px;border-radius:5px;border:1px solid var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent);color:var(--accent);font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap}
+.pf-maint-start:hover{background:var(--accent);color:#fff}

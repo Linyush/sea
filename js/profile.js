@@ -364,9 +364,9 @@ function _renderMaintenance(tank){
       else maintText+=' · <span class="pf-maint-hi">超期'+Math.abs(nextDays)+'天</span>';
     }
     const maintWarn=(tank.maintCycle&&tank.maintCycle>0&&(tank.maintCycle-daysSinceMaint)<=0);
-    h+='<div class="pf-maint-row'+(maintWarn?' warn':' ok')+' pf-maint-click" onclick="switchPage(\'maintain\')"><span class="pf-maint-icon">'+(maintWarn?'⚠️':'🧪')+'</span><span>'+maintText+'</span></div>';
+    h+='<div class="pf-maint-row'+(maintWarn?' warn':' ok')+'"><span class="pf-maint-icon">'+(maintWarn?'⚠️':'🧪')+'</span><span>'+maintText+'</span><button class="pf-maint-start" onclick="MT_startWizard()">开始维护</button></div>';
   }else{
-    h+='<div class="pf-maint-row pf-maint-click" onclick="switchPage(\'maintain\')"><span class="pf-maint-icon">🧪</span><span>暂无维护记录</span></div>';
+    h+='<div class="pf-maint-row"><span class="pf-maint-icon">🧪</span><span>暂无维护记录</span><button class="pf-maint-start" onclick="MT_startWizard()">开始维护</button></div>';
   }
   // 2. Recent water quality (last row - always show all values)
   if(lastRow&&wFields.length){

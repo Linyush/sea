@@ -4,6 +4,8 @@
 document.addEventListener('keydown',function(e){
   if(e.key==='Escape'){
     /* Close modals from top layer to bottom */
+    const mtWiz=document.getElementById('mtWizardOverlay');
+    if(mtWiz){MT_tryClose();return;}
     const mtSet=document.getElementById('mtSettingsOverlay');
     if(mtSet){MT_closeSettings();return;}
     const mtHist=document.getElementById('mtHistoryOverlay');
@@ -37,7 +39,7 @@ document.addEventListener('DOMContentLoaded',function(){
   if(startPage==='profile') initProfile();
   else if(startPage==='water') initWater();
   else if(startPage==='light') initLight();
-  else if(startPage==='maintain') initMaintain();
+  else if(startPage==='change') initChange();
   else if(startPage==='titrate') initTitrate();
   if(startPage==='profile') renderProfile();
 });

@@ -31,7 +31,7 @@ var _sysConfirmCb=null;
 function sysConfirm(msg,okText,cb){
   let ov=document.getElementById('sysCfmOverlay');
   if(!ov){
-    document.body.insertAdjacentHTML('beforeend','<div class="cfm-overlay" id="sysCfmOverlay" onclick="if(event.target===this)sysConfirmCancel()"><div class="cfm-box"><p id="sysCfmMsg"></p><div class="cfm-btns"><button class="btn-ghost" onclick="sysConfirmCancel()">取消</button><button class="btn-del" id="sysCfmOk">确定</button></div></div></div>');
+    document.body.insertAdjacentHTML('beforeend','<div class="cfm-overlay" id="sysCfmOverlay" style="z-index:9999" onclick="if(event.target===this)sysConfirmCancel()"><div class="cfm-box"><p id="sysCfmMsg"></p><div class="cfm-btns"><button class="btn-ghost" onclick="sysConfirmCancel()">取消</button><button class="btn-del" id="sysCfmOk">确定</button></div></div></div>');
     ov=document.getElementById('sysCfmOverlay');
   }
   document.getElementById('sysCfmMsg').textContent=msg;

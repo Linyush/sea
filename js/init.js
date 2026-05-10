@@ -3,6 +3,10 @@
    ============================================================ */
 document.addEventListener('keydown',function(e){
   if(e.key==='Escape'){
+    const sysCfm=document.getElementById("sysCfmOverlay");
+    if(sysCfm&&sysCfm.classList.contains("open")){sysConfirmCancel();return;}
+    const wEdit=document.getElementById("wEditOverlay");
+    if(wEdit){W_closeEdit();return;}
     /* Close modals from top layer to bottom */
     const mtWiz=document.getElementById('mtWizardOverlay');
     if(mtWiz){MT_tryClose();return;}

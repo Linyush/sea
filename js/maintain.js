@@ -64,13 +64,14 @@ function MT_wizKeyHandler(e){
 }
 
 function MT_tryClose(){
-  if(_mt.stepIdx>0){if(!confirm('维护未完成，确认退出？'))return;}
+  if(_mt.stepIdx>0){sysConfirm('维护未完成，确认退出？','退出',function(){MT_doClose();});return;}
   MT_closeWizard();
 }
 function MT_closeWizard(){
   var el=document.getElementById('mtWizardOverlay');
   if(el)el.remove();
   document.removeEventListener('keydown',MT_wizKeyHandler);
+function MT_doClose(){MT_closeWizard();}
 }
 
 /* --- Render --- */
@@ -435,7 +436,7 @@ function MT_openHistory(){
     log.slice().reverse().forEach(function(entry,ri){
       var realIdx=log.length-1-ri;
       html+='<div class="mt-history-item">';
-      html+='<div style="display:flex;align-items:center;justify-content:space-between"><div class="mt-h-date">'+entry.date+'</div><button class="mt-btn-del-sm" onclick="if(confirm(\'确认删除 '+entry.date+' 的记录？对应水质数据也会清除。\'))MT_deleteLogEntry('+realIdx+')">删除</button></div>';
+      html+='<div style="display:flex;align-items:center;justify-content:space-between"><div class="mt-h-date">'+entry.date+'</div><button class="mt-btn-del-sm" onclick="sysConfirm(\'确认删除此记录？\',\'删除\',function(){MT_deleteLogEntry('+realIdx+');})">删除</button></div>';
       var details=[];
       if(entry.vol) details.push('换水 '+entry.vol+'L');
       if(entry.testData){

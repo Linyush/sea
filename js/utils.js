@@ -24,3 +24,20 @@ function toggleTheme(){
   },80);
 }
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+
+
+/* System confirm modal (replaces native confirm) */
+var _sysConfirmCb=null;
+function sysConfirm(msg,okText,cb){
+  let ov=document.getElementById('sysCfmOverlay');
+  if(!ov){
+    document.body.insertAdjacentHTML('beforeend','<div class="cfm-overlay" id="sysCfmOverlay" onclick="if(event.target===this)sysConfirmCancel()"><div class="cfm-box"><p id="sysCfmMsg"></p><div class="cfm-btns"><button class="btn-ghost" onclick="sysConfirmCancel()">取消</button><button class="btn-del" id="sysCfmOk">确定</button></div></div></div>');
+    ov=document.getElementById('sysCfmOverlay');
+  }
+  document.getElementById('sysCfmMsg').textContent=msg;
+  const okBtn=document.getElementById('sysCfmOk');okBtn.textContent=okText||'确定';
+  _sysConfirmCb=cb;
+  ov.style.display='flex';requestAnimationFrame(()=>ov.classList.add('open'));
+  okBtn.onclick=function(){sysConfirmCancel();if(_sysConfirmCb)_sysConfirmCb();};
+}
+function sysConfirmCancel(){const ov=document.getElementById('sysCfmOverlay');if(ov){ov.classList.remove('open');ov.style.display='none';}_sysConfirmCb=null;}

@@ -139,8 +139,7 @@ function TK_del(){
   TK_hideCtx();
   if(_tanks.length<=1){toast('至少保留一个鱼缸');return;}
   const t=_tanks.find(x=>x.id===_ctxTankId);if(!t)return;
-  if(!confirm('确定删除鱼缸「'+t.name+'」及其所有数据？'))return;
-  // Remove data
+  sysConfirm('确定删除鱼缸「'+t.name+'」及其所有数据？','删除',function(){
   ['_water_v10','_spectrum_v8','_change_v1','_titrate_v1','_inventory'].forEach(suffix=>{
     _r('reef_'+t.id+suffix);
   });
@@ -149,6 +148,7 @@ function TK_del(){
   if(_activeTank===t.id){TK_switchTo(_tanks[0].id);}
   else{TK_renderBar();}
   toast('已删除 '+t.name);
+  });
 }
 
 // --- Tank Form ---

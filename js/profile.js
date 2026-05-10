@@ -892,7 +892,7 @@ function IF_save(){
 }
 
 function IF_del(){
-  if(!confirm('确定删除？'))return;
+  sysConfirm('确定删除？','删除',function(){
   const inv=P_loadInv();
   const arrKey=IF_INV_KEYS[_ifType];
   if(!inv[arrKey])return;
@@ -912,6 +912,7 @@ function IF_del(){
   IF_close();
   renderProfile();
   toast('已删除');
+  });
 }
 
 
@@ -1168,9 +1169,10 @@ function P_clearAll(type){
   const arrKey=IF_INV_KEYS[type];
   const count=(inv[arrKey]||[]).length;
   if(!count){toast('没有数据可清空');return;}
-  if(!confirm('确定清空全部 '+count+' 条'+typeName+'记录？此操作不可恢复！'))return;
+  sysConfirm('确定清空全部 '+count+' 条'+typeName+'记录？此操作不可恢复！','清空',function(){
   inv[arrKey]=[];
   P_saveInv(inv);
   renderProfile();
   toast('已清空'+typeName);
+  });
 }

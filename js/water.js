@@ -184,7 +184,7 @@ function renderChart(){
   const scales={x:{type:'time',time:{unit:'day',tooltipFormat:'M/d',displayFormats:{day:'M/d',week:'M/d',month:'yyyy/M'}},min:firstDate,max:fd(new Date(pd(lastDate).getTime()+30*86400000)),ticks:{color:cs.getPropertyValue('--text3').trim(),font:{size:11,weight:'500'},maxRotation:45,autoSkip:true,maxTicksLimit:_overviewMode?20:15},grid:{color:cs.getPropertyValue('--border').trim()+'40'}}};
   chartFields().forEach(fi=>{
     const k=fi.key,c=fi.color,yId='y_'+k,ar=bandAxisRange(fi,bands);
-    const pts=rows.filter(r=>r[k]!=null).map(r=>({x:r.date,y:r[k],_date:r.date,_dateLabel:fs(r.date)}));
+    const pts=rows.filter(r=>r[k]!=null&&!r._hidden).map(r=>({x:r.date,y:r[k],_date:r.date,_dateLabel:fs(r.date)}));
     ds.push({label:fi.name,data:pts,borderColor:c,backgroundColor:c+'22',borderWidth:_overviewMode?1.8:2.5,pointRadius:_overviewMode?2.5:4.5,pointBackgroundColor:c,pointBorderColor:cs.getPropertyValue('--card').trim(),pointBorderWidth:_overviewMode?1:2,pointHoverRadius:_overviewMode?4:7,pointHitRadius:12,tension:.3,yAxisID:yId,spanGaps:true,_field:k});
     if(fi.tgt!=null&&rows.length>=2)ds.push({label:fi.name+' tgt',data:[{x:firstDate,y:fi.tgt},{x:lastDate,y:fi.tgt}],borderColor:c+'55',borderWidth:1.5,borderDash:[6,4],pointRadius:0,pointHitRadius:0,tension:0,yAxisID:yId,_isTgt:true});
     scales[yId]={type:'linear',display:false,min:ar.min,max:ar.max};
@@ -225,7 +225,10 @@ function doExport(){
 }
 function doImport(input){
   const file=input.files[0];if(!file)return;
-  if(!confirm('导入将覆盖当前所有数据（包括目标值和记录），确定继续？')){input.value='';return;}
+  sysConfirm('导入将覆盖当前所有数据（包括目标值和记录），确定继续？','导入',function(){W_doImport(input);});
+}
+function W_doImport(input){
+  const file=input.files[0];if(!file)return;
   const reader=new FileReader();
   reader.onload=function(e){
     try{const o=JSON.parse(e.target.result);
@@ -244,13 +247,13 @@ function renderTgtGrid(){
   let h='';
   fields.forEach((fi,i)=>{
     const custom=!DEF_FIELDS.some(d=>d.key===fi.key);
-    h+='<div class="tgt-card"><div class="tgt-hd"><div class="left"><span class="sw" style="background:'+fi.color+'"></span><span style="color:'+fi.color+'">'+fi.name+'</span></div>'+(custom?'<button class="del-field-btn" onclick="delField('+i+')" title="删除">✕</button>':'')+'</div><div class="tgt-row"><span class="rl">目标</span><input class="tgt-v" type="text" inputmode="decimal" value="'+fi.tgt+'" onchange="chgField('+i+',\'tgt\',this.value)"></div><div class="tgt-row"><span class="rl">下限</span><input type="text" inputmode="decimal" value="'+fi.lo+'" onchange="chgField('+i+',\'lo\',this.value)"></div><div class="tgt-row"><span class="rl">上限</span><input type="text" inputmode="decimal" value="'+fi.hi+'" onchange="chgField('+i+',\'hi\',this.value)"></div><label class="tgt-hide-row"><input type="checkbox" '+(fi.hidden?'checked':'')+' onchange="toggleFieldHidden('+i+',this.checked)"><span>不在折线图显示</span></label></div>';
+    h+='<div class="tgt-card"><div class="tgt-hd"><div class="left"><span class="sw" style="background:'+fi.color+'"></span><span style="color:'+fi.color+'">'+fi.name+'</span></div><div class="tgt-hd-right"><label class="tgt-hide-toggle" title="隐藏折线图"><input type="checkbox" '+(fi.hidden?'checked':'')+' onchange="toggleFieldHidden('+i+',this.checked)"><span>隐藏</span></label>'+(custom?'<button class="del-field-btn" onclick="delField('+i+')" title="删除">✕</button>':'')+'</div></div><div class="tgt-row"><span class="rl">目标</span><input class="tgt-v" type="text" inputmode="decimal" value="'+fi.tgt+'" onchange="chgField('+i+',\'tgt\',this.value)"></div><div class="tgt-row"><span class="rl">下限</span><input type="text" inputmode="decimal" value="'+fi.lo+'" onchange="chgField('+i+',\'lo\',this.value)"></div><div class="tgt-row"><span class="rl">上限</span><input type="text" inputmode="decimal" value="'+fi.hi+'" onchange="chgField('+i+',\'hi\',this.value)"></div></div>';
   });
   h+='<div class="add-field-card" onclick="openNf()"><span>+</span></div>';
   document.getElementById('tgtGrid').innerHTML=h;
 }
 function chgField(i,prop,v){const n=parseFloat(v);if(!isNaN(n)){fields[i][prop]=n;save();renderChart();if(prop!=='tgt')renderTable();toast(fields[i].name+' 已更新');}}
-function renderThead(){document.getElementById('thead').innerHTML='<tr><th style="width:96px">日期</th>'+fields.map(fi=>'<th><span class="th-dot" style="background:'+fi.color+'"></span>'+fi.name+'</th>').join('')+'<th style="width:30px"></th></tr>';}
+function renderThead(){document.getElementById('thead').innerHTML='<tr><th style="width:96px">日期</th>'+fields.map(fi=>'<th><span class="th-dot" style="background:'+fi.color+'"></span>'+fi.name+'</th>').join('')+'<th style="width:30px"></th><th style="width:30px"></th></tr>';}
 function renderTable(){
   const tb=document.getElementById('tbody'),co=cutoff(),rev=rows.slice().reverse(),dd=localDate();
   let h='<tr class="add-row"><td><input type="text" id="iDate" value="'+dd+'" placeholder="YYYY-MM-DD"></td>';
@@ -259,10 +262,10 @@ function renderTable(){
     h+='<td style="position:relative"><input type="text" id="i'+fi.key+'" placeholder="'+fi.name+'"'+(isCaMg?' onblur="autoConvert(\''+fi.key+'\',this)"':'')+'>';
     if(isCaMg)h+='<span class="conv-hint" id="hint_'+fi.key+'"></span>';h+='</td>';
   });
-  h+='<td style="text-align:center"><button class="btn-sm" onclick="addRow()">+</button></td></tr>';
+  h+='<td></td><td style="text-align:center"><button class="btn-sm" onclick="addRow()">+</button></td></tr>';
   rev.forEach((r,ri)=>{
     const idx=rows.length-1-ri,old=pd(r.date)<co,hide=old&&!expanded;
-    h+='<tr'+(old?' class="old-row"':'')+(hide?' style="display:none"':'')+'><td class="dc">'+fs(r.date)+'</td>'+fields.map(fi=>{const v=r[fi.key],oor=isOOR(fi.key,v);return '<td><input class="'+(oor?'val-warn':'')+'" value="'+(v!=null?v:'')+'" placeholder="-" onchange="editCell('+idx+',\''+fi.key+'\',this)" onfocus="this.select()"></td>';}).join('')+'<td><button class="del-btn" onclick="askDel('+idx+')">✕</button></td></tr>';
+    h+='<tr'+(old?' class="old-row"':'')+(hide?' style="display:none"':'')+'><td class="dc">'+fs(r.date)+'</td>'+fields.map(fi=>{const v=r[fi.key],oor=isOOR(fi.key,v);return '<td><input class="'+(oor?'val-warn':'')+'" value="'+(v!=null?v:'')+'" placeholder="-" onchange="editCell('+idx+',\''+fi.key+'\',this)" onfocus="this.select()"></td>';}).join('')+'<td><button class="del-btn hide-row-btn'+(r._hidden?' active':'')+'" onclick="toggleRowHidden('+idx+')" title="隐藏">👁</button></td><td><button class="del-btn" onclick="askDel('+idx+')">✕</button></td></tr>';
   });
   tb.innerHTML=h;
   document.getElementById('expandBar').style.display=rows.some(r=>pd(r.date)<co)?'':'none';
@@ -308,7 +311,7 @@ function askDel(i){
   document.getElementById('delOk').onclick=()=>{rows.splice(_di,1);save();renderTable();renderChart();closeDel();toast('已删除');};
 }
 function closeDel(){const m=document.getElementById('delCfm');m.classList.remove('open');setTimeout(()=>{m.style.display='none';},300);}
-function resetAll(){if(!confirm('确定恢复默认目标值并清空所有数据？'))return;_r(W_SK());load();renderModal();renderChart();toast('已重置');}
+function resetAll(){sysConfirm('确定恢复默认目标值并清空所有数据？','重置',function(){_r(W_SK());load();renderModal();renderChart();toast('已重置');});}
 function openNf(){const m=document.getElementById('nfModal');m.style.display='flex';requestAnimationFrame(()=>m.classList.add('open'));}
 function closeNf(){const m=document.getElementById('nfModal');m.classList.remove('open');setTimeout(()=>{m.style.display='none';},300);}
 function doAddField(){
@@ -322,9 +325,10 @@ function doAddField(){
   ['nfKey','nfName','nfTgt','nfLo','nfHi'].forEach(id=>{document.getElementById(id).value='';});
 }
 function delField(i){
-  if(!confirm('确定删除指标 '+fields[i].name+'？'))return;
-  const key=fields[i].key;fields.splice(i,1);rows.forEach(r=>{delete r[key];});
-  save();renderModal();renderChart();renderQuickBar();toast('已删除');
+  sysConfirm('确定删除指标 '+fields[i].name+'？','删除',function(){
+    const key=fields[i].key;fields.splice(i,1);rows.forEach(r=>{delete r[key];});
+    save();renderModal();renderChart();renderQuickBar();toast('已删除');
+  });
 }
 function renderModal(){renderTgtGrid();renderThead();renderTable();}
 function renderQuickBar(){
@@ -347,6 +351,8 @@ function quickAdd(){
   renderChart();toast('已添加 '+fs(dv));autoBackup();
 }
 
+
+function toggleRowHidden(idx){rows[idx]._hidden=!rows[idx]._hidden;save();renderChart();renderTable();}
 function toggleFieldHidden(i,checked){fields[i].hidden=checked;save();renderChart();updateLaneLabels();}
 
 /* --- Double-click edit modal for chart data --- */
@@ -398,8 +404,7 @@ function W_saveEdit(idx){
 }
 
 function W_deleteEditRow(idx){
-  if(!confirm('确定删除 '+fs(rows[idx].date)+' 的记录？'))return;
-  rows.splice(idx,1);save();renderChart();renderModal();W_closeEdit();toast('已删除');
+  sysConfirm('确定删除 '+fs(rows[idx].date)+' 的记录？','删除',function(){rows.splice(idx,1);save();renderChart();renderModal();W_closeEdit();toast('已删除');});
 }
 
 function initWater(){

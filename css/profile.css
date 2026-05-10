@@ -359,13 +359,12 @@
 
 
 /* 封面背景 - 卡片内绝对定位，底部渐变消失 */
-.pf-cover-bg{display:none;position:absolute;top:0;left:0;right:0;height:240px;z-index:0;overflow:hidden;border-radius:14px 14px 0 0}
+.pf-cover-bg{display:none;position:absolute;top:0;left:0;right:0;height:100%;z-index:0;overflow:hidden}
 .pf-cover-bg.active{display:block}
 .pf-cover-bg img,.pf-cover-bg video{width:100%;height:100%;object-fit:cover}
-.pf-cover-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 20%,color-mix(in srgb,var(--card) 40%,transparent) 60%,var(--card) 95%);pointer-events:none}
+.pf-cover-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 10%,color-mix(in srgb,var(--card) 50%,transparent) 45%,color-mix(in srgb,var(--card) 85%,transparent) 70%,var(--card) 92%);pointer-events:none}
 
-/* 有封面时给卡片内容加上 padding-top 让内容不完全被遮挡 */
-.pf-cover-bg.active~.profile-header{padding-top:160px}
+.pf-cover-bg.active~.profile-header{padding-top:120px}
 .profile-header,.pf-divider,.pf-columns{position:relative;z-index:1}
 
 /* 全屏预览 */

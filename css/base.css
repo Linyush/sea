@@ -1,5 +1,5 @@
 :root{
-  --bg:#0a1628;--card:#131d2f;--border:#1e2d45;--border2:#2a3a52;
+  --bg:#0a1628;--card:#131d2f;--card-rgb:19,29,47;--border:#1e2d45;--border2:#2a3a52;
   --text:#e0e6ed;--text2:#8ba3c7;--text3:#6b7a8d;--text4:#4a5a6d;--text5:#3a4a62;
   --input-bg:#0a1628;--hover:rgba(0,210,255,.03);--accent:#00d2ff;--accent2:#7b68ee;
   --warn:#ff4444;--shadow:rgba(0,0,0,.3);--card-hover-border:#1e3a5a;--card-hover-shadow:rgba(0,210,255,.04);
@@ -9,7 +9,7 @@
   --scrollbar:#2a3a52;--scrollbar-hover:#3a5a72;
 }
 html.light{
-  --bg:#f0f2f5;--card:#ffffff;--border:#dce0e6;--border2:#c5cbd3;
+  --bg:#f0f2f5;--card:#ffffff;--card-rgb:255,255,255;--border:#dce0e6;--border2:#c5cbd3;
   --text:#111827;--text2:#374151;--text3:#4b5563;--text4:#6b7280;--text5:#9ca3af;
   --input-bg:#f7f8fa;--hover:rgba(0,120,200,.04);--accent:#0066cc;--accent2:#5b4ed4;
   --warn:#e02020;--shadow:rgba(0,0,0,.10);--card-hover-border:#b0bec5;--card-hover-shadow:rgba(0,120,200,.08);

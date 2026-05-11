@@ -376,3 +376,17 @@
 .pf-btn-group.has-cover .profile-edit-btn:hover{border-color:#fff;color:#fff}
 .profile-info.has-cover h2{color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.6)}
 .profile-info.has-cover .meta{color:rgba(255,255,255,.85);text-shadow:0 1px 3px rgba(0,0,0,.5)}
+
+/* 有封面时，增强下方模块的可读性 */
+.pf-cover-bg.active~.pf-columns .pf-mod-title{color:rgba(255,255,255,.95);text-shadow:0 1px 3px rgba(0,0,0,.5)}
+.pf-cover-bg.active~.pf-columns .pf-maint-row{background:rgba(var(--card-rgb,30,30,30),.75);backdrop-filter:blur(4px);border-color:rgba(255,255,255,.1)}
+.pf-cover-bg.active~.pf-columns .pf-maint-row,.pf-cover-bg.active~.pf-columns .pf-maint-row b{color:rgba(255,255,255,.9)}
+.pf-cover-bg.active~.pf-columns .pf-inv-row-name{color:rgba(255,255,255,.8)}
+.pf-cover-bg.active~.pf-columns .pf-inv-row-cnt{color:rgba(255,255,255,.6)}
+.pf-cover-bg.active~.pf-columns .pf-inv-row-val{color:rgba(255,255,255,.95);text-shadow:0 1px 2px rgba(0,0,0,.4)}
+.pf-cover-bg.active~.pf-columns .pf-inv-row.loss .pf-inv-row-val{color:#ff7b7b}
+.pf-cover-bg.active~.pf-columns .pf-inv-row.gain .pf-inv-row-val{color:#5aeaad}
+.pf-cover-bg.active~.pf-columns .pf-inv-row-accent .pf-inv-row-val{color:var(--accent)}
+.pf-cover-bg.active~.pf-columns .pf-mod-actions .pf-mod-btn{color:rgba(255,255,255,.8);text-shadow:0 1px 2px rgba(0,0,0,.4)}
+.pf-cover-bg.active~.pf-columns .pf-inv-detail-btn{color:rgba(255,255,255,.7)}
+.pf-cover-bg.active~.pf-columns .pf-eye-btn{text-shadow:0 1px 2px rgba(0,0,0,.4)}

@@ -683,7 +683,7 @@ function _ifRenderAll(type,vals){
       const cur=vals[k]||status;
       if(cur!==need) return;
     }
-    const v=vals[f.key]!=null?vals[f.key]:'';
+    const v=vals[f.key]!=null?vals[f.key]:(f.type==='date'?new Date().toISOString().slice(0,10):'');
     const inp=_ifRenderField(f,v);
     const row='<div class="if-row" data-fk="'+f.key+'"><label'+(f.required?' class="req"':'')+'>'+ f.label+'</label>'+inp+'</div>';
     if(f.top) topH+=row;

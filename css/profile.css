@@ -390,3 +390,12 @@
 .pf-cover-bg.active~.pf-columns .pf-mod-actions .pf-mod-btn{color:rgba(255,255,255,.8);text-shadow:0 1px 2px rgba(0,0,0,.4)}
 .pf-cover-bg.active~.pf-columns .pf-inv-detail-btn{color:rgba(255,255,255,.7)}
 .pf-cover-bg.active~.pf-columns .pf-eye-btn{text-shadow:0 1px 2px rgba(0,0,0,.4)}
+
+/* 有封面 + 隐藏金额时，保持模糊不可读 */
+.pf-cover-bg.active~.pf-columns .pf-invest-grid.pf-hidden .pf-inv-row-val,
+.pf-cover-bg.active~.pf-columns .pf-invest-grid.pf-hidden .pf-inv-row.loss .pf-inv-row-val,
+.pf-cover-bg.active~.pf-columns .pf-invest-grid.pf-hidden .pf-inv-row.gain .pf-inv-row-val,
+.pf-cover-bg.active~.pf-columns .pf-invest-grid.pf-hidden .pf-inv-row-accent .pf-inv-row-val,
+.pf-cover-bg.active~.pf-columns .pf-invest-grid.pf-hidden .pf-inv-card-val,
+.pf-cover-bg.active~.pf-columns .pf-invest-grid.pf-hidden .pf-inv-card.pf-inv-row-accent .pf-inv-card-val,
+.pf-cover-bg.active~.pf-columns .pf-invest-grid.pf-hidden .pf-inv-card.pf-inv-card-cur .pf-inv-card-val{color:transparent;text-shadow:0 0 8px rgba(255,255,255,.3);user-select:none}

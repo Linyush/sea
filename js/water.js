@@ -378,14 +378,14 @@ function W_showEditModal(idx){
   html+='<div class="modal-hd"><h3><span class="dot"></span>编辑数据</h3><button class="modal-close" onclick="W_closeEdit()">✕</button></div>';
   html+='<div class="modal-bd" style="padding:16px 20px">';
   html+='<div class="w-edit-list">';
-  html+='<div class="w-edit-row"><span class="w-edit-label">日期</span><input type="text" id="wEdit_date" value="'+r.date+'" class="w-edit-input"></div>';
+  html+='<div class="w-edit-row"><span class="w-edit-label">日期</span><input type="date" id="wEdit_date" value="'+r.date+'" class="w-edit-input"></div>';
   fields.forEach(fi=>{
     const v=r[fi.key]!=null?r[fi.key]:'';
     html+='<div class="w-edit-row"><span class="w-edit-label" style="color:'+fi.color+'">'+fi.name+'</span><input type="number" step="any" id="wEdit_'+fi.key+'" value="'+v+'" placeholder="-" class="w-edit-input"></div>';
   });
   html+='</div>';
   html+='<div class="w-edit-actions">';
-  html+='<button class="btn-ghost" onclick="W_toggleEditHidden('+idx+')" id="wEditHideBtn">'+(r._hidden?'👁':'🙈')+'</button>';
+  html+='<button class="btn-ghost" onclick="W_toggleEditHidden('+idx+')" id="wEditHideBtn">'+(r._hidden?'🙈':'👁')+'</button>';
   html+='<span style="flex:1"></span>';
   html+='<button class="btn-ghost" onclick="W_deleteEditRow('+idx+')">🗑️ 删除</button>';
   html+='<button class="btn" onclick="W_saveEdit('+idx+')">保存</button>';
@@ -397,7 +397,7 @@ function W_showEditModal(idx){
 function W_toggleEditHidden(idx){
   rows[idx]._hidden=!rows[idx]._hidden;
   var btn=document.getElementById('wEditHideBtn');
-  if(btn) btn.textContent=rows[idx]._hidden?'👁':'🙈';
+  if(btn) btn.textContent=rows[idx]._hidden?'🙈':'👁';
   save();renderChart();renderTable();
 }
 

@@ -651,7 +651,8 @@ function _ifRenderField(f,val){
     }).join('');
     return '<select id="if_'+f.key+'">'+opts+'</select>';
   }else if(f.type==='date'){
-    return '<input type="text" id="if_'+f.key+'" value="'+val+'" placeholder="YYYY-MM-DD" maxlength="10" oninput="IF_fmtDate(this)">';
+    return '<input type="date" id="if_'+f.key+'" value="'+val+'">';
+
   }else if(f.type==='textarea'){
     return '<textarea id="if_'+f.key+'" rows="2" placeholder="'+(f.placeholder||'')+'">'+val+'</textarea>';
   }else{

@@ -1055,6 +1055,7 @@ function P_delChild(idx){
   toast('已删除');
 }
 function initProfile(){
+  BK_checkReminder();
   // Profile page is render-only, no special init needed
 }
 

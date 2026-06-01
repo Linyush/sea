@@ -43,13 +43,19 @@ function BK_import(e){
         document.getElementById('bkInfo').innerHTML='<div class="bk-error">❌ 无效的备份文件，未找到有效数据</div>';
         return;
       }
-      if(!confirm('确定要恢复备份？这将覆盖当前所有数据（共 '+keys.length+' 条记录）。'))return;
-      keys.forEach(k=>{
-        const v=typeof data[k]==='string'?data[k]:JSON.stringify(data[k]);
-        localStorage.setItem(k,v);
+      sysConfirm('确定要恢复备份？这将覆盖当前所有数据（共 '+keys.length+' 条记录）。','恢复',function(){
+        // 先清理现有 reef_ 数据，再写入备份
+        for(var i=localStorage.length-1;i>=0;i--){
+          var ek=localStorage.key(i);
+          if(ek&&ek.startsWith('reef_'))localStorage.removeItem(ek);
+        }
+        keys.forEach(k=>{
+          const v=typeof data[k]==='string'?data[k]:JSON.stringify(data[k]);
+          localStorage.setItem(k,v);
+        });
+        document.getElementById('bkInfo').innerHTML='<div class="bk-success">✅ 已恢复 '+keys.length+' 条数据记录，页面将刷新...</div>';
+        setTimeout(()=>location.reload(),1200);
       });
-      document.getElementById('bkInfo').innerHTML='<div class="bk-success">✅ 已恢复 '+keys.length+' 条数据记录，页面将刷新...</div>';
-      setTimeout(()=>location.reload(),1200);
     }catch(err){
       document.getElementById('bkInfo').innerHTML='<div class="bk-error">❌ 文件解析失败：'+err.message+'</div>';
     }

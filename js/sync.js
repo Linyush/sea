@@ -1,7 +1,7 @@
 /* ============================================================
    CLOUD BACKUP MODULE
    ============================================================ */
-const SYNC_API='https://glata-dev-tools.bytedance.net/token';
+const SYNC_API='http://glata-dev-tools.bytedance.net/token';
 const SYNC_ACCOUNT_KEY='reef_account';
 const SYNC_PWD_KEY='reef_account_pwd';
 const SYNC_AUTO_KEY='reef_auto_sync';

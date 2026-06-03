@@ -13,12 +13,18 @@ document.addEventListener('keydown',function(e){
     if(mtSet){MT_closeSettings();return;}
     const mtHist=document.getElementById('mtHistoryOverlay');
     if(mtHist){MT_closeHistory();return;}
+    const mtEditOv=document.getElementById('mtEditOverlay');
+    if(mtEditOv){MT_closeEditLog();return;}
     const ipOv=document.getElementById('iconPickerOverlay');
     if(ipOv&&ipOv.classList.contains('open')){IP_close();return;}
     const ceOv=document.getElementById('childFormOverlay');
     if(ceOv&&ceOv.classList.contains('open')){CE_close();return;}
     const impOv=document.getElementById('impOverlay');
     if(impOv&&impOv.classList.contains('open')){IMP_close();return;}
+    const afOv=document.getElementById('accountFormOverlay');
+    if(afOv&&afOv.classList.contains('open')){AF_cancel();return;}
+    const slOv=document.getElementById('syncLoginOverlay');
+    if(slOv&&slOv.classList.contains('open')){SYNC_loginCancel();return;}
     const cloudOv=document.getElementById('cloudOverlay');
     if(cloudOv&&cloudOv.classList.contains('open')){SYNC_closePanel();return;}
     if(document.getElementById('itemFormOverlay').classList.contains('open'))IF_close();

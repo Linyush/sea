@@ -442,8 +442,8 @@ function MT_openHistory(){
     html+='<div class="mt-history-list">';
     log.slice().reverse().forEach(function(entry,ri){
       var realIdx=log.length-1-ri;
-      html+='<div class="mt-history-item">';
-      html+='<div style="display:flex;align-items:center;justify-content:space-between"><div class="mt-h-date">'+entry.date+'</div><button class="mt-btn-del-sm" onclick="sysConfirm(\'确认删除此记录？\',\'删除\',function(){MT_deleteLogEntry('+realIdx+');})">删除</button></div>';
+      html+='<div class="mt-history-item" ondblclick="MT_editLogEntry('+realIdx+')">';
+      html+='<div class="mt-h-date">'+entry.date+'</div>';
       var details=[];
       if(entry.vol) details.push('换水 '+entry.vol+'L');
       if(entry.testData){
@@ -466,6 +466,73 @@ function MT_openHistory(){
 function MT_closeHistory(){
   var el=document.getElementById('mtHistoryOverlay');
   if(el)el.remove();
+}
+
+/* --- Edit log entry --- */
+let _mtEditIdx=-1;
+function MT_editLogEntry(idx){
+  var log=MT_loadLog();
+  if(idx<0||idx>=log.length)return;
+  _mtEditIdx=idx;
+  var entry=log[idx];
+  var wsk='reef_'+_activeTank+'_water_v10';
+  var wData;try{wData=JSON.parse(_g(wsk))||{};}catch(e){wData={};}
+  var wFields=wData.fields||[{key:'kh',name:'KH'},{key:'ca',name:'Ca'},{key:'mg',name:'Mg'},{key:'no3',name:'NO3'},{key:'po4',name:'PO4'}];
+
+  var html='<div class="mt-settings-overlay open" id="mtEditOverlay" onclick="if(event.target===this)MT_closeEditLog()">';
+  html+='<div class="mt-settings-box">';
+  html+='<h4>编辑维护记录</h4>';
+  html+='<div class="mt-edit-form">';
+  html+='<div class="if-row"><label>日期</label><input type="date" id="mtEditDate" value="'+(entry.date||'')+'"></div>';
+  html+='<div class="if-row"><label>换水量</label><input type="number" id="mtEditVol" value="'+(entry.vol||'')+'" step="0.1" placeholder="L"><span style="color:var(--text4);font-size:12px;margin-left:-4px">L</span></div>';
+  html+='<div class="mt-set-section" style="margin-top:12px"><div class="mt-set-label">水质检测</div>';
+  html+='<div class="mt-test-grid">';
+  wFields.forEach(function(f){
+    var val=entry.testData?entry.testData[f.key]||'':'';
+    html+='<div class="mt-test-item"><label>'+f.name+'</label><input type="number" step="any" id="mtEditTest_'+f.key+'" value="'+val+'" placeholder="-"></div>';
+  });
+  html+='</div></div>';
+  if(entry.maintDone&&entry.maintDone.length){
+    html+='<div class="if-row"><label>维护项目</label><input id="mtEditMaint" value="'+entry.maintDone.join('、')+'" placeholder="用顿号分隔"></div>';
+  }
+  html+='<div class="if-row"><label>备注</label><textarea id="mtEditNote" rows="2" placeholder="选填">'+(entry.note||'')+'</textarea></div>';
+  html+='</div>';
+  html+='<div class="mt-actions"><button class="mt-btn mt-btn-ghost" onclick="MT_closeEditLog()">取消</button><button class="mt-btn mt-btn-del" onclick="MT_deleteLogEntry('+idx+');MT_closeEditLog()">删除</button><button class="mt-btn mt-btn-primary" onclick="MT_saveEditLog()">保存</button></div>';
+  html+='</div></div>';
+  document.body.insertAdjacentHTML('beforeend',html);
+}
+function MT_closeEditLog(){
+  _mtEditIdx=-1;
+  var el=document.getElementById('mtEditOverlay');
+  if(el)el.remove();
+}
+function MT_saveEditLog(){
+  if(_mtEditIdx<0)return;
+  var log=MT_loadLog();
+  var entry=log[_mtEditIdx];
+  if(!entry)return;
+  var wsk='reef_'+_activeTank+'_water_v10';
+  var wData;try{wData=JSON.parse(_g(wsk))||{};}catch(e){wData={};}
+  var wFields=wData.fields||[{key:'kh',name:'KH'},{key:'ca',name:'Ca'},{key:'mg',name:'Mg'},{key:'no3',name:'NO3'},{key:'po4',name:'PO4'}];
+
+  entry.date=document.getElementById('mtEditDate').value;
+  entry.vol=document.getElementById('mtEditVol').value;
+  entry.note=document.getElementById('mtEditNote').value;
+  var newTestData={};
+  wFields.forEach(function(f){
+    var v=document.getElementById('mtEditTest_'+f.key);
+    if(v&&v.value) newTestData[f.key]=v.value;
+  });
+  entry.testData=newTestData;
+  var maintEl=document.getElementById('mtEditMaint');
+  if(maintEl) entry.maintDone=maintEl.value.split('、').filter(Boolean);
+
+  log[_mtEditIdx]=entry;
+  MT_saveLog(log);
+  MT_closeEditLog();
+  MT_closeHistory();
+  MT_openHistory();
+  toast('已保存');
 }
 
 /* --- Settings modal --- */

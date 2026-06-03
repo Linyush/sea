@@ -188,7 +188,7 @@ function renderProfile(){
   if(t.volume) metaParts.push(t.volume+'L');
   if(daysSince>=0) metaParts.push('开缸 '+daysSince+' 天');
   hdrHtml+=metaParts.join(' · ');
-  hdrHtml+='</div></div><div class="pf-btn-group'+(t.cover?' has-cover':'')+'"><button class="profile-edit-btn" onclick="TF_open(&#39;'+t.id+'&#39;)">编辑</button></div>';
+  hdrHtml+='</div></div>';
   hdr.innerHTML=hdrHtml;
   // Investment & Value
   const inv=P_loadInv();

@@ -106,11 +106,7 @@ function TK_renderBar(){
       btn.className='tank-tab'+(t.id===_activeTank?' active':'');
       btn.innerHTML='<span class="t-dot"></span>'+(t.name||'鱼缸 '+(i+1));
       btn.onclick=()=>TK_switchTo(t.id);
-      btn.oncontextmenu=(e)=>{e.preventDefault();TK_showCtx(t.id,e);};
-      let _lp;
-      btn.ontouchstart=(e)=>{_lp=setTimeout(()=>{e.preventDefault();TK_showCtx(t.id,e.touches[0]);},500);};
-      btn.ontouchend=()=>clearTimeout(_lp);
-      btn.ontouchmove=()=>clearTimeout(_lp);
+      btn.ondblclick=()=>TF_open(t.id);
       bar.appendChild(btn);
     });
 
@@ -127,28 +123,11 @@ function TK_renderBar(){
   }
 }
 
-let _ctxTankId='';
-function TK_showCtx(id,e){
-  _ctxTankId=id;
-  const ctx=document.getElementById('tankCtx');
-  ctx.style.display='block';
-  ctx.style.left=Math.min((e.clientX||e.pageX),window.innerWidth-120)+'px';
-  ctx.style.top=Math.min((e.clientY||e.pageY),window.innerHeight-100)+'px';
-  setTimeout(()=>{document.addEventListener('click',TK_hideCtx,{once:true});},0);
-}
-function TK_hideCtx(){document.getElementById('tankCtx').style.display='none';}
-
-function TK_edit(){
-  TK_hideCtx();
-  if(_ctxTankId!==_activeTank)TK_switchTo(_ctxTankId);
-  TF_open(_ctxTankId);
-}
-function TK_del(){
-  TK_hideCtx();
+function TK_del(id){
   if(_tanks.length<=1){toast('至少保留一个鱼缸');return;}
-  const t=_tanks.find(x=>x.id===_ctxTankId);if(!t)return;
+  const t=_tanks.find(x=>x.id===id);if(!t)return;
   sysConfirm('确定删除鱼缸「'+t.name+'」及其所有数据？','删除',function(){
-  ['_water_v10','_spectrum_v8','_change_v1','_titrate_v1','_inventory'].forEach(suffix=>{
+  ['_water_v10','_spectrum_v8','_change_v1','_titrate_v1','_inventory','_maintain_cfg','_maintain_log'].forEach(suffix=>{
     _r('reef_'+t.id+suffix);
   });
   _tanks=_tanks.filter(x=>x.id!==t.id);
@@ -156,6 +135,7 @@ function TK_del(){
   if(_activeTank===t.id){TK_switchTo(_tanks[0].id);}
   else{TK_renderBar();}
   toast('已删除 '+t.name);
+  TF_close();
   });
 }
 
@@ -188,6 +168,8 @@ function TF_open(editId){
     document.getElementById('tfType').value='LPS';
   }
   ov.style.display='flex';requestAnimationFrame(()=>ov.classList.add('open'));
+  const delBtn=document.getElementById('tfDelBtn');
+  if(delBtn) delBtn.style.display=editId?'':'none';
 }
 function TF_close(){
   const ov=document.getElementById('tankFormOverlay');ov.classList.remove('open');setTimeout(()=>{ov.style.display='none';},300);

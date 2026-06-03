@@ -14,8 +14,8 @@ const L_dc=o=>JSON.parse(JSON.stringify(o));
 const L_DEF={mode:'quick',g:{s:14,t:10,p:4,w:60},ch:{},qr:'aipai'};
 L_CH.forEach(c=>{L_DEF.ch[c.key]={s:c.dS,t:c.dT,p:c.dP,w:c.dW,on:c.dOn}});
 
-function L_ld(){try{const r=localStorage.getItem(L_SK());if(!r)return L_dc(L_DEF);const s=JSON.parse(r),c=L_dc(L_DEF);if(s.mode)c.mode=s.mode;if(s.g)Object.assign(c.g,s.g);if(s.ch)for(const k in c.ch)if(s.ch[k])Object.assign(c.ch[k],s.ch[k]);if(s.qr)c.qr=s.qr;return c}catch(e){return L_dc(L_DEF)}}
-function L_sv(c){try{localStorage.setItem(L_SK(),JSON.stringify(c))}catch(e){}}
+function L_ld(){try{const r=_g(L_SK());if(!r)return L_dc(L_DEF);const s=JSON.parse(r),c=L_dc(L_DEF);if(s.mode)c.mode=s.mode;if(s.g)Object.assign(c.g,s.g);if(s.ch)for(const k in c.ch)if(s.ch[k])Object.assign(c.ch[k],s.ch[k]);if(s.qr)c.qr=s.qr;return c}catch(e){return L_dc(L_DEF)}}
+function L_sv(c){try{_s(L_SK(),JSON.stringify(c))}catch(e){}}
 let L_cfg=L_ld(),L_chart=null;
 
 function L_mkStp(id,val,min,max,step){

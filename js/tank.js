@@ -88,29 +88,43 @@ function TK_switchTo(id){
 function TK_renderBar(){
   const bar=document.getElementById('tankBar');
   if(!bar)return;
-  bar.innerHTML='';
-  /* Only show bar if >1 tank, or 1 tank with a name */
-  if(_tanks.length<=1 && !(_tanks[0]&&_tanks[0].name)){bar.style.display='none';return;}
-  bar.style.display='';
-  _tanks.forEach(t=>{
-    const btn=document.createElement('button');
-    btn.className='tank-tab'+(t.id===_activeTank?' active':'');
-    btn.innerHTML='<span class="t-dot"></span>'+(t.name||'鱼缸 '+(i+1));
-    btn.onclick=()=>TK_switchTo(t.id);
-    btn.oncontextmenu=(e)=>{e.preventDefault();TK_showCtx(t.id,e);};
-    // Long press for mobile
-    let _lp;
-    btn.ontouchstart=(e)=>{_lp=setTimeout(()=>{e.preventDefault();TK_showCtx(t.id,e.touches[0]);},500);};
-    btn.ontouchend=()=>clearTimeout(_lp);
-    btn.ontouchmove=()=>clearTimeout(_lp);
-    bar.appendChild(btn);
-  });
-  const addBtn=document.createElement('button');
-  addBtn.className='tank-add';
-  addBtn.textContent='+';
-  addBtn.title='新建鱼缸';
-  addBtn.onclick=()=>TF_open();
-  bar.appendChild(addBtn);
+  // Keep existing avatar and theme buttons, remove old tank tabs
+  bar.querySelectorAll('.necklace-dyn,.tank-tab,.tank-add').forEach(el=>el.remove());
+
+  if(_tanks.length>1||(_tanks[0]&&_tanks[0].name)){
+    const line=document.createElement('div');
+    line.className='necklace-line necklace-dyn';
+    bar.appendChild(line);
+
+    _tanks.forEach((t,i)=>{
+      if(i>0){
+        const sep=document.createElement('div');
+        sep.className='necklace-line necklace-dyn';
+        bar.appendChild(sep);
+      }
+      const btn=document.createElement('button');
+      btn.className='tank-tab'+(t.id===_activeTank?' active':'');
+      btn.innerHTML='<span class="t-dot"></span>'+(t.name||'鱼缸 '+(i+1));
+      btn.onclick=()=>TK_switchTo(t.id);
+      btn.oncontextmenu=(e)=>{e.preventDefault();TK_showCtx(t.id,e);};
+      let _lp;
+      btn.ontouchstart=(e)=>{_lp=setTimeout(()=>{e.preventDefault();TK_showCtx(t.id,e.touches[0]);},500);};
+      btn.ontouchend=()=>clearTimeout(_lp);
+      btn.ontouchmove=()=>clearTimeout(_lp);
+      bar.appendChild(btn);
+    });
+
+    const line2=document.createElement('div');
+    line2.className='necklace-line necklace-dyn';
+    bar.appendChild(line2);
+
+    const addBtn=document.createElement('button');
+    addBtn.className='tank-add';
+    addBtn.textContent='+';
+    addBtn.title='新建鱼缸';
+    addBtn.onclick=()=>TF_open();
+    bar.appendChild(addBtn);
+  }
 }
 
 let _ctxTankId='';
@@ -124,17 +138,10 @@ function TK_showCtx(id,e){
 }
 function TK_hideCtx(){document.getElementById('tankCtx').style.display='none';}
 
-function TK_rename(){
-  TK_hideCtx();
-  const t=_tanks.find(x=>x.id===_ctxTankId);if(!t)return;
-  const n=prompt('鱼缸名称',t.name);
-  if(n&&n.trim()){t.name=n.trim();TK_save();TK_renderBar();if(_currentPage==='profile')renderProfile();}
-}
 function TK_edit(){
   TK_hideCtx();
-  // Switch to that tank's profile
   if(_ctxTankId!==_activeTank)TK_switchTo(_ctxTankId);
-  switchPage('profile');
+  TF_open(_ctxTankId);
 }
 function TK_del(){
   TK_hideCtx();

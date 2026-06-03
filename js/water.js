@@ -21,7 +21,7 @@ let fields=[],rows=[],expanded=false,W_chart=null,_chartTheme=null;
 
 
 function _param(k){try{return new URLSearchParams(window.location.search).get(k)}catch(e){return null}}
-function _hasAutoBack(){return _param('autoBack')==='1';}
+function _hasAutoBack(){return SYNC_isAuto()&&SYNC_getAccount();}
 function localDate(){const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
 function pd(s){return new Date(s+'T00:00:00')}
 function fd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
@@ -239,7 +239,7 @@ function W_doImport(input){
     input.value='';
   };reader.readAsText(file);
 }
-function autoBackup(){if(!_hasAutoBack())return;doExport();}
+function autoBackup(){if(!_hasAutoBack())return;if(typeof SYNC_markDirty==='function')SYNC_markDirty();}
 
 function openModal(){const m=document.getElementById('dataModal');m.style.display='flex';requestAnimationFrame(()=>m.classList.add('open'));renderModal();}
 function closeModal(){const m=document.getElementById('dataModal');m.classList.remove('open');setTimeout(()=>{m.style.display='none';},350);}

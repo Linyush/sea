@@ -188,7 +188,7 @@ function renderProfile(){
   if(t.volume) metaParts.push(t.volume+'L');
   if(daysSince>=0) metaParts.push('开缸 '+daysSince+' 天');
   hdrHtml+=metaParts.join(' · ');
-  hdrHtml+='</div></div><div class="pf-btn-group'+(t.cover?' has-cover':'')+'"><button class="profile-edit-btn" onclick="TF_open(&#39;'+t.id+'&#39;)">编辑</button><button class="profile-edit-btn" onclick="BK_export()">备份</button><button class="profile-edit-btn" onclick="document.getElementById(&#39;bkFileInput&#39;).click()">恢复</button></div>';
+  hdrHtml+='</div></div><div class="pf-btn-group'+(t.cover?' has-cover':'')+'"><button class="profile-edit-btn" onclick="TF_open(&#39;'+t.id+'&#39;)">编辑</button></div>';
   hdr.innerHTML=hdrHtml;
   // Investment & Value
   const inv=P_loadInv();
@@ -1041,9 +1041,10 @@ function CE_save(){
   toast('\u5df2\u4fdd\u5b58');
 }
 function CE_del(){
-  if(!confirm('\u5220\u9664\u6b64\u5b50\u4f53\uff1f')) return;
-  P_delChild(_ceIdx);
-  CE_close();
+  sysConfirm('\u5220\u9664\u6b64\u5b50\u4f53\uff1f','\u5220\u9664',function(){
+    P_delChild(_ceIdx);
+    CE_close();
+  });
 }
 function P_delChild(idx){
   const inv=P_loadInv();
@@ -1055,7 +1056,6 @@ function P_delChild(idx){
   toast('已删除');
 }
 function initProfile(){
-  BK_checkReminder();
   // Profile page is render-only, no special init needed
 }
 

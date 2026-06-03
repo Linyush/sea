@@ -7,7 +7,6 @@ document.addEventListener('keydown',function(e){
     if(sysCfm&&sysCfm.classList.contains("open")){sysConfirmCancel();return;}
     const wEdit=document.getElementById("wEditOverlay");
     if(wEdit){W_closeEdit();return;}
-    /* Close modals from top layer to bottom */
     const mtWiz=document.getElementById('mtWizardOverlay');
     if(mtWiz){MT_tryClose();return;}
     const mtSet=document.getElementById('mtSettingsOverlay');
@@ -20,6 +19,8 @@ document.addEventListener('keydown',function(e){
     if(ceOv&&ceOv.classList.contains('open')){CE_close();return;}
     const impOv=document.getElementById('impOverlay');
     if(impOv&&impOv.classList.contains('open')){IMP_close();return;}
+    const cloudOv=document.getElementById('cloudOverlay');
+    if(cloudOv&&cloudOv.classList.contains('open')){SYNC_closePanel();return;}
     if(document.getElementById('itemFormOverlay').classList.contains('open'))IF_close();
     else if(document.getElementById('tankFormOverlay').classList.contains('open'))TF_close();
     else if(document.getElementById('nfModal').classList.contains('open'))closeNf();
@@ -31,14 +32,20 @@ document.addEventListener('keydown',function(e){
 
 if('scrollRestoration' in history) history.scrollRestoration='manual';
 
-document.addEventListener('DOMContentLoaded',function(){
+document.addEventListener('DOMContentLoaded',async function(){
   window.scrollTo(0,0);
   loadTheme();
-  // Multi-tank init
+
+  // Init sync module (register _onDataChange hook)
+  SYNC_init();
+
+  // If auto-sync is ON and account is set, pull cloud data first
+  await SYNC_pullOnStart();
+
+  // Normal app init
   TK_migrate();
   TK_load();
   TK_renderBar();
-  // Read hash to determine initial page
   const hash=window.location.hash.replace('#','');
   const startPage=PAGE_META[hash]?hash:'profile';
   _pageInited[startPage]=true;
@@ -49,4 +56,5 @@ document.addEventListener('DOMContentLoaded',function(){
   else if(startPage==='change') initChange();
   else if(startPage==='titrate') initTitrate();
   if(startPage==='profile') renderProfile();
+  SYNC_setInitDone();
 });

@@ -23,7 +23,12 @@
 </head>
 <body>
 <div class="app-layout">
-  <div class="tank-sidebar" id="tankBar"></div>
+  <div class="corner-btns" id="tankBar">
+    <button class="avatar-btn" id="avatarBtn" onclick="SYNC_openPanel()" title="账号管理"><span class="avatar-icon" id="avatarIcon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span></button>
+    <div class="necklace-line"></div>
+    <button class="theme-btn" id="cloudThemeIcon" onclick="toggleTheme()" title="切换主题">🌙</button>
+  </div>
+  <div class="page-body">
   <div class="container">
 
 
@@ -34,14 +39,11 @@
       <span class="badge" id="pageBadge"></span>
     </div>
     <div class="nav-right">
-      <button class="nav-tab active" data-page="profile" onclick="switchPage('profile')">📋 概览</button>
-      <button class="nav-tab" data-page="water" onclick="switchPage('water')">💧 水质</button>
-      <button class="nav-tab" data-page="change" onclick="switchPage('change')">🔄 换水</button>
-      
-      <button class="nav-tab" data-page="titrate" onclick="switchPage('titrate')">🧪 滴定</button>
-      <button class="nav-tab" data-page="light" onclick="switchPage('light')">🌈 光谱</button>
-      <span class="nav-sep"></span>
-      <button class="theme-btn" onclick="toggleTheme()" id="themeBtn" title="切换主题">🌙</button>
+      <button class="nav-tab active" data-page="profile" onclick="switchPage('profile')"><i class="nav-ico">📋</i> 概览</button>
+      <button class="nav-tab" data-page="water" onclick="switchPage('water')"><i class="nav-ico">💧</i> 水质</button>
+      <button class="nav-tab" data-page="change" onclick="switchPage('change')"><i class="nav-ico">🔄</i> 换水</button>
+      <button class="nav-tab" data-page="titrate" onclick="switchPage('titrate')"><i class="nav-ico">🧪</i> 滴定</button>
+      <button class="nav-tab" data-page="light" onclick="switchPage('light')"><i class="nav-ico">🌈</i> 光谱</button>
     </div>
   </div>
 
@@ -129,7 +131,7 @@
         <span class="tb-sep"></span>
         <button class="btn-data" onclick="openModal()">📋 数据</button>
         <button class="btn-data" onclick="toggleOverview()">📊 全览</button>
-        <span class="auto-label" id="autoBackLabel" style="display:none"><span class="auto-dot"></span>自动备份</span>
+        <span class="auto-label" id="autoBackLabel" style="display:none"><span class="auto-dot"></span>自动同步</span>
       </div>
       <div class="chart-outer" id="chartOuter">
         <div class="lane-labels" id="laneLabels"></div>
@@ -411,6 +413,7 @@
 
 </div>
 
+</div><!-- page-body -->
 
 <!-- Tank form modal -->
 <div class="tf-overlay" id="tankFormOverlay" onclick="if(event.target===this)TF_close()">
@@ -454,9 +457,8 @@
 
 <!-- Tank context menu -->
 <div class="tank-ctx" id="tankCtx" style="display:none">
-  <button onclick="TK_rename()">重命名</button>
-  <button onclick="TK_edit()">编辑档案</button>
-  <button class="danger" onclick="TK_del()">删除鱼缸</button>
+  <button onclick="TK_edit()">编辑</button>
+  <button class="danger" onclick="TK_del()">删除</button>
 </div>
 
 <!-- Shared toast -->
@@ -505,9 +507,10 @@
 </div>
 
 <script src="js/utils.js?v=20260506h"></script>
+<script src="js/md5.js?v=20260602"></script>
+<script src="js/sync.js?v=20260602"></script>
 <script src="js/tank.js?v=20260506h"></script>
 <script src="js/profile.js?v=20260506h"></script>
-<script src="js/backup.js?v=20260506h"></script>
 <script src="js/router.js?v=20260506h"></script>
 <script src="js/water.js?v=20260506h"></script>
 <script src="js/light.js?v=20260506h"></script>
@@ -548,19 +551,80 @@
     </div>
   </div>
 
-    <!-- Backup/Restore Overlay -->
-    <div class="bk-overlay" id="bkOverlay" onclick="if(event.target===this)BK_close()">
-      <div class="bk-box">
-        <h4>📦 数据备份与恢复</h4>
-        <p class="bk-hint">导出所有鱼缸数据为 JSON 文件，或从备份文件恢复。</p>
-        <div class="bk-actions">
-          <button class="btn" onclick="BK_export()">📤 导出备份</button>
-          <button class="btn btn-ghost" onclick="document.getElementById('bkFileInput').click()">📥 导入恢复</button>
-          <input type="file" id="bkFileInput" accept=".json" style="display:none" onchange="BK_import(event)">
+    <!-- Cloud Panel -->
+    <div class="cloud-overlay" id="cloudOverlay" onclick="if(event.target===this)SYNC_closePanel()">
+      <div class="cloud-panel">
+        <div class="cloud-hd">
+          <h4>账号管理</h4>
+          <button class="modal-close" onclick="SYNC_closePanel()">✕</button>
         </div>
-        <div class="bk-info" id="bkInfo"></div>
-        <div class="if-actions" style="margin-top:16px">
-          <button class="btn btn-ghost" onclick="BK_close()">关闭</button>
+
+        <!-- Account section -->
+        <div class="cloud-section" id="cloudAccountSection">
+          <div class="cloud-title">账号</div>
+          <div id="cloudAccountDisplay" style="display:none">
+            <div class="cloud-row">
+              <span class="cloud-val" id="cloudAccount"></span>
+              <div class="cloud-links">
+                <button class="cloud-link" onclick="AF_open('switch')">切换</button>
+                <button class="cloud-link" onclick="AF_open('changepwd')">改密码</button>
+              </div>
+            </div>
+          </div>
+          <div id="cloudAccountForm">
+            <input id="cloudNameInput" placeholder="名称 / 手机号" maxlength="64" onkeydown="if(event.key==='Enter')document.getElementById('cloudPwdInput').focus()">
+            <input id="cloudPwdInput" type="password" placeholder="密码" maxlength="64" onkeydown="if(event.key==='Enter')SYNC_saveAccount()">
+            <button class="btn" style="width:100%;margin-top:6px" onclick="SYNC_saveAccount()">确定</button>
+          </div>
+        </div>
+
+        <!-- Data backup -->
+        <div class="cloud-section">
+          <div class="cloud-row">
+            <span class="cloud-title">数据备份</span>
+            <label class="cloud-auto" title="开启后进入页面自动拉取云端数据，修改后自动备份"><input type="checkbox" id="cloudAutoToggle"><span class="cloud-auto-box"></span><span class="cloud-auto-text">自动同步</span></label>
+            <button class="cloud-icon-btn" id="cloudBackupBtn" onclick="SYNC_manualBackup()" title="备份到云端"><svg viewBox="0 0 1024 1024" width="16" height="16"><path d="M576 631.466667V725.333333h170.666667c59.733333-8.533333 106.666667-64 106.666666-128 0-72.533333-55.466667-128-128-128-17.066667 0-29.866667 4.266667-42.666666 8.533334V469.333333c0-93.866667-76.8-170.666667-170.666667-170.666666s-170.666667 76.8-170.666667 170.666666c0 17.066667 4.266667 29.866667 4.266667 46.933334-8.533333-4.266667-17.066667-4.266667-25.6-4.266667C260.266667 512 213.333333 558.933333 213.333333 618.666667S260.266667 725.333333 320 725.333333h170.666667v-93.866666l-46.933334 46.933333L384 618.666667l149.333333-149.333334 149.333334 149.333334-59.733334 59.733333-46.933333-46.933333z m0 93.866666v85.333334h-85.333333v-85.333334h-42.666667v85.333334h-128C213.333333 810.666667 128 725.333333 128 618.666667c0-85.333333 55.466667-157.866667 128-183.466667C273.066667 311.466667 379.733333 213.333333 512 213.333333c110.933333 0 209.066667 72.533333 243.2 170.666667 102.4 12.8 183.466667 102.4 183.466667 213.333333s-85.333333 200.533333-192 213.333334h-128v-85.333334h-42.666667z" fill="currentColor"/></svg></button>
+          </div>
+          <div class="cloud-row" style="margin-top:6px">
+            <span class="cloud-val" id="cloudStatus"></span>
+          </div>
+        </div>
+
+        <!-- Backup record -->
+        <div class="cloud-section">
+          <div class="cloud-row">
+            <span class="cloud-title">备份记录</span>
+            <button class="cloud-icon-btn" id="cloudRestoreBtn" onclick="SYNC_manualRestore()" title="从云端恢复"><svg viewBox="0 0 1024 1024" width="16" height="16"><path d="M490.666667 644.266667V469.333333h85.333333v174.933334l46.933333-46.933334 59.733334 59.733334-68.266667 68.266666h132.266667c59.733333-8.533333 106.666667-64 106.666666-128 0-72.533333-55.466667-128-128-128-17.066667 0-29.866667 4.266667-42.666666 8.533334V469.333333c0-93.866667-76.8-170.666667-170.666667-170.666666s-170.666667 76.8-170.666667 170.666666c0 17.066667 4.266667 29.866667 4.266667 46.933334-8.533333-4.266667-17.066667-4.266667-25.6-4.266667C260.266667 512 213.333333 558.933333 213.333333 618.666667S260.266667 725.333333 320 725.333333h132.266667L384 657.066667l59.733333-59.733334 46.933334 46.933334z m123.733333 81.066666l-81.066667 81.066667-81.066666-81.066667H405.333333v85.333334h-85.333333C213.333333 810.666667 128 725.333333 128 618.666667c0-85.333333 55.466667-157.866667 128-183.466667C273.066667 311.466667 379.733333 213.333333 512 213.333333c110.933333 0 209.066667 72.533333 243.2 170.666667 102.4 12.8 183.466667 102.4 183.466667 213.333333s-85.333333 200.533333-192 213.333334h-85.333334v-85.333334h-46.933333z" fill="currentColor"/></svg></button>
+          </div>
+          <div class="cloud-row" style="margin-top:6px">
+            <span class="cloud-val" id="cloudLastTime">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Account form modal (switch / change password) -->
+    <div class="sync-overlay" id="accountFormOverlay">
+      <div class="sync-account-box">
+        <h4 id="afTitle">切换账号</h4>
+        <input id="afNameInput" placeholder="名称 / 手机号" maxlength="64" onkeydown="if(event.key==='Enter')document.getElementById('afPwdInput').focus()">
+        <input id="afPwdInput" type="password" placeholder="密码" maxlength="64" onkeydown="if(event.key==='Enter')AF_confirm()">
+        <div class="sync-account-btns">
+          <button class="btn btn-ghost" onclick="AF_cancel()">取消</button>
+          <button class="btn" onclick="AF_confirm()">确定</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Login Modal (password verify for existing remote data) -->
+    <div class="sync-overlay" id="syncLoginOverlay">
+      <div class="sync-account-box">
+        <h4>验证密码</h4>
+        <p id="syncLoginMsg">该账号已有云端数据，请输入密码验证。</p>
+        <input id="syncLoginPwdInput" type="password" placeholder="输入密码" maxlength="64" onkeydown="if(event.key==='Enter')SYNC_loginConfirm()">
+        <div class="sync-account-btns">
+          <button class="btn btn-ghost" onclick="SYNC_loginCancel()">取消</button>
+          <button class="btn" onclick="SYNC_loginConfirm()">验证</button>
         </div>
       </div>
     </div>

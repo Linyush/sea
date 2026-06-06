@@ -148,6 +148,22 @@ function P_loadInv(){
     });
   });
   if(_dateDirty){try{_s(P_INV_KEY(),JSON.stringify(inv));}catch(e){}}
+  // Migration: add category to livestock items missing it
+  let _catDirty=false;
+  (inv.livestock||[]).forEach(it=>{
+    if(!it.category){
+      const iconKey=(it.icon||'').split('|')[0];
+      // Try matching by icon key first, then by name
+      if(iconKey){
+        const nameEntry=Object.entries(P_ICON_MAP.livestock||{}).find(([n,k])=>k===iconKey);
+        it.category=nameEntry?LS_CAT_MAP[nameEntry[0]]||'coral':'coral';
+      }else{
+        it.category=LS_CAT_MAP[it.name]||'coral';
+      }
+      _catDirty=true;
+    }
+  });
+  if(_catDirty){try{_s(P_INV_KEY(),JSON.stringify(inv));}catch(e){}}
   // Sort all arrays by addDate ascending (in place)
   if(inv.livestock) inv.livestock.sort((a,b)=>{const d=_parseDate(_getItemDate(a))-_parseDate(_getItemDate(b));return d!==0?d:(a.name||'').localeCompare(b.name||'','zh');});
   if(inv.equipment) inv.equipment.sort((a,b)=>{const d=_parseDate(_getItemDate(a))-_parseDate(_getItemDate(b));return d!==0?d:(a.name||'').localeCompare(b.name||'','zh');});
@@ -158,9 +174,10 @@ function P_saveInv(inv){
   _s(P_INV_KEY(),JSON.stringify(inv));
 }
 
-var _pfCoverKey="";
+var _pfCoverMap=new Map();
 function renderProfile(){
   const t=TK_current();
+  const tId=t.id;
   // Header - simplified: name, volume, days
   const hdr=document.getElementById('profileHeader');
   const daysSince=t.startDate?Math.floor((Date.now()-new Date(t.startDate+'T00:00:00').getTime())/(86400000)):-1;
@@ -169,17 +186,30 @@ function renderProfile(){
     var isVideo=/\.(mp4|webm|mov)(\?|$)/i.test(t.cover);
     var pos='center '+(t.coverPos||'50')+'%';
     var coverKey=t.cover+'|'+pos;
-    if(coverKey!==_pfCoverKey&&bgEl){
-      _pfCoverKey=coverKey;
+    // 检查缓存是否命中（同鱼缸同封面）
+    var cached=_pfCoverMap.get(tId);
+    if(cached&&cached.key===coverKey&&bgEl){
+      bgEl.innerHTML='';
+      bgEl.appendChild(cached.el);
+      if(isVideo) cached.el.play().catch(()=>{});
+    }else if(bgEl){
+      var el;
       if(isVideo){
-        bgEl.innerHTML='<video src="'+t.cover+'" muted autoplay loop playsinline style="object-position:'+pos+'"></video>';
+        el=document.createElement('video');
+        el.src=t.cover;el.muted=true;el.autoplay=true;el.loop=true;el.playsInline=true;
+        el.style.objectPosition=pos;
       }else{
-        bgEl.innerHTML='<img src="'+t.cover+'" style="object-position:'+pos+'">';
+        el=document.createElement('img');
+        el.src=t.cover;el.style.objectPosition=pos;
       }
+      bgEl.innerHTML='';
+      bgEl.appendChild(el);
+      _pfCoverMap.set(tId,{key:coverKey,el:el});
     }
     if(bgEl) bgEl.classList.add('active');
   }else{
     if(bgEl){bgEl.innerHTML='';bgEl.classList.remove('active');}
+    _pfCoverMap.delete(tId);
   }
   let hdrHtml='';
   if(!t.cover) hdrHtml+='<div class="profile-avatar">🐠</div>';
@@ -203,53 +233,56 @@ function renderProfile(){
 
 function _renderInvestment(inv){
   const livestock=inv.livestock||[], equipment=inv.equipment||[], consumables=inv.consumables||[];
-  let liveCost=0, equipCost=0, cmCost=0, deathLoss=0, soldIncome=0;
   const liveMain=livestock.filter(x=>x.origin!=='breed');
-  const liveActive=liveMain.filter(x=>!['dead','sold'].includes(x.status)).length;
-  const equipActive=equipment.filter(x=>!['broken','sold'].includes(x.status)).length;
-  const cmActive=consumables.filter(x=>!['empty','expired'].includes(x.status)).length;
-  let liveCount=liveActive+'/'+liveMain.length;
-  let equipCount=equipActive+'/'+equipment.length, cmCount=cmActive+'/'+consumables.length;
-  let deadCount=0, soldCount=0;
-  let firstDeadTab='', firstSoldTab='';
-  livestock.forEach(item=>{
-    const p=parseFloat(item.price)||0;
-    liveCost+=p;
-    if(item.status==='dead'){deathLoss+=p;deadCount++;if(!firstDeadTab)firstDeadTab='livestock';}
-    if(item.status==='sold'){soldIncome+=parseFloat(item.sellPrice)||0;soldCount++;if(!firstSoldTab)firstSoldTab='livestock';}
+  const rows=[
+    {name:'生物',tab:'livestock',items:liveMain,lossStatus:['dead'],lossFilter:'dead'},
+    {name:'设备',tab:'equipment',items:equipment,lossStatus:['broken'],lossFilter:'broken',withRepair:true},
+    {name:'耗材',tab:'consumable',items:consumables,lossStatus:['empty','expired'],lossFilter:'empty'}
+  ];
+  rows.forEach(r=>{
+    r.totalCnt=r.items.length;
+    r.totalCost=0; r.curCnt=0; r.curValue=0;
+    r.lossCnt=0; r.lossCost=0; r.soldCnt=0; r.soldIncome=0;
+    r.items.forEach(item=>{
+      const p=parseFloat(item.price)||0;
+      r.totalCost+=p;
+      if(r.lossStatus.includes(item.status)){r.lossCnt++;r.lossCost+=p;}
+      else if(item.status==='sold'){r.soldCnt++;r.soldIncome+=parseFloat(item.sellPrice)||0;}
+      else{r.curCnt++;r.curValue+=parseFloat(item.value||item.price)||0;}
+    });
+    if(r.withRepair){
+      let rc=0;
+      r.items.forEach(item=>{rc+=(item._repairs||[]).reduce((s,r)=>s+(r.items||[]).reduce((ss,it)=>ss+(parseFloat(it.cost)||0),0)+(parseFloat(r.cost)||0),0);});
+      r.totalCost+=rc;
+    }
   });
-  equipment.forEach(item=>{
-    const p=parseFloat(item.price)||0;
-    equipCost+=p;
-    if(item.status==='broken'){deathLoss+=p;deadCount++;if(!firstDeadTab)firstDeadTab='equipment';}
-    if(item.status==='sold'){soldIncome+=parseFloat(item.sellPrice)||0;soldCount++;if(!firstSoldTab)firstSoldTab='equipment';}
-  });
-  consumables.forEach(item=>{cmCost+=parseFloat(item.price)||0;});
   const tankCost=parseFloat(TK_current().price)||0;
-  const totalCost=liveCost+equipCost+cmCost+tankCost;
-  const netCost=totalCost-soldIncome;
-  // Calculate current value (tank + alive livestock value + active equipment price)
-  let curValue=tankCost;
-  livestock.forEach(item=>{if(!['dead','sold'].includes(item.status)){curValue+=parseFloat(item.value||item.price)||0;}});
-  equipment.forEach(item=>{if(!['broken','sold'].includes(item.status)){curValue+=parseFloat(item.value||item.price)||0;}});
-  consumables.forEach(item=>{if(!['empty','expired'].includes(item.status)){curValue+=parseFloat(item.price)||0;}});
-  const fmt=v=>v>=10000?'\u00a5'+(v/10000).toFixed(1)+'\u4e07':'\u00a5'+v.toFixed(0);
+  const tankRepair=(MT_loadLog().filter(e=>e.type==='special')||[]).reduce((s,e)=>s+(e.items||[]).reduce((ss,it)=>ss+(parseFloat(it.cost)||0),0)+(parseFloat(e.cost)||0),0);
+  const tankTotal=tankCost+tankRepair;
+  const totalCost=rows.reduce((s,r)=>s+r.totalCost,0)+tankTotal;
+  const totalSold=rows.reduce((s,r)=>s+r.soldIncome,0);
+  const curValue=rows.reduce((s,r)=>s+r.curValue,0)+tankTotal;
+  const netCost=totalCost-totalSold;
+  const fmt=v=>v>=10000?'¥'+(v/10000).toFixed(1)+'万':'¥'+v.toFixed(0);
   const box=document.getElementById('pfInvestBox');
   if(!box) return;
-  const deadFilter=firstDeadTab==='livestock'?'dead':'broken';
-  box.innerHTML=
-    '<div class="pf-inv-left">'+
-      '<div class="pf-inv-card pf-inv-row-accent"><div class="pf-inv-card-name">\u51c0\u6295\u5165</div><div class="pf-inv-card-val">'+fmt(netCost)+'</div></div>'+
-      '<div class="pf-inv-card pf-inv-card-cur"><div class="pf-inv-card-name">\u51c0\u4ef7\u503c</div><div class="pf-inv-card-val">'+fmt(curValue)+'</div></div>'+
-      '<div class="pf-inv-card"><div class="pf-inv-card-name">\u603b\u6295\u5165</div><div class="pf-inv-card-val">'+fmt(totalCost)+'</div></div>'+
-      '</div>'+
-    '<div class="pf-inv-right">'+
-      '<div class="pf-inv-row pf-inv-click" onclick="P_switchTab(\'livestock\')"><span class="pf-inv-row-name">\u751f\u7269</span><span class="pf-inv-row-cnt">'+liveCount+'</span><span class="pf-inv-row-val">'+fmt(liveCost)+'</span></div>'+
-      '<div class="pf-inv-row pf-inv-click" onclick="P_switchTab(\'equipment\')"><span class="pf-inv-row-name">\u8bbe\u5907</span><span class="pf-inv-row-cnt">'+equipCount+'</span><span class="pf-inv-row-val">'+fmt(equipCost)+'</span></div>'+
-      '<div class="pf-inv-row pf-inv-click" onclick="P_switchTab(\'consumable\')"><span class="pf-inv-row-name">\u8017\u6750</span><span class="pf-inv-row-cnt">'+cmCount+'</span><span class="pf-inv-row-val">'+fmt(cmCost)+'</span></div>'+
-      '<div class="pf-inv-row pf-inv-click loss" onclick="P_switchTab(\''+firstDeadTab+'\',\''+deadFilter+'\')"><span class="pf-inv-row-name">\u6b7b\u4ea1/\u635f\u574f</span><span class="pf-inv-row-cnt">'+deadCount+'\u4e2a</span><span class="pf-inv-row-val">'+fmt(deathLoss)+'</span></div>'+
-      '<div class="pf-inv-row pf-inv-click gain" onclick="P_switchTab(\''+firstSoldTab+'\',\'sold\')"><span class="pf-inv-row-name">\u552e\u51fa\u6536\u5165</span><span class="pf-inv-row-cnt">'+soldCount+'\u4e2a</span><span class="pf-inv-row-val">'+fmt(soldIncome)+'</span></div>'+
-    '</div>';
+  const cell=(cnt,val,cls)=>'<td'+(cls?' class="'+cls+'"':'')+'><span class="pf-inv-cell"><b>'+cnt+'</b><span class="pf-inv-val">'+val+'</span></span></td>';
+  let h='<div class="pf-inv-layout"><div class="pf-inv-summary">';
+  h+='<div class="pf-inv-card accent"><div class="pf-inv-card-name">净投入</div><div class="pf-inv-card-val">'+fmt(netCost)+'</div></div>';
+  h+='<div class="pf-inv-card green"><div class="pf-inv-card-name">净价值</div><div class="pf-inv-card-val">'+fmt(curValue)+'</div></div>';
+  h+='<div class="pf-inv-card"><div class="pf-inv-card-name">总投入</div><div class="pf-inv-card-val">'+fmt(totalCost)+'</div></div>';
+  h+='</div><div class="pf-inv-table-wrap"><table class="pf-inv-table"><thead><tr><th></th><th class="pf-th-total">总计</th><th class="pf-th-cur">当前</th><th class="pf-th-loss">损耗</th><th class="pf-th-sold">售出</th></tr></thead><tbody>';
+  rows.forEach(r=>{
+    h+='<tr onclick="P_switchTab(\''+r.tab+'\')">';
+    h+='<td class="pf-inv-name">'+r.name+'</td>';
+    h+=cell(r.totalCnt,fmt(r.totalCost),'pf-inv-total');
+    h+=cell(r.curCnt,r.curCnt?fmt(r.curValue):'—','pf-inv-cur');
+    h+=cell(r.lossCnt,r.lossCnt?fmt(r.lossCost):'—','pf-inv-loss');
+    h+=cell(r.soldCnt,r.soldCnt?fmt(r.soldIncome):'—','pf-inv-sold');
+    h+='</tr>';
+  });
+  h+='</tbody></table></div></div>';
+  box.innerHTML=h;
 }
 
 
@@ -349,7 +382,7 @@ let _eyeOpen=false;
 function P_toggleEye(){
   _eyeOpen=!_eyeOpen;
   document.getElementById("pfEyeBtn").textContent=_eyeOpen?"👁":"🙈";
-  document.getElementById("pfInvestBox").classList.toggle("pf-hidden",!_eyeOpen);
+  document.getElementById("pfInvestBox").classList.toggle("pf-show-amounts",_eyeOpen);
 }
 
 function _renderMaintenance(tank){
@@ -372,7 +405,8 @@ function _renderMaintenance(tank){
   const today=new Date();today.setHours(0,0,0,0);
   // Use maintain log for "last maintenance" date
   const mtLog=MT_loadLog();
-  const lastMaintEntry=mtLog.length?mtLog[mtLog.length-1]:null;
+  const dailyLog=mtLog.filter(e=>e.type!=='special');
+  const lastMaintEntry=dailyLog.length?dailyLog[dailyLog.length-1]:null;
   const lastMaintDate=lastMaintEntry?lastMaintEntry.date:lastTestDate;
   if(lastMaintDate){
     const lastD=new Date(lastMaintDate+'T00:00:00');
@@ -404,18 +438,14 @@ function _renderMaintenance(tank){
     h+='<div class="'+rowCls+' pf-maint-click" onclick="switchPage(\'water\')"><span class="pf-maint-icon">💧</span><span>'+(hasAlert?'水质异常：':'水质正常：')+vals.join(' · ')+'</span></div>';
   }
 
-  // 3. Recent livestock events (7 days)
+  // 3. Livestock & consumable status (always show, combine into one row)
   const inv=P_loadInv();
   const ls=inv.livestock||[];
   const weekAgo=new Date(today.getTime()-7*86400000);
-  let newCount=0, deadCount=0;
+  let deadCount=0;
   ls.forEach(item=>{
-    if(item.addDate){const d=new Date(item.addDate+'T00:00:00');if(d>=weekAgo)newCount++;}
     if(item.status==='dead'&&item.deathDate){const d=new Date(item.deathDate+'T00:00:00');if(d>=weekAgo)deadCount++;}
   });
-  if(deadCount) h+='<div class="pf-maint-row warn pf-maint-click" onclick="P_switchTab(\'livestock\',\'dead\')"><span class="pf-maint-icon">🐠</span><span>近7天死亡 <b>'+deadCount+'</b> 个生物</span></div>';
-
-  // 4. Consumable replace reminders
   const cms=inv.consumables||[];
   const expiring=[];
   cms.forEach(item=>{
@@ -424,8 +454,15 @@ function _renderMaintenance(tank){
       if(remain!==null&&remain<=7) expiring.push(item.name+(remain<=0?' (已到期)':' ('+remain+'天)'));
     }
   });
-  if(expiring.length) h+='<div class="pf-maint-row warn"><span class="pf-maint-icon">📦</span><span>耗材提醒：'+expiring.join('、')+'</span></div>';
-  if(!h) h='<div class="pf-maint-row ok"><span class="pf-maint-icon">✅</span><span>一切正常</span></div>';
+  const hasWarn=deadCount>0||expiring.length>0;
+  let tags=[];
+  if(deadCount) tags.push('死亡 <b>'+deadCount+'</b> 个生物');
+  if(expiring.length) tags.push('耗材：'+expiring.join('、'));
+  if(hasWarn){
+    h+='<div class="pf-maint-row warn'+(deadCount?' pf-maint-click':'')+'"'+(deadCount?' onclick="P_switchTab(\'livestock\',\'dead\')"':'')+'><span class="pf-maint-icon">🐠</span><span>'+tags.join(' · ')+'</span></div>';
+  }else{
+    h+='<div class="pf-maint-row ok"><span class="pf-maint-icon">🐠</span><span>生物与耗材状态正常</span></div>';
+  }
   box.innerHTML=h;
 }
 
@@ -455,7 +492,7 @@ function _glowCSS(level,color){
   if(level===2) return ';filter:drop-shadow(0 0 3px '+color+') drop-shadow(0 0 6px '+color+'90) brightness(1.1) saturate(1.2)';
   return ';filter:drop-shadow(0 0 3px '+color+') drop-shadow(0 0 7px '+color+'aa) drop-shadow(0 0 12px '+color+'40) brightness(1.2) saturate(1.4)';
 }
-function _renderCard(item,i,type,childCount){
+function _renderCard(item,i,type,childCount,mergeCount,mergeIndices,mergeMode){
   const _iconRaw=item.icon||'';
   const _iconParts=_iconRaw.split('|');
   const iconKey=_iconParts[0]||'';
@@ -466,11 +503,16 @@ function _renderCard(item,i,type,childCount){
   const iconHtml=hasSvg?'<div class="inv-card-icon'+(iconGlow>0?' glow-'+iconGlow:'')+'" style="color:'+iconColor+glowStyle+'">'+P_ICONS[iconKey]+'</div>':'<div class="inv-icon">📦</div>';
   const stClass=item.status?' st-'+item.status:'';
   let badge='';
-  if(item.status==='dead') badge='<span class="inv-badge inv-badge-dead" title="死亡">💀</span>';
-  else if(item.status==='sold') badge='<span class="inv-badge inv-badge-sold" title="售出">💸</span>';
+  if(mergeCount>1) badge+='<span class="inv-badge inv-badge-merge" title="共'+mergeCount+'个">×'+mergeCount+'</span>';
+  if(item.status==='dead') badge+='<span class="inv-badge inv-badge-dead" title="死亡">💀</span>';
+  else if(item.status==='sold') badge+='<span class="inv-badge inv-badge-sold" title="售出">💸</span>';
   if(item.origin==='breed') badge+='<span class="inv-badge inv-badge-breed" title="繁殖">🌱</span>';
   if(childCount>0) badge+='<span class="inv-badge inv-badge-child" title="繁殖'+childCount+'个子体">🌱'+childCount+'</span>';
-  let h='<div class="inv-card'+stClass+'" onclick="P_editItem(&#39;'+type+'&#39;,'+i+')">'+badge+iconHtml;
+  if(type==='equipment'&&(item._repairs||[]).length>0) badge+='<span class="inv-badge inv-badge-repair" title="维护'+item._repairs.length+'次">🔧</span>';
+  const mergeAttr=mergeIndices&&mergeIndices.length>1?' data-merge-indices="'+mergeIndices.join(',')+'"':'';
+  const noEdit=mergeMode==='name'?' data-readonly="1"':'';
+  const clickAttr=mergeMode==='name'?'':' onclick="P_editItem(this)"';
+  let h='<div class="inv-card'+stClass+'" data-type="'+type+'" data-idx="'+i+'"'+mergeAttr+noEdit+clickAttr+'>'+badge+iconHtml;
   if(type==='livestock'){
     h+='<div class="inv-name">'+item.name+'</div>';
     let sub=[];
@@ -524,12 +566,45 @@ function _normDate(s){
 }
 
 const _filterState={livestock:'active',equipment:'active',consumable:'active'};
+const _catFilter={livestock:''};
+const _mergeState={livestock:'full',equipment:'full',consumable:'full'};
+const _MERGE_CYCLE=['','full','name'];
+function P_toggleMerge(btn){
+  const type=btn.parentElement.dataset.type;
+  const mode=btn.dataset.mergeMode;
+  // Click same mode again -> turn off; click different mode -> switch
+  if(_mergeState[type]===mode) _mergeState[type]='';
+  else _mergeState[type]=mode;
+  // Update both merge buttons in the same bar
+  const bar=btn.parentElement;
+  bar.querySelectorAll('.inv-merge-btn').forEach(b=>{
+    b.classList.toggle('active',_mergeState[type]===b.dataset.mergeMode);
+  });
+  renderProfile();
+}
+function _mergeKey(item,type,mode){
+  if(mode==='name'){
+    if(type==='livestock') return item.name+'|'+item.status+'|'+(item.category||'');
+    return item.name+'|'+item.status;
+  }
+  if(type==='livestock') return [item.name,item.breed,item.status,item.category||'',item.addDate||'',item.source||'',item.price||'',item.size||'',item.curSize||'',item.value||''].join('|');
+  return [item.name,item.brand,item.spec,item.status,item.addDate||'',item.source||'',item.price||''].join('|');
+}
 function P_filter(btn){
   const bar=btn.parentElement;
   const type=bar.dataset.type;
   const f=btn.dataset.f;
-  _filterState[type]=f;
-  bar.querySelectorAll('.inv-ft').forEach(b=>b.classList.toggle('active',b===btn));
+  if(type==='livestock'&&LS_CATS.some(c=>c.key===f)){
+    _catFilter.livestock=_catFilter.livestock===f?'':f;
+  }else{
+    _filterState[type]=f;
+  }
+  bar.querySelectorAll('.inv-ft').forEach(b=>{
+    const bf=b.dataset.f;
+    const isCat=LS_CATS.some(c=>c.key===bf);
+    if(isCat) b.classList.toggle('active',_catFilter.livestock===bf);
+    else b.classList.toggle('active',_filterState[type]===bf);
+  });
   renderProfile();
 }
 function P_renderInvSection(prefix,items,type){
@@ -562,17 +637,46 @@ function P_renderInvSection(prefix,items,type){
   if(filter==='all') filtered=mainItems;
   else if(filter==='active') filtered=active;
   else filtered=mainItems.filter(({item})=>item.status===filter);
+  // Apply category filter for livestock
+  if(type==='livestock'&&_catFilter.livestock){
+    filtered=filtered.filter(({item})=>(item.category||'coral')===_catFilter.livestock);
+  }
+  // Merge same items if enabled
+  let merged=filtered;
+  const mergeMode=_mergeState[type];
+  if(mergeMode){
+    const groups={};
+    const order=[];
+    filtered.forEach(({item,i})=>{
+      const key=_mergeKey(item,type,mergeMode);
+      if(!groups[key]){groups[key]={item,i,count:0,indices:[]};order.push(key);}
+      groups[key].count++;
+      groups[key].indices.push(i);
+    });
+    merged=order.map(k=>({item:groups[k].item,i:groups[k].i,_mergeCount:groups[k].count,_mergeIndices:groups[k].indices,_mergeMode:mergeMode}));
+  }
   let h='<div class="inv-grid">';
-  filtered.forEach(({item,i})=>{ h+=_renderCard(item,i,type,childMap[item._id]||0); });
-  h+='<div class="inv-card inv-card-add" onclick="P_openForm(&#39;'+type+'&#39;)"><span class="inv-add-plus">+</span><span class="inv-add-label">添加'+typeName+'</span></div>';
+  merged.forEach(({item,i,_mergeCount,_mergeIndices,_mergeMode})=>{
+    h+=_renderCard(item,i,type,childMap[item._id]||0,_mergeCount||0,_mergeIndices||[],_mergeMode||'');
+  });
+  h+='<div class="inv-card inv-card-add" onclick="P_openForm(&#39;'+type+'&#39;,this)"><span class="inv-add-plus">+</span><span class="inv-add-label">添加'+typeName+'</span></div>';
   h+='</div>';
   gridEl.innerHTML=h;
 }
 
 // --- Item Form ---
 let _ifType='',_ifIdx=-1;
+const LS_CATS=[
+  {key:'coral',label:'珊瑚',icon:'🪸'},
+  {key:'fish',label:'鱼',icon:'🐠'},
+  {key:'invertebrate',label:'无脊椎',icon:'🦐'},
+  {key:'algae',label:'藻类',icon:'🌿'}
+];
+const LS_CAT_MAP={'小丑鱼':'fish','吊类':'fish','龙/隆头鱼':'fish','虾虎鱼':'fish','神仙鱼':'fish','䲁鱼':'fish','拟雀鲷':'fish','天竺鲷':'fish','鹰鱼':'fish','其他鱼':'fish','花类':'coral','皮革类':'coral','菇类':'coral','纽扣':'coral','海葵':'coral','火柴珊瑚':'coral','脑珊瑚':'coral','榔头/蛙卵':'coral','盘类':'coral','草皮':'coral','螺':'invertebrate','虾':'invertebrate','蟹':'invertebrate','海胆':'invertebrate','海星':'invertebrate','贝/砗磲':'invertebrate','海参':'invertebrate','藻':'algae','其他':'fish'};
+
 const IF_FIELDS={
   livestock:[
+    {key:'category',label:'分类',type:'select',opts:['coral','fish','invertebrate','algae'],labels:['🪸','🐠','🦐','🌿'],titles:['珊瑚','鱼','无脊椎','藻类'],required:true,default:'coral',top:true},
     {key:'name',label:'名称',type:'text',required:true,top:true},
     {key:'breed',label:'品种',type:'text',top:true},
     {key:'status',label:'状态',type:'select',opts:['alive','dead','sold'],labels:['存活','死亡','售出'],required:true,default:'alive',top:true},
@@ -639,7 +743,8 @@ function _ifRenderField(f,val){
       const optVal=f.labels?f.opts[i]:o;
       const txt=f.labels?f.labels[i]:o;
       const active=(val===optVal)?' active':'';
-      return '<span class="if-tag'+active+'" data-val="'+optVal+'" onclick="IF_pickTag(this)">'+txt+'</span>';
+      const title=f.titles?' title="'+f.titles[i]+'"':'';
+      return '<span class="if-tag'+active+'" data-val="'+optVal+'" onclick="IF_pickTag(this)"'+title+'>'+txt+'</span>';
     }).join('');
     return '<div class="if-tags" id="if_'+f.key+'">'+tags+'</div>';
   }else if(f.type==='select'){
@@ -850,39 +955,78 @@ function IF_collectVals(){
   });
   return vals;
 }
-function P_openForm(type){
+function P_openForm(type,originEl){
   _ifType=type;_ifIdx=-1;
   document.getElementById('ifTitle').textContent='添加'+IF_TITLES[type];
   document.getElementById('ifDelBtn').style.display='none';
+  document.getElementById('ifCopyBtn').style.display='none';
   const breedBtn=document.getElementById('ifBreedBtn');
   if(breedBtn) breedBtn.style.display='none';
+  const repairBtn=document.getElementById('ifRepairBtn');
+  if(repairBtn) repairBtn.style.display='none';
   const childBox=document.getElementById('ifChildrenBox');
   if(childBox){childBox.innerHTML='';childBox.style.display='none';}
+  const repairBox=document.getElementById('ifRepairBox');
+  if(repairBox){repairBox.innerHTML='';repairBox.style.display='none';}
   _ifRenderAll(type,{});
   _syncIconDisplay('');
   const ov=document.getElementById('itemFormOverlay');
-  ov.style.display='flex';requestAnimationFrame(()=>ov.classList.add('open'));
+  ov.style.display='flex';
+  _setFormOrigin(originEl||null);
+  void ov.offsetHeight;
+  requestAnimationFrame(()=>{ov.classList.add('open');});
 }
 
-function P_editItem(type,idx){
+let _ifOriginEl=null;
+function _setFormOrigin(el){
+  _ifOriginEl=el;
+  const box=document.querySelector('#itemFormOverlay .if-box');
+  if(!el||!box)return;
+  const cr=el.getBoundingClientRect();
+  const br=box.getBoundingClientRect();
+  const ox=((cr.left+cr.width/2)-br.left)/br.width*100;
+  const oy=((cr.top+cr.height/2)-br.top)/br.height*100;
+  box.style.transformOrigin=ox+'% '+oy+'%';
+}
+let _ifMergeIndices=[];
+function P_editItem(el){
+  const type=el.dataset.type;
+  const idx=parseInt(el.dataset.idx);
   _ifType=type;_ifIdx=idx;
+  _ifMergeIndices=el.dataset.mergeIndices?el.dataset.mergeIndices.split(',').map(Number):[];
   const inv=P_loadInv();
   const arr=inv[IF_INV_KEYS[type]]||[];
   const item=arr[idx];if(!item)return;
   document.getElementById('ifTitle').textContent='编辑'+IF_TITLES[type];
   document.getElementById('ifDelBtn').style.display='';
+  document.getElementById('ifCopyBtn').style.display='';
   const breedBtn=document.getElementById('ifBreedBtn');
   if(breedBtn) breedBtn.style.display=(type==='livestock'&&item.status==='alive'&&item.origin!=='breed')?'':'none';
+  const repairBtn=document.getElementById('ifRepairBtn');
+  if(repairBtn) repairBtn.style.display=(type==='equipment')?'':'none';
   _ifRenderAll(type,item);
   _syncIconDisplay(item.icon||'');
   if(type==='livestock'&&item.origin!=='breed') _renderChildrenPanel(idx);
   else{const cb=document.getElementById('ifChildrenBox');if(cb){cb.innerHTML='';cb.style.display='none';}}
+  if(type==='equipment') _renderRepairPanel(idx);
+  else{const rb=document.getElementById('ifRepairBox');if(rb){rb.innerHTML='';rb.style.display='none';}}
   const ov=document.getElementById('itemFormOverlay');
-  ov.style.display='flex';requestAnimationFrame(()=>ov.classList.add('open'));
+  ov.style.display='flex';
+  _setFormOrigin(el);
+  void ov.offsetHeight;
+  requestAnimationFrame(()=>{ov.classList.add('open');});
 }
 
 function IF_close(){
-  const ov=document.getElementById('itemFormOverlay');ov.classList.remove('open');setTimeout(()=>{ov.style.display='none';},300);
+  const ov=document.getElementById('itemFormOverlay');
+  const box=ov?ov.querySelector('.if-box'):null;
+  if(box&&_ifOriginEl) _setFormOrigin(_ifOriginEl);
+  ov.classList.remove('open');
+  setTimeout(()=>{
+    ov.style.display='none';
+    if(box){box.style.transform='';box.style.transformOrigin='';}
+    _ifOriginEl=null;
+  },450);
 }
 
 function IF_save(){
@@ -904,8 +1048,30 @@ function IF_save(){
     if(prev.origin) item.origin=prev.origin;
     if(prev.parentId) item.parentId=prev.parentId;
     if(prev._id) item._id=prev._id;
+    if(prev._repairs) item._repairs=prev._repairs;
     inv[arrKey][_ifIdx]=item;
-  }else{item._id=_uid();inv[arrKey].push(item);}
+    // Apply to all merged items
+    if(_ifMergeIndices.length>1){
+      _ifMergeIndices.forEach(mi=>{
+        if(mi===_ifIdx)return;
+        const mp=inv[arrKey][mi]||{};
+        const mi_item=Object.assign({},item);
+        if(mp._id) mi_item._id=mp._id;
+        if(mp.origin) mi_item.origin=mp.origin;
+        if(mp.parentId) mi_item.parentId=mp.parentId;
+        if(mp._repairs) mi_item._repairs=mp._repairs;
+        inv[arrKey][mi]=mi_item;
+      });
+    }
+  }else{
+    item._id=_uid();
+    // Auto default icon based on category for new livestock
+    if(_ifType==='livestock'&&!item.icon&&item.category){
+      const cat=LS_CATS.find(c=>c.key===item.category);
+      if(cat) item.icon=cat.icon;
+    }
+    inv[arrKey].push(item);
+  }
   P_saveInv(inv);
   IF_close();
   renderProfile();
@@ -913,27 +1079,50 @@ function IF_save(){
 }
 
 function IF_del(){
-  sysConfirm('确定删除？','删除',function(){
+  const cnt=_ifMergeIndices.length>1?_ifMergeIndices.length:0;
+  const msg=cnt>1?'确定删除？共'+cnt+'个相同项将全部删除':'确定删除？';
+  sysConfirm(msg,'删除',function(){
   const inv=P_loadInv();
   const arrKey=IF_INV_KEYS[_ifType];
   if(!inv[arrKey])return;
+  // Collect all indices to delete (merged + breed children)
+  const delSet=new Set();
+  _ifMergeIndices.forEach(mi=>delSet.add(mi));
   // If deleting a livestock parent, also remove its children
   if(_ifType==='livestock'){
-    const delItem=inv[arrKey][_ifIdx];
-    const delId=delItem?delItem._id:'';
-    inv[arrKey]=inv[arrKey].filter((item,i)=>{
-      if(i===_ifIdx) return false;
-      if(delId&&item.origin==='breed'&&item.parentId===delId) return false;
-      return true;
+    _ifMergeIndices.forEach(mi=>{
+      const delItem=inv[arrKey][mi];
+      const delId=delItem?delItem._id:'';
+      if(delId) inv[arrKey].forEach((item,i)=>{if(item.origin==='breed'&&item.parentId===delId)delSet.add(i);});
     });
-  }else{
-    inv[arrKey].splice(_ifIdx,1);
   }
+  inv[arrKey]=inv[arrKey].filter((_,i)=>!delSet.has(i));
+  _ifMergeIndices=[];
   P_saveInv(inv);
   IF_close();
   renderProfile();
   toast('已删除');
   });
+}
+
+function IF_copy(){
+  sysConfirm('复制几份？','确认复制',function(n){
+    n=parseInt(n)||0;
+    if(n<1||n>50){toast('请输入 1~50 之间的数字');return;}
+    const inv=P_loadInv();
+    const arrKey=IF_INV_KEYS[_ifType];
+    const src=inv[arrKey][_ifIdx];
+    if(!src)return;
+    for(let i=0;i<n;i++){
+      const cp=JSON.parse(JSON.stringify(src));
+      delete cp._id;
+      inv[arrKey].push(cp);
+    }
+    P_saveInv(inv);
+    IF_close();
+    renderProfile();
+    toast('已复制 '+n+' 份');
+  },'1');
 }
 
 
@@ -1055,6 +1244,133 @@ function P_delChild(idx){
   _renderChildrenPanel(_ifIdx);
   toast('已删除');
 }
+
+// --- Equipment Repair Panel ---
+let _editRepairIdx=-1;
+function _renderRepairPanel(eqpIdx){
+  const box=document.getElementById('ifRepairBox');
+  if(!box)return;
+  const inv=P_loadInv();
+  const item=(inv.equipment||[])[eqpIdx];
+  if(!item){box.innerHTML='';box.style.display='none';return;}
+  const repairs=item._repairs||[];
+  if(!repairs.length){box.innerHTML='';box.style.display='none';return;}
+  const totalCost=repairs.reduce((s,r)=>s+(r.items||[]).reduce((ss,it)=>ss+(parseFloat(it.cost)||0),0),0);
+  box.style.display='';
+  let h='<div class="if-repair-hd"><span>维护记录 ('+repairs.length+')</span><span class="if-repair-total">'+(totalCost>0?'¥'+totalCost.toFixed(0):'')+'</span></div>';
+  h+='<div class="if-repair-list">';
+  repairs.forEach((r,i)=>{
+    const cost=(r.items||[]).reduce((s,it)=>s+(parseFloat(it.cost)||0),0)||(r.cost||0);
+    const partsText=(r.items||[]).filter(it=>it.name).map(it=>it.name).join('、')||(r.parts||'');
+    h+='<div class="if-repair-item" onclick="RP_openEdit('+i+')">';
+    h+='<div class="if-repair-item-left"><span class="if-repair-date">'+(r.date||'')+'</span>'+(r.name?'<span class="if-repair-name">'+r.name+'</span>':'')+(partsText?'<span class="if-repair-parts">'+partsText+'</span>':'')+'</div>';
+    h+='<div class="if-repair-item-right">'+(cost?'¥'+(typeof cost==='number'?cost.toFixed(0):cost):'')+(r.notes?'<span class="if-repair-notes">'+r.notes+'</span>':'')+'</div>';
+    h+='</div>';
+  });
+  h+='</div>';
+  box.innerHTML=h;
+}
+function RP_openAdd(){
+  _editRepairIdx=-1;
+  RP_showForm({date:localDate(),name:'',items:[],notes:''});
+}
+function RP_openEdit(i){
+  const inv=P_loadInv();
+  const item=(inv.equipment||[])[_ifIdx];
+  if(!item||!item._repairs||!item._repairs[i])return;
+  _editRepairIdx=i;
+  RP_showForm(item._repairs[i]);
+}
+function RP_showForm(r){
+  let ex=document.getElementById('rpFormOverlay');if(ex)ex.remove();
+  let items=r.items&&r.items.length?r.items:(r.parts||r.cost)?[{name:r.parts||'',cost:r.cost||''}]:[];
+  if(!items.length) items=[{name:'',cost:''}];
+  let h='<div class="rp-overlay" id="rpFormOverlay" onclick="if(event.target===this)RP_closeForm()">';
+  h+='<div class="rp-box"><h4>维护记录</h4>';
+  h+='<div class="if-row"><label>日期</label><input type="date" id="rp_date" value="'+(r.date||localDate())+'"></div>';
+  h+='<div class="if-row"><label>维护项目</label><input id="rp_name" value="'+(r.name||'')+'" placeholder="如：换灯管、清洗转子"></div>';
+  h+='<div class="if-row"><label>备注</label><input id="rp_notes" value="'+(r.notes||'')+'" placeholder="可选"></div>';
+  h+='<div class="rp-items-label">耗材明细</div>';
+  h+='<div id="rpItemsList"></div>';
+  h+='<button class="rp-add-item" onclick="RP_addItem()">+ 添加耗材</button>';
+  h+='<div class="if-actions"><span style="flex:1"></span>';
+  if(_editRepairIdx>=0) h+='<button class="btn-del" onclick="RP_del()">删除</button>';
+  h+='<button class="btn" onclick="RP_save()">保存</button></div>';
+  h+='</div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
+  // 用 DOM API 创建耗材行，避免 CSS 优先级问题
+  var list=document.getElementById('rpItemsList');
+  items.forEach(function(it){ list.appendChild(RP_createRow(it)); });
+}
+let _rpItemCount=0;
+function RP_createRow(it){
+  var row=document.createElement('div');
+  row.className='rp-item-row';
+  var nameInput=document.createElement('input');
+  nameInput.type='text'; nameInput.className='rp-item-name';
+  nameInput.value=it.name||''; nameInput.placeholder='耗材名称';
+  var costInput=document.createElement('input');
+  costInput.type='number'; costInput.className='rp-item-cost';
+  costInput.value=it.cost||''; costInput.placeholder='¥'; costInput.step='any';
+  var delBtn=document.createElement('button');
+  delBtn.className='rp-item-del'; delBtn.textContent='✕';
+  delBtn.onclick=function(){RP_removeItem(delBtn);};
+  row.appendChild(nameInput);
+  row.appendChild(costInput);
+  row.appendChild(delBtn);
+  return row;
+}
+function RP_addItem(){
+  const list=document.getElementById('rpItemsList');
+  if(!list)return;
+  list.appendChild(RP_createRow({name:'',cost:''}));
+}
+function RP_removeItem(btn){
+  const row=btn.parentElement;
+  const list=row.parentElement;
+  if(list.children.length<=1){toast('至少保留一项');return;}
+  row.remove();
+}
+function RP_closeForm(){const el=document.getElementById('rpFormOverlay');if(el)el.remove();}
+function RP_save(){
+  const date=(document.getElementById('rp_date').value||'').trim();
+  const name=(document.getElementById('rp_name').value||'').trim();
+  const notes=(document.getElementById('rp_notes').value||'').trim();
+  if(!date){toast('请填写日期');return;}
+  const items=[];
+  document.querySelectorAll('#rpItemsList .rp-item-row').forEach(function(row){
+    const n=row.querySelector('.rp-item-name').value.trim();
+    const c=row.querySelector('.rp-item-cost').value.trim();
+    if(n||c) items.push({name:n,cost:c?parseFloat(c):''});
+  });
+  const inv=P_loadInv();
+  const item=(inv.equipment||[])[_ifIdx];
+  if(!item)return;
+  if(!item._repairs)item._repairs=[];
+  const rec={date,name,items,notes};
+  if(_editRepairIdx>=0) item._repairs[_editRepairIdx]=rec;
+  else item._repairs.push(rec);
+  item._repairs.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  P_saveInv(inv);
+  RP_closeForm();
+  _renderRepairPanel(_ifIdx);
+  renderProfile();
+  toast('已保存');
+}
+function RP_del(){
+  sysConfirm('删除此维修记录？','删除',function(){
+    const inv=P_loadInv();
+    const item=(inv.equipment||[])[_ifIdx];
+    if(!item||!item._repairs)return;
+    item._repairs.splice(_editRepairIdx,1);
+    P_saveInv(inv);
+    RP_closeForm();
+    _renderRepairPanel(_ifIdx);
+    renderProfile();
+    toast('已删除');
+  });
+}
+
 function initProfile(){
   // Profile page is render-only, no special init needed
 }

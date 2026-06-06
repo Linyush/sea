@@ -19,6 +19,10 @@ document.addEventListener('keydown',function(e){
     if(ipOv&&ipOv.classList.contains('open')){IP_close();return;}
     const ceOv=document.getElementById('childFormOverlay');
     if(ceOv&&ceOv.classList.contains('open')){CE_close();return;}
+    const rpOv=document.getElementById('rpFormOverlay');
+    if(rpOv){RP_closeForm();return;}
+    const spOv=document.getElementById('mtSpecialOverlay');
+    if(spOv){MT_closeSpecialForm();return;}
     const impOv=document.getElementById('impOverlay');
     if(impOv&&impOv.classList.contains('open')){IMP_close();return;}
     const afOv=document.getElementById('accountFormOverlay');

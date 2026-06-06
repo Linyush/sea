@@ -41,9 +41,13 @@
 /* Item form modal */
 .if-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0);z-index:400;align-items:center;justify-content:center;transition:background .3s}
 .if-overlay.open{display:flex;background:rgba(0,0,0,.55)}
-.if-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;max-width:540px;width:94%;max-height:85vh;overflow-y:auto;transform:scale(.92);opacity:0;transition:transform .3s cubic-bezier(.22,1,.36,1),opacity .25s;position:relative}
+.if-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;max-width:540px;width:94%;max-height:85vh;overflow-y:auto;transform:scale(0);opacity:0;transition:transform .4s cubic-bezier(.16,1,.3,1),opacity .35s;position:relative}
 .if-overlay.open .if-box{transform:scale(1);opacity:1}
 .if-box h4{font-size:15px;font-weight:600;margin-bottom:16px}
+.if-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.if-header h4{margin-bottom:0}
+.if-copy-btn{background:none;border:none;cursor:pointer;color:var(--text4);padding:4px 6px;border-radius:6px;transition:all .2s;display:flex;align-items:center}
+.if-copy-btn:hover{color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
 
 /* Form top area: relative container, icon absolute right */
 .if-top{position:relative;padding-right:128px;margin-bottom:10px;min-height:112px}
@@ -137,10 +141,11 @@
 .tf-overlay.open .tf-box{transform:scale(1);opacity:1}
 
 
-/* Card badges (dead/sold) */
+/* Card badges (dead/sold/merge) */
 .inv-badge{position:absolute;top:5px;right:6px;font-size:13px;line-height:1;z-index:1;opacity:.85}
 .inv-badge-dead{filter:none}
 .inv-badge-sold{font-size:13px}
+.inv-badge-merge{position:absolute;top:5px;left:6px;right:auto;font-size:11px;font-weight:700;color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);padding:1px 5px;border-radius:4px;line-height:1.3;opacity:1}
 
 /* Import button in header */
 /* Status filter bar */
@@ -148,6 +153,9 @@
 .inv-ft{background:none;border:none;padding:3px 6px;border-radius:6px;font-size:14px;cursor:pointer;opacity:.45;transition:all .2s;line-height:1}
 .inv-ft:hover{opacity:.8;background:var(--border)}
 .inv-ft.active{opacity:1;background:color-mix(in srgb,var(--accent) 12%,transparent);box-shadow:0 0 0 1px color-mix(in srgb,var(--accent) 30%,transparent)}
+.inv-merge-btn{font-size:13px!important;opacity:.85;color:var(--text);display:flex!important;align-items:center;padding:4px 5px!important}
+.inv-merge-btn:hover{opacity:1}
+.inv-merge-btn.active{color:var(--accent);opacity:1;background:color-mix(in srgb,var(--accent) 12%,transparent);box-shadow:0 0 0 1px color-mix(in srgb,var(--accent) 30%,transparent)}
 
 /* Import modal */
 .imp-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0);z-index:400;align-items:center;justify-content:center;transition:background .3s}
@@ -204,7 +212,7 @@
 .btn-breed:hover{background:#236b3d}
 
 /* Breed badge */
-.inv-badge-breed{position:absolute;top:5px;left:6px;font-size:12px;line-height:1;z-index:1;opacity:.85}
+.inv-badge-breed{position:absolute;top:5px;left:32px;font-size:12px;line-height:1;z-index:1;opacity:.85}
 
 /* Children panel in edit form */
 #ifChildrenBox{margin-top:14px;border-top:1px solid var(--border);padding-top:12px}
@@ -213,6 +221,47 @@
 .if-children-title{font-size:13px;font-weight:600;color:var(--text3);margin-bottom:10px}
 .if-children-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:10px}
 .inv-card.inv-card-child{min-height:auto;padding:10px 6px 8px}
+
+/* Repair panel in edit form */
+#ifRepairBox{margin-top:14px;border-top:1px solid var(--border);padding-top:12px}
+.if-repair-hd{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:13px;font-weight:600;color:var(--text3)}
+.if-repair-total{font-weight:400;color:var(--accent);font-size:12px}
+.if-repair-list{display:flex;flex-direction:column;gap:6px}
+.if-repair-item{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--bg2);border-radius:8px;cursor:pointer;transition:background .2s}
+.if-repair-item:hover{background:var(--hover)}
+.if-repair-item-left{display:flex;align-items:center;gap:8px;min-width:0}
+.if-repair-date{font-size:12px;color:var(--text3);white-space:nowrap}
+.if-repair-name{font-size:12px;color:var(--text2);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.if-repair-parts{font-size:12px;color:var(--text4);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.if-repair-item-right{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--accent);font-weight:500;white-space:nowrap}
+.if-repair-notes{font-size:11px;color:var(--text4);font-weight:400;max-width:60px;overflow:hidden;text-overflow:ellipsis}
+
+/* Repair badge on card */
+.inv-badge-repair{position:absolute;top:5px;right:6px;font-size:12px;line-height:1;z-index:1;opacity:.8}
+
+/* Repair form overlay */
+.rp-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:460}
+.rp-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;max-width:360px;width:90%}
+.rp-box h4{font-size:15px;font-weight:600;color:var(--text);margin-bottom:16px}
+.rp-box .if-row{flex-direction:column;align-items:stretch;gap:4px;margin-bottom:10px}
+.rp-box .if-row label{font-size:12px;color:var(--text3);width:auto;text-align:left}
+.rp-box .if-row input{width:100%;padding:7px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--input-bg);color:var(--text);font-size:13px;outline:none;transition:border .2s}
+.rp-box .if-row input:focus{border-color:var(--accent)}
+
+/* Repair item rows (consumables list) */
+.rp-items-label{font-size:12px;color:var(--text3);margin-bottom:6px;font-weight:500}
+.rp-item-row{display:grid;grid-template-columns:1fr 72px auto;gap:8px;align-items:center;margin-bottom:8px}
+.rp-item-name{padding:7px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--input-bg);color:var(--text);font-size:13px;outline:none;transition:border .2s;width:100%;box-sizing:border-box}
+.rp-item-cost{padding:7px 8px;border:1px solid var(--border2);border-radius:8px;background:var(--input-bg);color:var(--text);font-size:13px;outline:none;transition:border .2s;text-align:right;width:100%;box-sizing:border-box}
+.rp-item-name:focus,.rp-item-cost:focus{border-color:var(--accent)}
+.rp-item-del{background:none;border:none;color:var(--text4);font-size:13px;cursor:pointer;padding:2px 4px;border-radius:4px;transition:color .2s;line-height:1}
+.rp-item-del:hover{color:var(--warn)}
+.rp-add-item{width:100%;padding:8px;border:1px dashed var(--border2);border-radius:8px;background:transparent;color:var(--accent);font-size:12px;font-weight:500;cursor:pointer;margin-bottom:10px;transition:all .2s}
+.rp-add-item:hover{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 5%,transparent)}
+
+/* Repair button */
+.btn-repair{background:color-mix(in srgb,var(--accent) 12%,transparent);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);color:var(--accent);padding:6px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;transition:all .3s;outline:none}
+.btn-repair:hover{background:color-mix(in srgb,var(--accent) 20%,transparent);border-color:var(--accent)}
 
 /* Child count badge on card */
 .inv-badge-child{position:absolute;top:auto;bottom:6px;right:6px;font-size:11px;line-height:1;z-index:1;color:var(--accent);opacity:.9}
@@ -281,16 +330,58 @@
 /* Card duration */
 .inv-days{font-size:10px;color:var(--text4);margin-top:3px;font-weight:400}
 
-/* === Investment: left big number + right rows === */
-.pf-inv-row{display:flex;align-items:center;padding:6px 10px;border-radius:6px;cursor:pointer;transition:background .15s;gap:8px}
-.pf-inv-row:hover{background:color-mix(in srgb,var(--accent) 5%,transparent)}
-.pf-inv-row-name{font-size:12px;color:var(--text2);font-weight:500;min-width:60px}
-.pf-inv-row-cnt{font-size:11px;color:var(--text4);min-width:36px}
-.pf-inv-row-val{font-size:13px;font-weight:600;color:var(--text);margin-left:auto}
-.pf-inv-row.loss .pf-inv-row-val{color:#e74c3c}
-.pf-inv-row.gain .pf-inv-row-val{color:#22bb88}
+/* === Investment layout === */
+.pf-inv-layout{display:flex;align-items:stretch}
+.pf-inv-summary{width:88px;flex-shrink:0;overflow:hidden;padding-right:8px;transition:width .35s cubic-bezier(.4,0,.2,1),opacity .3s ease,padding .35s cubic-bezier(.4,0,.2,1)}
+#pfInvestBox:not(.pf-show-amounts) .pf-inv-summary{width:0;opacity:0;padding-right:0;height:0;min-height:0}
+.pf-inv-table-wrap{flex:1;min-width:0;overflow:hidden}
+.pf-inv-table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+.pf-inv-table th{font-size:9px;font-weight:500;padding:1px 4px 2px;letter-spacing:.4px;border-bottom:1px solid var(--border);text-align:center;background:none}
+.pf-inv-table th:first-child{width:38px}
+.pf-th-total{color:color-mix(in srgb,var(--accent) 55%,transparent)}
+.pf-th-cur{color:color-mix(in srgb,#22bb88 55%,transparent)}
+.pf-th-loss{color:color-mix(in srgb,var(--warn) 55%,transparent)}
+.pf-th-sold{color:color-mix(in srgb,#e8a735 55%,transparent)}
+.pf-inv-table td{padding:5px 4px;vertical-align:middle;cursor:pointer;transition:background .15s;text-align:center}
+.pf-inv-table tbody tr:hover td{background:color-mix(in srgb,var(--accent) 4%,transparent)}
+.pf-inv-card{padding:5px 8px;border-radius:6px;background:color-mix(in srgb,var(--border) 8%,transparent);margin-bottom:4px}
+.pf-inv-card:last-child{margin-bottom:0}
+.pf-inv-card-name{font-size:9px;color:var(--text3);font-weight:500;margin-bottom:1px;letter-spacing:.3px}
+.pf-inv-card-val{font-size:13px;font-weight:700;color:var(--text)}
+.pf-inv-card.accent .pf-inv-card-name{color:var(--accent);font-weight:600}
+.pf-inv-card.accent .pf-inv-card-val{color:var(--accent)}
+.pf-inv-card.green .pf-inv-card-name{color:#22bb88;font-weight:500}
+.pf-inv-card.green .pf-inv-card-val{color:#22bb88}
+.pf-inv-name{font-size:12px;font-weight:600;color:var(--text2);text-align:left}
+.pf-inv-cell{display:flex;flex-direction:column;align-items:center;gap:1px}
+.pf-inv-cell b{font-size:13px;font-weight:700;color:var(--text);line-height:1.3}
+.pf-inv-cell .pf-inv-val{font-size:10px;font-weight:500;color:var(--text4);line-height:1.3}
+/* 列颜色 */
+.pf-inv-total b{color:var(--accent)}
+.pf-inv-total .pf-inv-val{color:color-mix(in srgb,var(--accent) 60%,transparent)}
+.pf-inv-cur b{color:#22bb88}
+.pf-inv-cur .pf-inv-val{color:color-mix(in srgb,#22bb88 50%,transparent)}
+.pf-inv-loss b{color:var(--warn)}
+.pf-inv-loss .pf-inv-val{color:color-mix(in srgb,var(--warn) 50%,transparent)}
+.pf-inv-sold b{color:#e8a735}
+.pf-inv-sold .pf-inv-val{color:color-mix(in srgb,#e8a735 50%,transparent)}
 
-/* === Tab row with filter on right === */
+/* 金额隐藏/显示 - 保留空间，高度不变 */
+.pf-inv-val,.pf-inv-card-val{visibility:hidden;opacity:0;transform:translateY(-3px);transition:opacity .3s ease,transform .3s ease,visibility 0s .3s}
+.pf-show-amounts .pf-inv-val,.pf-show-amounts .pf-inv-card-val{visibility:visible;opacity:1;transform:translateY(0);transition:opacity .3s ease,transform .3s ease,visibility 0s 0s}
+
+/* 封面背景适配 */
+.pf-cover-bg.active~.pf-columns .pf-inv-card-val{color:rgba(255,255,255,.95);text-shadow:0 1px 2px rgba(0,0,0,.4)}
+.pf-cover-bg.active~.pf-columns .pf-inv-card.accent .pf-inv-card-val{color:var(--accent)}
+.pf-cover-bg.active~.pf-columns .pf-inv-card.green .pf-inv-card-val{color:#5aeaad}
+.pf-cover-bg.active~.pf-columns .pf-inv-name{color:rgba(255,255,255,.8)}
+.pf-cover-bg.active~.pf-columns .pf-inv-total b{color:var(--accent)}
+.pf-cover-bg.active~.pf-columns .pf-inv-cur b{color:#5aeaad}
+.pf-cover-bg.active~.pf-columns .pf-inv-loss b{color:#ff7b7b}
+.pf-cover-bg.active~.pf-columns .pf-inv-sold b{color:#f0d060}
+.pf-cover-bg.active~.pf-columns .pf-inv-cell .pf-inv-val{color:rgba(255,255,255,.55)}
+
+@media(max-width:420px){.pf-inv-summary{width:72px}.pf-inv-card-val{font-size:12px}}
 .pf-tab-row{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);margin-bottom:14px}
 .pf-tab-bar{display:flex;gap:0}
 .pf-filter-slot{display:flex;align-items:center}
@@ -299,25 +390,6 @@
 /* Clickable maintenance rows */
 .pf-maint-click{cursor:pointer;transition:background .15s}
 .pf-maint-click:hover{background:color-mix(in srgb,var(--accent) 8%,transparent)}
-
-/* === Investment: flat rows layout === */
-.pf-invest-grid.pf-hidden .pf-inv-row-val,.pf-invest-grid.pf-hidden .pf-inv-row.loss .pf-inv-row-val,.pf-invest-grid.pf-hidden .pf-inv-row.gain .pf-inv-row-val,.pf-invest-grid.pf-hidden .pf-inv-row-accent .pf-inv-row-val,.pf-invest-grid.pf-hidden .pf-inv-card-val,.pf-invest-grid.pf-hidden .pf-inv-card.pf-inv-row-accent .pf-inv-card-val,.pf-invest-grid.pf-hidden .pf-inv-card.pf-inv-card-cur .pf-inv-card-val{color:transparent;text-shadow:0 0 8px var(--text3);user-select:none}
-.pf-inv-row-accent{font-weight:600}
-.pf-inv-row-accent .pf-inv-row-name{color:var(--accent);font-weight:600}
-.pf-inv-row-accent .pf-inv-row-val{color:var(--accent);font-size:15px;font-weight:700}
-
-/* Investment: left-right flex layout */
-.pf-invest-grid{display:flex;gap:16px;align-items:stretch}
-.pf-inv-left{display:flex;flex-direction:column;justify-content:space-between;min-width:100px}
-.pf-inv-right{flex:1;display:flex;flex-direction:column;justify-content:space-between;min-width:0}
-.pf-inv-card{padding:6px 10px;border-radius:6px}
-.pf-inv-card-name{font-size:11px;color:var(--text3);font-weight:500;margin-bottom:2px}
-.pf-inv-card-val{font-size:14px;font-weight:600;color:var(--text)}
-.pf-inv-card.pf-inv-row-accent .pf-inv-card-name{color:var(--accent);font-weight:600}
-.pf-inv-card.pf-inv-row-accent .pf-inv-card-val{color:var(--accent);font-size:14px;font-weight:600}
-.pf-inv-card.pf-inv-card-cur .pf-inv-card-name{color:#22bb88;font-weight:500}
-.pf-inv-card.pf-inv-card-cur .pf-inv-card-val{color:#22bb88;font-size:14px;font-weight:600}
-@media(max-width:420px){.pf-invest-grid{flex-direction:column}.pf-inv-left,.pf-inv-right{width:100%}}
 
 /* Investment detail */
 .pf-inv-detail-btn{font-size:11px;color:var(--accent);cursor:pointer;padding:2px 8px;opacity:.7;transition:opacity .2s;margin-left:auto;font-weight:500}
@@ -381,21 +453,6 @@
 .pf-cover-bg.active~.pf-columns .pf-mod-title{color:rgba(255,255,255,.95);text-shadow:0 1px 3px rgba(0,0,0,.5)}
 .pf-cover-bg.active~.pf-columns .pf-maint-row{background:rgba(var(--card-rgb,30,30,30),.75);backdrop-filter:blur(4px);border-color:rgba(255,255,255,.1)}
 .pf-cover-bg.active~.pf-columns .pf-maint-row,.pf-cover-bg.active~.pf-columns .pf-maint-row b{color:rgba(255,255,255,.9)}
-.pf-cover-bg.active~.pf-columns .pf-inv-row-name{color:rgba(255,255,255,.8)}
-.pf-cover-bg.active~.pf-columns .pf-inv-row-cnt{color:rgba(255,255,255,.6)}
-.pf-cover-bg.active~.pf-columns .pf-inv-row-val{color:rgba(255,255,255,.95);text-shadow:0 1px 2px rgba(0,0,0,.4)}
-.pf-cover-bg.active~.pf-columns .pf-inv-row.loss .pf-inv-row-val{color:#ff7b7b}
-.pf-cover-bg.active~.pf-columns .pf-inv-row.gain .pf-inv-row-val{color:#5aeaad}
-.pf-cover-bg.active~.pf-columns .pf-inv-row-accent .pf-inv-row-val{color:var(--accent)}
 .pf-cover-bg.active~.pf-columns .pf-mod-actions .pf-mod-btn{color:rgba(255,255,255,.8);text-shadow:0 1px 2px rgba(0,0,0,.4)}
 .pf-cover-bg.active~.pf-columns .pf-inv-detail-btn{color:rgba(255,255,255,.7)}
 .pf-cover-bg.active~.pf-columns .pf-eye-btn{text-shadow:0 1px 2px rgba(0,0,0,.4)}
-
-/* 有封面 + 隐藏金额时，保持模糊不可读 */
-.pf-cover-bg.active~.pf-columns .pf-invest-grid.pf-hidden .pf-inv-row-val,
-.pf-cover-bg.active~.pf-columns .pf-invest-grid.pf-hidden .pf-inv-row.loss .pf-inv-row-val,
-.pf-cover-bg.active~.pf-columns .pf-invest-grid.pf-hidden .pf-inv-row.gain .pf-inv-row-val,
-.pf-cover-bg.active~.pf-columns .pf-invest-grid.pf-hidden .pf-inv-row-accent .pf-inv-row-val,
-.pf-cover-bg.active~.pf-columns .pf-invest-grid.pf-hidden .pf-inv-card-val,
-.pf-cover-bg.active~.pf-columns .pf-invest-grid.pf-hidden .pf-inv-card.pf-inv-row-accent .pf-inv-card-val,
-.pf-cover-bg.active~.pf-columns .pf-invest-grid.pf-hidden .pf-inv-card.pf-inv-card-cur .pf-inv-card-val{color:transparent;text-shadow:0 0 8px rgba(255,255,255,.3);user-select:none}

@@ -14,11 +14,6 @@
 .t-tips strong{color:var(--text)}
 .t-tips p{margin:0}
 
-::-webkit-scrollbar{width:6px;height:6px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--scrollbar);border-radius:3px}
-::-webkit-scrollbar-thumb:hover{background:var(--scrollbar-hover)}
-
 @media(max-width:600px){
   .container{padding:12px;padding-bottom:50px}
   .page-hd{flex-wrap:wrap;gap:8px}

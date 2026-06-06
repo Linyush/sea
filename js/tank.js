@@ -65,7 +65,7 @@ function TK_switchTo(id){
   _s(TK_ACTIVE_KEY,id);
   // Reset init flags for data pages
   _pageInited.water=false;_pageInited.light=false;_pageInited.change=false;_pageInited.titrate=false;_pageInited.profile=false;
-  _pfCoverKey="";
+
   // Destroy charts
   if(W_chart){W_chart.destroy();W_chart=null;}
   if(L_chart){L_chart.destroy();L_chart=null;}
@@ -131,6 +131,7 @@ function TK_del(id){
     _r('reef_'+t.id+suffix);
   });
   _tanks=_tanks.filter(x=>x.id!==t.id);
+  _pfCoverMap.delete(t.id);
   TK_save();
   if(_activeTank===t.id){TK_switchTo(_tanks[0].id);}
   else{TK_renderBar();}

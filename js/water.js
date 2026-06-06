@@ -125,6 +125,27 @@ const crosshairPlugin={
     ctx.strokeStyle=getCS('--text4');ctx.lineWidth=1;ctx.setLineDash([4,3]);ctx.stroke();ctx.setLineDash([]);ctx.restore();
   }
 };
+const eventLinePlugin={
+  id:'eventLines',
+  afterDatasetsDraw(c){
+    const ctx=c.ctx,area=c.chartArea,xScale=c.scales.x;
+    if(!xScale||!rows.length)return;
+    ctx.save();
+    rows.forEach(r=>{
+      if(!r._event)return;
+      const px=xScale.getPixelForValue(new Date(r.date+'T00:00:00'));
+      if(px<area.left||px>area.right)return;
+      ctx.beginPath();ctx.moveTo(px,area.top);ctx.lineTo(px,area.bottom);
+      ctx.strokeStyle=getCS('--accent')+'38';ctx.lineWidth=1;ctx.setLineDash([5,4]);ctx.stroke();ctx.setLineDash([]);
+      // 事件文案显示在虚线顶部右侧
+      ctx.font='11px -apple-system,sans-serif';
+      ctx.fillStyle=getCS('--text2');
+      ctx.textAlign='left';ctx.textBaseline='top';
+      ctx.fillText(r._event,px+4,area.top+4);
+    });
+    ctx.restore();
+  }
+};
 
 function _handleChartHover(mouseX,mouseY){
   const tt=document.getElementById('customTooltip');
@@ -208,7 +229,7 @@ function renderChart(){
     interaction:{mode:'nearest',intersect:false,axis:'x'},
     plugins:{legend:{display:false},tooltip:{enabled:false}},
     scales:scales,onHover:function(){}
-  },plugins:[lanePlugin,dlPlugin,crosshairPlugin]});
+  },plugins:[lanePlugin,eventLinePlugin,dlPlugin,crosshairPlugin]});
   updateLaneLabels();
   const canvas=document.getElementById('mainChart');
   canvas.onmousemove=function(e){if(!W_chart)return;const rect=canvas.getBoundingClientRect();const mouseX=e.clientX-rect.left;const mouseY=e.clientY;_handleChartHover(mouseX,mouseY);};
@@ -383,11 +404,12 @@ function W_showEditModal(idx){
     const v=r[fi.key]!=null?r[fi.key]:'';
     html+='<div class="w-edit-row"><span class="w-edit-label" style="color:'+fi.color+'">'+fi.name+'</span><input type="number" step="any" id="wEdit_'+fi.key+'" value="'+v+'" placeholder="-" class="w-edit-input"></div>';
   });
+  html+='<div class="w-edit-row"><span class="w-edit-label">📌 事件</span><input type="text" id="wEdit_event" value="'+(r._event||'')+'" placeholder="可选，如：开缸、下鱼" class="w-edit-input"></div>';
   html+='</div>';
   html+='<div class="w-edit-actions">';
   html+='<button class="btn-ghost" onclick="W_toggleEditHidden('+idx+')" id="wEditHideBtn">'+(r._hidden?'🙈':'👁')+'</button>';
   html+='<span style="flex:1"></span>';
-  html+='<button class="btn-ghost" onclick="W_deleteEditRow('+idx+')">🗑️ 删除</button>';
+  html+='<button class="btn-ghost" onclick="W_deleteEditRow('+idx+')">删除</button>';
   html+='<button class="btn" onclick="W_saveEdit('+idx+')">保存</button>';
   html+='</div>';
   html+='</div></div></div>';
@@ -412,6 +434,8 @@ function W_saveEdit(idx){
     const v=el.value.trim();
     rows[idx][fi.key]=v===''?null:parseFloat(v);
   });
+  var evEl=document.getElementById('wEdit_event');
+  if(evEl){var ev=evEl.value.trim();if(ev)rows[idx]._event=ev;else delete rows[idx]._event;}
   rows.sort((a,b)=>a.date.localeCompare(b.date));
   save();renderChart();renderModal();W_closeEdit();toast('已更新');
 }

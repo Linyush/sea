@@ -108,6 +108,7 @@
 
 /* Settings modal */
 .mt-settings-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:1000;animation:mtFadeIn .2s}
+#mtEditOverlay,#mtSpecialOverlay{z-index:1100}
 .mt-settings-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;width:92%;max-width:560px;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
 .mt-settings-box h4{font-size:16px;font-weight:700;margin-bottom:20px;color:var(--text)}
 .mt-set-section{margin-bottom:22px}
@@ -142,6 +143,23 @@
 .mt-history-item:hover{border-color:var(--border)}
 .mt-history-item .mt-h-date{font-weight:700;color:var(--text);font-size:14px}
 .mt-history-item .mt-h-detail{color:var(--text3);margin-top:4px}
+
+/* History tabs */
+.mt-h-tabs{display:flex;gap:0;margin-bottom:14px;border:1px solid var(--border2);border-radius:8px;overflow:hidden}
+.mt-h-tab{flex:1;padding:8px 0;text-align:center;font-size:13px;font-weight:500;color:var(--text3);background:transparent;border:none;cursor:pointer;transition:all .2s}
+.mt-h-tab.active{color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.mt-h-tag{display:inline-block;font-size:10px;font-weight:600;color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);padding:1px 6px;border-radius:4px;margin-left:6px;vertical-align:middle}
+
+/* Wizard tabs */
+.mt-wiz-tab-bar{display:flex;gap:0;margin-bottom:14px;border:1px solid var(--border2);border-radius:8px;overflow:hidden}
+.mt-wiz-tab{flex:1;padding:8px 0;text-align:center;font-size:13px;font-weight:500;color:var(--text3);background:transparent;border:none;cursor:pointer;transition:all .2s}
+.mt-wiz-tab.active{color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
+
+/* Special maintenance form - vertical label layout */
+.mt-wiz-body .if-row{flex-direction:column;align-items:stretch;gap:4px;margin-bottom:10px}
+.mt-wiz-body .if-row label{font-size:12px;color:var(--text3);width:auto;text-align:left}
+.mt-wiz-body .if-row input{width:100%;padding:7px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--input-bg);color:var(--text);font-size:13px;outline:none;transition:border .2s}
+.mt-wiz-body .if-row input:focus{border-color:var(--accent)}
 
 /* Actions */
 .mt-actions{display:flex;gap:10px;margin-top:16px}

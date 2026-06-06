@@ -37,6 +37,7 @@ function MT_buildSteps(){
 
 /* --- Session state --- */
 let _mt={steps:[],stepIdx:0,supply:{},testData:{},closeDone:[],execVol:'',execNote:'',maintDone:[],restoreDone:[],calcVol:''};
+let _mtMode='daily';
 
 function MT_resetSession(){
   _mt={steps:MT_buildSteps(),stepIdx:0,supply:{},testData:{},closeDone:[],execVol:'',execNote:'',maintDone:[],restoreDone:[],calcVol:''};
@@ -44,9 +45,11 @@ function MT_resetSession(){
 
 /* --- Open/Close --- */
 function MT_startWizard(){
+  _mtMode='daily';
   MT_resetSession();
   var html='<div class="mt-wizard-overlay" id="mtWizardOverlay">';
   html+='<div class="mt-wizard-box">';
+  html+='<div class="mt-wiz-tabs" id="mtWizTabs"></div>';
   html+='<div class="mt-wiz-header" id="mtWizHeader"></div>';
   html+='<div class="mt-wiz-body" id="mtWizBody"></div>';
   html+='<div class="mt-wiz-footer" id="mtWizFooter"></div>';
@@ -76,6 +79,15 @@ function MT_doClose(){MT_closeWizard();}
 
 /* --- Render --- */
 function MT_renderWizard(){
+  // Tabs
+  var tabs=document.getElementById('mtWizTabs');
+  if(tabs) tabs.innerHTML='<div class="mt-wiz-tab-bar"><button class="mt-wiz-tab'+(_mtMode==='daily'?' active':'')+'" onclick="MT_switchMode(\'daily\')">日常维护</button><button class="mt-wiz-tab'+(_mtMode==='special'?' active':'')+'" onclick="MT_switchMode(\'special\')">特殊维护</button></div>';
+
+  if(_mtMode==='special'){
+    MT_renderSpecialMode();
+    return;
+  }
+
   var step=_mt.steps[_mt.stepIdx];
   if(!step){MT_finishWizard();return;}
   var total=_mt.steps.length;
@@ -105,6 +117,80 @@ function MT_renderWizard(){
   if(!isFirst) fhtml+='<button class="mt-btn mt-btn-ghost" onclick="MT_prevStep()">← 上一步</button>';
   fhtml+='<button class="mt-btn mt-btn-primary" id="mtMainBtn" onclick="MT_onConfirmBtn()">'+btnLabel+'</button>';
   footer.innerHTML=fhtml;
+}
+
+function MT_renderSpecialMode(){
+  var header=document.getElementById('mtWizHeader');
+  header.innerHTML='<div class="mt-wiz-title-row"><span class="mt-wiz-step-title">特殊维护</span><button class="mt-wiz-close" onclick="MT_tryClose()">✕</button></div>';
+  var body=document.getElementById('mtWizBody');
+  body.innerHTML='<div class="if-row"><label>日期</label><input type="date" id="sp_date" value="'+localDate()+'"></div>'
+    +'<div class="if-row"><label>维护项目</label><input id="sp_name" placeholder="如：换灯管、翻缸"></div>'
+    +'<div class="if-row"><label>备注</label><input id="sp_notes" placeholder="可选"></div>'
+    +'<div class="rp-items-label">耗材明细</div>'
+    +'<div id="spItemsList"></div>'
+    +'<button class="rp-add-item" onclick="MT_spAddItem()">+ 添加耗材</button>';
+  var list=document.getElementById('spItemsList');
+  if(list) list.appendChild(MT_spCreateRow({name:'',cost:''}));
+  var footer=document.getElementById('mtWizFooter');
+  footer.innerHTML='<button class="mt-btn mt-btn-primary" onclick="MT_saveSpecialFromWizard()">完成</button>';
+}
+
+function MT_spCreateRow(it){
+  var row=document.createElement('div');
+  row.className='rp-item-row';
+  var nameInput=document.createElement('input');
+  nameInput.type='text'; nameInput.className='rp-item-name';
+  nameInput.value=it.name||''; nameInput.placeholder='耗材名称';
+  var costInput=document.createElement('input');
+  costInput.type='number'; costInput.className='rp-item-cost';
+  costInput.value=it.cost||''; costInput.placeholder='¥'; costInput.step='any';
+  var delBtn=document.createElement('button');
+  delBtn.className='rp-item-del'; delBtn.textContent='✕';
+  delBtn.onclick=function(){MT_spRemoveItem(delBtn);};
+  row.appendChild(nameInput);
+  row.appendChild(costInput);
+  row.appendChild(delBtn);
+  return row;
+}
+function MT_spAddItem(){
+  var list=document.getElementById('spItemsList');
+  if(list) list.appendChild(MT_spCreateRow({name:'',cost:''}));
+}
+function MT_spRemoveItem(btn){
+  var row=btn.parentElement;
+  var list=row.parentElement;
+  if(list.children.length<=1){toast('至少保留一项');return;}
+  row.remove();
+}
+
+function MT_switchMode(mode){
+  _mtMode=mode;
+  MT_renderWizard();
+}
+
+function MT_collectSpItems(){
+  var items=[];
+  document.querySelectorAll('#spItemsList .rp-item-row').forEach(function(row){
+    var n=row.querySelector('.rp-item-name').value.trim();
+    var c=row.querySelector('.rp-item-cost').value.trim();
+    if(n||c) items.push({name:n,cost:c?parseFloat(c):''});
+  });
+  return items;
+}
+
+function MT_saveSpecialFromWizard(){
+  var date=(document.getElementById('sp_date').value||'').trim();
+  var name=(document.getElementById('sp_name').value||'').trim();
+  var notes=(document.getElementById('sp_notes').value||'').trim();
+  if(!date){toast('请填写日期');return;}
+  var items=MT_collectSpItems();
+  var log=MT_loadLog();
+  log.push({type:'special',date,name,items,notes});
+  log.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  MT_saveLog(log);
+  MT_closeWizard();
+  if(typeof renderProfile==='function') renderProfile();
+  toast('维护完成');
 }
 
 /* --- Main confirm button logic --- */
@@ -378,6 +464,7 @@ function MT_finishWizard(){
     note:_mt.execNote||''
   };
   log.push(entry);
+  log.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
   MT_saveLog(log);
   MT_syncWaterData(entry,date);
   MT_closeWizard();
@@ -435,24 +522,42 @@ function MT_openHistory(){
   var log=MT_loadLog();
   var html='<div class="mt-settings-overlay open" id="mtHistoryOverlay" onclick="if(event.target===this)MT_closeHistory()">';
   html+='<div class="mt-settings-box">';
-  html+='<h4>📋 维护历史</h4>';
+  html+='<h4>维护历史</h4>';
   if(!log.length){
-    html+='<p style="font-size:13px;color:var(--text4)">暂无维护记录</p>';
+    html+='<p style="font-size:13px;color:var(--text4);padding:20px 0;text-align:center">暂无记录</p>';
   }else{
     html+='<div class="mt-history-list">';
-    log.slice().reverse().forEach(function(entry,ri){
-      var realIdx=log.length-1-ri;
-      html+='<div class="mt-history-item" ondblclick="MT_editLogEntry('+realIdx+')">';
-      html+='<div class="mt-h-date">'+entry.date+'</div>';
-      var details=[];
-      if(entry.vol) details.push('换水 '+entry.vol+'L');
-      if(entry.testData){
-        var tests=Object.entries(entry.testData).filter(function(p){return p[1];}).map(function(p){return p[0].toUpperCase()+': '+p[1];});
-        if(tests.length) details.push('水质 '+tests.join(' / '));
+    log.slice().reverse().forEach(function(entry){
+      var realIdx=log.indexOf(entry);
+      var isSpecial=entry.type==='special';
+      html+='<div class="mt-history-item" ondblclick="'+(isSpecial?'MT_editSpecialEntry(':'MT_editLogEntry(')+realIdx+')">';
+      html+='<div class="mt-h-date">'+entry.date+(isSpecial?' <span class="mt-h-tag">特殊</span>':'')+'</div>';
+      if(isSpecial){
+        var sd=[];
+        if(entry.name) sd.push(entry.name);
+        var spItems=entry.items||[];
+        var oldParts=entry.parts||'';
+        var oldCost=entry.cost||'';
+        if(spItems.length){
+          spItems.forEach(function(it){
+            if(it.name||it.cost) sd.push((it.name||'')+(it.cost?' ¥'+it.cost:''));
+          });
+        }else if(oldParts||oldCost){
+          sd.push((oldParts||'耗材')+(oldCost?' ¥'+oldCost:''));
+        }
+        if(entry.note) sd.push(entry.note);
+        html+='<div class="mt-h-detail">'+sd.join('<br>')+'</div>';
+      }else{
+        var details=[];
+        if(entry.vol) details.push('换水 '+entry.vol+'L');
+        if(entry.testData){
+          var tests=Object.entries(entry.testData).filter(function(p){return p[1];}).map(function(p){return p[0].toUpperCase()+': '+p[1];});
+          if(tests.length) details.push('水质 '+tests.join(' / '));
+        }
+        if(entry.maintDone&&entry.maintDone.length) details.push('维护 '+entry.maintDone.join('、'));
+        if(entry.note) details.push('备注：'+entry.note);
+        html+='<div class="mt-h-detail">'+details.join('<br>')+'</div>';
       }
-      if(entry.maintDone&&entry.maintDone.length) details.push('维护 '+entry.maintDone.join('、'));
-      if(entry.note) details.push('备注：'+entry.note);
-      html+='<div class="mt-h-detail">'+details.join('<br>')+'</div>';
       html+='</div>';
     });
     html+='</div>';
@@ -533,6 +638,60 @@ function MT_saveEditLog(){
   MT_closeHistory();
   MT_openHistory();
   toast('已保存');
+}
+
+/* --- Special maintenance (edit from history) --- */
+let _spEditIdx=-1;
+function MT_editSpecialEntry(idx){
+  var log=MT_loadLog();
+  if(idx<0||idx>=log.length||log[idx].type!=='special')return;
+  _spEditIdx=idx;
+  var r=log[idx];
+  let ex=document.getElementById('mtSpecialOverlay');if(ex)ex.remove();
+  let items=r.items&&r.items.length?r.items:(r.parts||r.cost)?[{name:r.parts||'',cost:r.cost||''}]:[];
+  if(!items.length) items=[{name:'',cost:''}];
+  let h='<div class="rp-overlay" id="mtSpecialOverlay" onclick="if(event.target===this)MT_closeSpecialForm()">';
+  h+='<div class="rp-box"><h4>特殊维护</h4>';
+  h+='<div class="if-row"><label>日期</label><input type="date" id="sp_date" value="'+(r.date||localDate())+'"></div>';
+  h+='<div class="if-row"><label>维护项目</label><input id="sp_name" value="'+(r.name||'')+'" placeholder="如：换灯管、翻缸"></div>';
+  h+='<div class="if-row"><label>备注</label><input id="sp_notes" value="'+(r.notes||'')+'" placeholder="可选"></div>';
+  h+='<div class="rp-items-label">耗材明细</div>';
+  h+='<div id="spItemsList"></div>';
+  h+='<button class="rp-add-item" onclick="MT_spAddItem()">+ 添加耗材</button>';
+  h+='<div class="if-actions"><span style="flex:1"></span><button class="btn-del" onclick="MT_delSpecial()">删除</button><button class="btn" onclick="MT_saveSpecialEdit()">保存</button></div>';
+  h+='</div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
+  var list=document.getElementById('spItemsList');
+  items.forEach(function(it){ list.appendChild(MT_spCreateRow(it)); });
+}
+function MT_closeSpecialForm(){var el=document.getElementById('mtSpecialOverlay');if(el)el.remove();}
+function MT_saveSpecialEdit(){
+  var date=(document.getElementById('sp_date').value||'').trim();
+  var name=(document.getElementById('sp_name').value||'').trim();
+  var notes=(document.getElementById('sp_notes').value||'').trim();
+  if(!date){toast('请填写日期');return;}
+  var items=MT_collectSpItems();
+  var log=MT_loadLog();
+  log[_spEditIdx]={type:'special',date,name,items,notes};
+  log.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  MT_saveLog(log);
+  MT_closeSpecialForm();
+  MT_closeHistory();
+  MT_openHistory();
+  if(typeof renderProfile==='function') renderProfile();
+  toast('已保存');
+}
+function MT_delSpecial(){
+  sysConfirm('删除此维护记录？','删除',function(){
+    var log=MT_loadLog();
+    log.splice(_spEditIdx,1);
+    MT_saveLog(log);
+    MT_closeSpecialForm();
+    MT_closeHistory();
+    MT_openHistory();
+    if(typeof renderProfile==='function') renderProfile();
+    toast('已删除');
+  });
 }
 
 /* --- Settings modal --- */

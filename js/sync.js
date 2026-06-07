@@ -237,6 +237,12 @@ function SYNC_refreshPanel(){
     statusEl.className='cloud-val '+cls;
   }
 
+  // Show diff button when dirty
+  const diffBtn=document.getElementById('cloudDiffBtn');
+  if(diffBtn) diffBtn.style.display=(dirty&&account)?'':'none';
+  const rdiffBtn=document.getElementById('cloudRestoreDiffBtn');
+  if(rdiffBtn) rdiffBtn.style.display=account?'':'none';
+
   // Button states
   const backupBtn=document.getElementById('cloudBackupBtn');
   const restoreBtn=document.getElementById('cloudRestoreBtn');
@@ -379,6 +385,116 @@ function SYNC_loginCancel(){
   _loginRemote=null;_setStatus('idle','');
   SYNC_refreshPanel();
   if(window._loginResolve){window._loginResolve();window._loginResolve=null;}
+}
+
+/* --- Data diff --- */
+let _cachedRemote=null;
+function _humanKey(k){
+  const m=k.match(/^reef_t\d+_(.+)/);
+  const suffix=m?m[1]:k.replace('reef_','');
+  const map={water_v10:'水质',spectrum_v8:'光谱',change_v1:'换水',titrate_v1:'滴定',maintain_cfg:'维护设置',maintain_log:'维护日志',inventory:'库存'};
+  return map[suffix]||suffix;
+}
+function _parseVal(v){try{return typeof v==='string'?JSON.parse(v):v;}catch(e){return v;}}
+function _detailFor(key,val){
+  if(key.endsWith('_inventory')){
+    const inv=_parseVal(val);
+    const ls=(inv.livestock||[]).length,eq=(inv.equipment||[]).length,cm=(inv.consumables||[]).length;
+    return '生物'+ls+' / 设备'+eq+' / 耗材'+cm;
+  }
+  if(key.endsWith('_water_v10')){
+    const w=_parseVal(val);
+    return (w.rows||[]).length+'条记录';
+  }
+  if(key.endsWith('_maintain_log')){
+    const ml=_parseVal(val);
+    return (Array.isArray(ml)?ml.length:0)+'条日志';
+  }
+  return '';
+}
+function _dataDiff(localData,remoteData){
+  const diffs=[];
+  const allKeys=new Set([...Object.keys(localData),...Object.keys(remoteData)]);
+  allKeys.forEach(k=>{
+    if(!k.startsWith('reef_')||_SYNC_INTERNAL.has(k))return;
+    const lv=localData[k],rv=remoteData[k];
+    const name=_humanKey(k);
+    if(rv===undefined){
+      diffs.push({key:k,name,status:'removed',detail:_detailFor(k,lv)});
+    }else if(lv===undefined){
+      diffs.push({key:k,name,status:'added',detail:_detailFor(k,rv)});
+    }else{
+      const lp=_parseVal(lv),rp=_parseVal(rv);
+      if(JSON.stringify(lp)!==JSON.stringify(rp)){
+        diffs.push({key:k,name,status:'changed',localDetail:_detailFor(k,lv),remoteDetail:_detailFor(k,rv)});
+      }
+    }
+  });
+  return diffs;
+}
+function _buildDiffHTML(diffs,mode){
+  if(!diffs.length) return '';
+  let h='<div class="cloud-diff">';
+  if(mode==='backup') h+='<div class="cloud-diff-title">本地未备份的修改</div>';
+  else h+='<div class="cloud-diff-title">云端与本地差异</div>';
+  const added=diffs.filter(d=>d.status==='added');
+  const removed=diffs.filter(d=>d.status==='removed');
+  const changed=diffs.filter(d=>d.status==='changed');
+  if(added.length){
+    h+='<div class="cloud-diff-sec"><span class="cloud-diff-badge add">新增</span>';
+    added.forEach(d=>{h+='<div class="cloud-diff-item"><span class="cloud-diff-name">'+d.name+'</span>'+(d.detail?'<span class="cloud-diff-detail">'+d.detail+'</span>':'')+'</div>';});
+    h+='</div>';
+  }
+  if(removed.length){
+    h+='<div class="cloud-diff-sec"><span class="cloud-diff-badge del">删除</span>';
+    removed.forEach(d=>{h+='<div class="cloud-diff-item"><span class="cloud-diff-name">'+d.name+'</span>'+(d.detail?'<span class="cloud-diff-detail">'+d.detail+'</span>':'')+'</div>';});
+    h+='</div>';
+  }
+  if(changed.length){
+    h+='<div class="cloud-diff-sec"><span class="cloud-diff-badge chg">修改</span>';
+    changed.forEach(d=>{
+      h+='<div class="cloud-diff-item"><span class="cloud-diff-name">'+d.name+'</span>';
+      if(d.localDetail&&d.remoteDetail&&d.localDetail!==d.remoteDetail) h+='<span class="cloud-diff-detail">本地:'+d.localDetail+' → 云端:'+d.remoteDetail+'</span>';
+      else if(d.localDetail) h+='<span class="cloud-diff-detail">'+d.localDetail+'</span>';
+      h+='</div>';
+    });
+    h+='</div>';
+  }
+  h+='</div>';
+  return h;
+}
+async function SYNC_showDiff(){
+  const box=document.getElementById('cloudDiffBox');
+  if(!box)return;
+  if(box.style.display!=='none'){box.style.display='none';return;}
+  box.style.display='';box.innerHTML='<div class="cloud-diff"><div class="cloud-diff-empty">加载中...</div></div>';
+  const remote=await SYNC_pull();
+  if(!remote||!remote.data){box.innerHTML='<div class="cloud-diff"><div class="cloud-diff-empty">无法获取云端数据</div></div>';return;}
+  _cachedRemote=remote.data;
+  const localData=SYNC_collectData();
+  const diffs=_dataDiff(localData,_cachedRemote);
+  if(!diffs.length){
+    localStorage.removeItem(SYNC_DIRTY_KEY);
+    if(remote.version)SYNC_setVersion(remote.version);
+    SYNC_refreshPanel();
+    toast('数据与云端一致');
+    box.style.display='none';return;
+  }
+  box.innerHTML=_buildDiffHTML(diffs,'backup');
+  box.style.display='';
+}
+async function SYNC_showRestoreDiff(){
+  const box=document.getElementById('cloudDiffBox');
+  if(!box)return;
+  box.style.display='';box.innerHTML='<div class="cloud-diff"><div class="cloud-diff-empty">加载中...</div></div>';
+  const remote=await SYNC_pull();
+  if(!remote||!remote.data){box.innerHTML='<div class="cloud-diff"><div class="cloud-diff-empty">无法获取云端数据</div></div>';return;}
+  _cachedRemote=remote.data;
+  const localData=SYNC_collectData();
+  const diffs=_dataDiff(localData,_cachedRemote);
+  if(!diffs.length){box.innerHTML='<div class="cloud-diff"><div class="cloud-diff-empty">数据一致，无差异</div></div>';return;}
+  box.innerHTML=_buildDiffHTML(diffs,'restore');
+  box.style.display='';
 }
 
 /* --- Init --- */

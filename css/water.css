@@ -2,7 +2,7 @@
 .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;position:relative;transition:border-color .4s,box-shadow .4s,background .3s}
 .card:hover{border-color:var(--card-hover-border);box-shadow:0 4px 24px var(--card-hover-shadow)}
 .card-toolbar{display:flex;align-items:center;gap:8px;margin-bottom:12px}
-.qb-date{background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:5px 8px;border-radius:7px;font-size:12px;font-weight:500;outline:none;transition:border-color .3s;width:96px;flex-shrink:0}
+.qb-date{background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:5px 8px;border-radius:7px;font-size:12px;font-weight:500;outline:none;transition:border-color .3s;width:120px;flex-shrink:0}
 .qb-date:focus{border-color:var(--accent)}
 .qb-fields{display:flex;gap:5px;align-items:center;flex:1;min-width:0}
 .qb-field{display:flex;align-items:center;gap:3px;flex:1;min-width:0}
@@ -104,6 +104,8 @@ tr.add-row td:first-child input{text-align:left;padding-left:5px;width:96px}
 .btn-del:hover{background:color-mix(in srgb,var(--warn) 18%,transparent);border-color:var(--warn)}
 .btn-reset{background:0;border:none;color:var(--text5);font-size:15px;cursor:pointer;transition:color .3s,transform .3s;padding:4px;line-height:1;margin-left:8px}
 .btn-reset:hover{color:var(--warn);transform:rotate(-45deg)}
+.btn-sm2{background:0;border:none;color:var(--text5);font-size:13px;cursor:pointer;transition:color .2s;padding:4px 6px;line-height:1;margin-left:4px}
+.btn-sm2:hover{color:var(--accent)}
 .val-warn{color:var(--warn) !important;font-weight:700 !important}
 .nf-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0);z-index:300;align-items:center;justify-content:center;transition:background .3s}
 .nf-overlay.open{display:flex;background:rgba(0,0,0,.5)}

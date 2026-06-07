@@ -233,9 +233,8 @@ function renderProfile(){
 
 function _renderInvestment(inv){
   const livestock=inv.livestock||[], equipment=inv.equipment||[], consumables=inv.consumables||[];
-  const liveMain=livestock.filter(x=>x.origin!=='breed');
   const rows=[
-    {name:'生物',tab:'livestock',items:liveMain,lossStatus:['dead'],lossFilter:'dead'},
+    {name:'生物',tab:'livestock',items:livestock,lossStatus:['dead'],lossFilter:'dead'},
     {name:'设备',tab:'equipment',items:equipment,lossStatus:['broken'],lossFilter:'broken',withRepair:true},
     {name:'耗材',tab:'consumable',items:consumables,lossStatus:['empty','expired'],lossFilter:'empty'}
   ];
@@ -432,7 +431,7 @@ function _renderMaintenance(tank){
       let cls='',suffix='';
       if(f.lo!=null&&v<f.lo){cls=' class="pf-maint-lo"';suffix='↓';hasAlert=true;}
       else if(f.hi!=null&&v>f.hi){cls=' class="pf-maint-hi"';suffix='↑';hasAlert=true;}
-      vals.push('<span'+cls+'>'+f.name+' '+v+suffix+'</span>');
+      vals.push(cls?('<span'+cls+'>'+f.name+' '+v+suffix+'</span>'):(f.name+' '+v));
     });
     const rowCls=hasAlert?'pf-maint-row warn':'pf-maint-row ok';
     h+='<div class="'+rowCls+' pf-maint-click" onclick="switchPage(\'water\')"><span class="pf-maint-icon">💧</span><span>'+(hasAlert?'水质异常：':'水质正常：')+vals.join(' · ')+'</span></div>';

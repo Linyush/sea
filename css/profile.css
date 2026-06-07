@@ -280,8 +280,8 @@
 .pf-maint-row.ok{border-left:3px solid #22bb88;background:color-mix(in srgb,#22bb88 3%,var(--card))}
 .pf-maint-icon{font-size:16px;flex-shrink:0}
 .pf-maint-row b{font-weight:600;color:var(--text)}
-.pf-maint-hi{color:#e74c3c;font-weight:600;font-size:11px}
-.pf-maint-lo{color:#3b82f6;font-weight:600;font-size:11px}
+.pf-maint-hi{color:#e74c3c;font-weight:600}
+.pf-maint-lo{color:#e74c3c;font-weight:600}
 
 /* Divider between modules */
 .pf-divider{height:1px;background:var(--border);margin:16px 0}
@@ -291,7 +291,7 @@
 /* Water quality values row */
 .pf-maint-vals{display:flex;flex-wrap:wrap;gap:6px 12px;padding:4px 12px 8px 36px;font-size:12px;color:var(--text3)}
 .pf-maint-vals span{white-space:nowrap}
-.pf-maint-vals .pf-maint-lo{color:#3b82f6;font-weight:600}
+.pf-maint-vals .pf-maint-lo{color:#e74c3c;font-weight:600}
 .pf-maint-vals .pf-maint-hi{color:#e74c3c;font-weight:600}
 
 /* === Backup Overlay === */
@@ -308,8 +308,10 @@
 
 /* Two-column layout for overview */
 .pf-columns{display:flex;gap:16px;align-items:stretch}
-.pf-col-left{flex:1;min-width:0}
-.pf-col-right{flex:1;min-width:0}
+.pf-col-left{flex:1;min-width:0;display:flex;flex-direction:column}
+.pf-col-right{flex:1;min-width:0;display:flex;flex-direction:column}
+#pfMaintBox{flex:1;display:flex;flex-direction:column;gap:6px}
+#pfInvestBox{flex:1;display:flex;flex-direction:column;justify-content:center}
 @media(max-width:520px){.pf-columns{flex-direction:column}}
 
 /* Eye toggle button */
@@ -331,9 +333,9 @@
 .inv-days{font-size:10px;color:var(--text4);margin-top:3px;font-weight:400}
 
 /* === Investment layout === */
-.pf-inv-layout{display:flex;align-items:stretch}
-.pf-inv-summary{width:88px;flex-shrink:0;overflow:hidden;padding-right:8px;transition:width .35s cubic-bezier(.4,0,.2,1),opacity .3s ease,padding .35s cubic-bezier(.4,0,.2,1)}
-#pfInvestBox:not(.pf-show-amounts) .pf-inv-summary{width:0;opacity:0;padding-right:0;height:0;min-height:0}
+.pf-inv-layout{display:flex;align-items:flex-start;gap:8px}
+.pf-inv-summary{width:88px;flex-shrink:0;padding-right:8px;transition:opacity .3s ease,visibility 0s 0s}
+#pfInvestBox:not(.pf-show-amounts) .pf-inv-summary{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .3s ease,visibility 0s .3s}
 .pf-inv-table-wrap{flex:1;min-width:0;overflow:hidden}
 .pf-inv-table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
 .pf-inv-table th{font-size:9px;font-weight:500;padding:1px 4px 2px;letter-spacing:.4px;border-bottom:1px solid var(--border);text-align:center;background:none}
@@ -342,7 +344,7 @@
 .pf-th-cur{color:color-mix(in srgb,#22bb88 55%,transparent)}
 .pf-th-loss{color:color-mix(in srgb,var(--warn) 55%,transparent)}
 .pf-th-sold{color:color-mix(in srgb,#e8a735 55%,transparent)}
-.pf-inv-table td{padding:5px 4px;vertical-align:middle;cursor:pointer;transition:background .15s;text-align:center}
+.pf-inv-table td{padding:5px 4px;vertical-align:middle;cursor:pointer;transition:background .15s;text-align:center;height:32px}
 .pf-inv-table tbody tr:hover td{background:color-mix(in srgb,var(--accent) 4%,transparent)}
 .pf-inv-card{padding:5px 8px;border-radius:6px;background:color-mix(in srgb,var(--border) 8%,transparent);margin-bottom:4px}
 .pf-inv-card:last-child{margin-bottom:0}
@@ -353,8 +355,8 @@
 .pf-inv-card.green .pf-inv-card-name{color:#22bb88;font-weight:500}
 .pf-inv-card.green .pf-inv-card-val{color:#22bb88}
 .pf-inv-name{font-size:12px;font-weight:600;color:var(--text2);text-align:left}
-.pf-inv-cell{display:flex;flex-direction:column;align-items:center;gap:1px}
-.pf-inv-cell b{font-size:13px;font-weight:700;color:var(--text);line-height:1.3}
+.pf-inv-cell{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.pf-inv-cell b{font-size:13px;font-weight:700;color:var(--text);line-height:1.3;transition:transform .3s ease}
 .pf-inv-cell .pf-inv-val{font-size:10px;font-weight:500;color:var(--text4);line-height:1.3}
 /* 列颜色 */
 .pf-inv-total b{color:var(--accent)}
@@ -366,9 +368,11 @@
 .pf-inv-sold b{color:#e8a735}
 .pf-inv-sold .pf-inv-val{color:color-mix(in srgb,#e8a735 50%,transparent)}
 
-/* 金额隐藏/显示 - 保留空间，高度不变 */
-.pf-inv-val,.pf-inv-card-val{visibility:hidden;opacity:0;transform:translateY(-3px);transition:opacity .3s ease,transform .3s ease,visibility 0s .3s}
-.pf-show-amounts .pf-inv-val,.pf-show-amounts .pf-inv-card-val{visibility:visible;opacity:1;transform:translateY(0);transition:opacity .3s ease,transform .3s ease,visibility 0s 0s}
+/* 金额隐藏/显示 - 固定行高，金额隐藏时数量居中 */
+.pf-inv-val,.pf-inv-card-val{visibility:hidden;opacity:0;transition:opacity .3s ease,visibility 0s .3s}
+.pf-show-amounts .pf-inv-val,.pf-show-amounts .pf-inv-card-val{visibility:visible;opacity:1;transition:opacity .3s ease,visibility 0s 0s}
+#pfInvestBox:not(.pf-show-amounts) .pf-inv-cell{justify-content:center}
+.pf-show-amounts .pf-inv-cell{justify-content:flex-start}
 
 /* 封面背景适配 */
 .pf-cover-bg.active~.pf-columns .pf-inv-card-val{color:rgba(255,255,255,.95);text-shadow:0 1px 2px rgba(0,0,0,.4)}

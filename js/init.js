@@ -11,10 +11,10 @@ document.addEventListener('keydown',function(e){
     if(mtWiz){MT_tryClose();return;}
     const mtSet=document.getElementById('mtSettingsOverlay');
     if(mtSet){MT_closeSettings();return;}
-    const mtHist=document.getElementById('mtHistoryOverlay');
-    if(mtHist){MT_closeHistory();return;}
     const mtEditOv=document.getElementById('mtEditOverlay');
     if(mtEditOv){MT_closeEditLog();return;}
+    const mtHist=document.getElementById('mtHistoryOverlay');
+    if(mtHist){MT_closeHistory();return;}
     const ipOv=document.getElementById('iconPickerOverlay');
     if(ipOv&&ipOv.classList.contains('open')){IP_close();return;}
     const ceOv=document.getElementById('childFormOverlay');

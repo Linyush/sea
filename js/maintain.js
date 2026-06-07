@@ -527,11 +527,11 @@ function MT_openHistory(){
     html+='<p style="font-size:13px;color:var(--text4);padding:20px 0;text-align:center">暂无记录</p>';
   }else{
     html+='<div class="mt-history-list">';
-    log.slice().reverse().forEach(function(entry){
+    log.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(function(entry){
       var realIdx=log.indexOf(entry);
       var isSpecial=entry.type==='special';
-      html+='<div class="mt-history-item" ondblclick="'+(isSpecial?'MT_editSpecialEntry(':'MT_editLogEntry(')+realIdx+')">';
-      html+='<div class="mt-h-date">'+entry.date+(isSpecial?' <span class="mt-h-tag">特殊</span>':'')+'</div>';
+      html+='<div class="mt-history-item'+(isSpecial?' mt-h-inline':'')+'" ondblclick="'+(isSpecial?'MT_editSpecialEntry(':'MT_editLogEntry(')+realIdx+')">';
+      html+='<span class="mt-h-date">'+entry.date+(isSpecial?' <span class="mt-h-tag">特殊</span>':'')+'</span>';
       if(isSpecial){
         var sd=[];
         if(entry.name) sd.push(entry.name);
@@ -546,7 +546,7 @@ function MT_openHistory(){
           sd.push((oldParts||'耗材')+(oldCost?' ¥'+oldCost:''));
         }
         if(entry.note) sd.push(entry.note);
-        html+='<div class="mt-h-detail">'+sd.join('<br>')+'</div>';
+        html+='<span class="mt-h-detail">'+sd.join(' · ')+'</span>';
       }else{
         var details=[];
         if(entry.vol) details.push('换水 '+entry.vol+'L');

@@ -246,16 +246,24 @@ function doExport(){
 }
 function doImport(input){
   const file=input.files[0];if(!file)return;
-  sysConfirm('导入将覆盖当前所有数据（包括目标值和记录），确定继续？','导入',function(){W_doImport(input);});
+  sysConfirm('选择导入方式：确定 = 合并（仅补充缺失日期的记录），取消则覆盖全部','合并导入',function(){W_doImport(input,'merge');},function(){W_doImport(input,'replace');});
 }
-function W_doImport(input){
+function W_doImport(input,mode){
   const file=input.files[0];if(!file)return;
   const reader=new FileReader();
   reader.onload=function(e){
     try{const o=JSON.parse(e.target.result);
       if(!o.fields||!Array.isArray(o.fields)||!o.rows||!Array.isArray(o.rows)){toast('文件格式不正确');input.value='';return;}
-      fields=o.fields;rows=o.rows;rows.sort((a,b)=>a.date.localeCompare(b.date));
-      save();renderModal();renderChart();renderQuickBar();toast('已导入 '+rows.length+' 条记录');
+      if(mode==='merge'){
+        const existDates=new Set(rows.map(r=>r.date));
+        let added=0;
+        o.rows.forEach(r=>{if(!existDates.has(r.date)){rows.push(r);added++;}});
+        rows.sort((a,b)=>a.date.localeCompare(b.date));
+        save();renderModal();renderChart();renderQuickBar();toast('已合并，新增 '+added+' 条记录');
+      }else{
+        fields=o.fields;rows=o.rows;rows.sort((a,b)=>a.date.localeCompare(b.date));
+        save();renderModal();renderChart();renderQuickBar();toast('已导入 '+rows.length+' 条记录');
+      }
     }catch(err){toast('解析失败: '+err.message);}
     input.value='';
   };reader.readAsText(file);
@@ -402,7 +410,8 @@ function W_showEditModal(idx){
   html+='<div class="w-edit-row"><span class="w-edit-label">日期</span><input type="date" id="wEdit_date" value="'+r.date+'" class="w-edit-input"></div>';
   fields.forEach(fi=>{
     const v=r[fi.key]!=null?r[fi.key]:'';
-    html+='<div class="w-edit-row"><span class="w-edit-label" style="color:'+fi.color+'">'+fi.name+'</span><input type="number" step="any" id="wEdit_'+fi.key+'" value="'+v+'" placeholder="-" class="w-edit-input"></div>';
+    const isCaMg=(fi.key==='ca'||fi.key==='mg');
+    html+='<div class="w-edit-row" style="position:relative"><span class="w-edit-label" style="color:'+fi.color+'">'+fi.name+'</span><input type="text" inputmode="decimal" id="wEdit_'+fi.key+'" value="'+v+'" placeholder="-" class="w-edit-input"'+(isCaMg?' onblur="W_editAutoConvert(\''+fi.key+'\',this)"':'')+'>'+(!isCaMg?'':'<span class="conv-hint" id="wEditHint_'+fi.key+'"></span>')+'</div>';
   });
   html+='<div class="w-edit-row"><span class="w-edit-label">📌 事件</span><input type="text" id="wEdit_event" value="'+(r._event||'')+'" placeholder="可选，如：开缸、下鱼" class="w-edit-input"></div>';
   html+='</div>';
@@ -424,8 +433,16 @@ function W_toggleEditHidden(idx){
 }
 
 function W_closeEdit(){const el=document.getElementById('wEditOverlay');if(el)el.remove();}
+function W_editAutoConvert(fk,el){
+  const v=parseFloat(el.value);if(isNaN(v)||v>=1)return;
+  const tbl=fk==='ca'?CA_TABLE:MG_TABLE;const ppm=lookupTable(tbl,v);el.value=ppm;
+  const hint=document.getElementById('wEditHint_'+fk);
+  if(hint){hint.textContent='读数 '+v+' → '+ppm+'ppm';hint.classList.add('show');setTimeout(()=>hint.classList.remove('show'),3000);}
+}
 
 function W_saveEdit(idx){
+  // 保存前自动转换 Ca/Mg
+  fields.forEach(fi=>{if(fi.key==='ca'||fi.key==='mg'){var el=document.getElementById('wEdit_'+fi.key);if(el)autoConvert(fi.key,el);}});
   var dateEl=document.getElementById('wEdit_date');
   if(dateEl){var nd=parseDate(dateEl.value.trim());if(nd)rows[idx].date=nd;}
   fields.forEach(fi=>{

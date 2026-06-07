@@ -466,7 +466,7 @@
 <div class="modal-overlay" id="dataModal" onclick="if(event.target===this)closeModal()">
   <div class="modal">
     <div class="modal-hd">
-      <h3><span class="dot"></span>水质数据<button class="btn-reset" onclick="resetAll()" title="重置">↻</button></h3>
+      <h3><span class="dot"></span>水质数据<button class="btn-reset" onclick="resetAll()" title="重置">↻</button><button class="btn-sm2" onclick="doExport()" title="导出数据">↗</button><button class="btn-sm2" onclick="document.getElementById('wImpFile').click()" title="导入数据">↙</button><input type="file" id="wImpFile" accept=".json" style="display:none" onchange="doImport(this)"></h3>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
     <div class="modal-bd">
@@ -583,7 +583,9 @@
           </div>
           <div class="cloud-row" style="margin-top:6px">
             <span class="cloud-val" id="cloudStatus"></span>
+            <button class="cloud-link" id="cloudDiffBtn" style="display:none" onclick="SYNC_showDiff()">查看差异</button>
           </div>
+          <div id="cloudDiffBox" style="display:none"></div>
         </div>
 
         <!-- Backup record -->
@@ -594,6 +596,7 @@
           </div>
           <div class="cloud-row" style="margin-top:6px">
             <span class="cloud-val" id="cloudLastTime">—</span>
+            <button class="cloud-link" id="cloudRestoreDiffBtn" style="display:none" onclick="SYNC_showRestoreDiff()">查看差异</button>
           </div>
         </div>
       </div>

@@ -139,10 +139,13 @@
 
 /* History */
 .mt-history-list{display:flex;flex-direction:column;gap:10px}
-.mt-history-item{padding:14px 16px;border-radius:10px;background:color-mix(in srgb,var(--border) 10%,transparent);font-size:13px;color:var(--text2);line-height:1.8;border:1px solid transparent;transition:all .15s}
+.mt-history-item{padding:10px 14px;border-radius:8px;background:color-mix(in srgb,var(--border) 10%,transparent);font-size:13px;color:var(--text2);line-height:1.6;border:1px solid transparent;transition:all .15s}
 .mt-history-item:hover{border-color:var(--border)}
-.mt-history-item .mt-h-date{font-weight:700;color:var(--text);font-size:14px}
-.mt-history-item .mt-h-detail{color:var(--text3);margin-top:4px}
+.mt-history-item .mt-h-date{font-weight:700;color:var(--text);font-size:13px}
+.mt-history-item .mt-h-detail{color:var(--text3);margin-top:2px}
+.mt-history-item.mt-h-inline{display:flex;align-items:center;gap:8px}
+.mt-history-item.mt-h-inline .mt-h-date{flex-shrink:0}
+.mt-history-item.mt-h-inline .mt-h-detail{margin-top:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 /* History tabs */
 .mt-h-tabs{display:flex;gap:0;margin-bottom:14px;border:1px solid var(--border2);border-radius:8px;overflow:hidden}

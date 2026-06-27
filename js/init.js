@@ -49,9 +49,6 @@ document.addEventListener('DOMContentLoaded',async function(){
   // Init sync module (register _onDataChange hook)
   SYNC_init();
 
-  // If auto-sync is ON and account is set, pull cloud data first
-  await SYNC_pullOnStart();
-
   // Normal app init
   TK_migrate();
   TK_load();

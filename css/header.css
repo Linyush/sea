@@ -40,13 +40,8 @@
 .cloud-section{margin-bottom:14px}
 .cloud-title{font-size:13px;color:var(--text2);font-weight:600;margin-bottom:8px;letter-spacing:.3px}
 .cloud-label{font-size:13px;color:var(--text2);font-weight:600;margin-bottom:8px;letter-spacing:.3px}
-.cloud-auto{display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;flex-shrink:0;user-select:none}
-.cloud-auto input{display:none}
-.cloud-auto-box{width:16px;height:16px;border:1.5px solid var(--border);border-radius:3px;display:flex;align-items:center;justify-content:center;transition:all .2s;position:relative;flex-shrink:0}
-.cloud-auto input:checked+.cloud-auto-box{background:var(--accent);border-color:var(--accent)}
-.cloud-auto input:checked+.cloud-auto-box::after{content:'✓';color:#fff;font-size:10px;font-weight:700;line-height:1}
-.cloud-auto-text{color:var(--text4);transition:color .2s}
-.cloud-auto input:checked~.cloud-auto-text{color:var(--accent)}
+.cloud-panel select{padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--input-bg);color:var(--text);font-size:13px;outline:none;transition:border-color .2s;margin-bottom:6px;appearance:auto}
+.cloud-panel select:focus{border-color:var(--accent)}
 .cloud-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .cloud-val{font-size:14px;color:var(--text2);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cloud-links{display:flex;gap:2px;flex-shrink:0}
@@ -55,14 +50,12 @@
 .cloud-icon-btn{background:color-mix(in srgb,var(--accent) 8%,transparent);border:none;color:var(--accent);width:34px;height:34px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;padding:0;line-height:1}
 .cloud-icon-btn:hover{background:color-mix(in srgb,var(--accent) 16%,transparent)}
 .cloud-icon-btn:disabled{opacity:.3;cursor:not-allowed;background:var(--hover);color:var(--text4)}
+.cloud-sync-status{font-size:10px;font-weight:500;padding:2px 6px;border-radius:3px;margin-left:6px;letter-spacing:.2px;flex-shrink:0;cursor:default;user-select:none}
+.cloud-sync-status.dirty{background:color-mix(in srgb,#f59e0b 12%,transparent);color:#f59e0b;cursor:pointer;transition:background .2s}
+.cloud-sync-status.dirty:hover{background:color-mix(in srgb,#f59e0b 20%,transparent)}
+.cloud-sync-status.synced{background:color-mix(in srgb,#22c55e 12%,transparent);color:#22c55e}
 .cloud-panel input{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--input-bg);color:var(--text);font-size:13px;outline:none;transition:border-color .2s;margin-bottom:6px}
 .cloud-panel input:focus{border-color:var(--accent)}
-
-/* Status colors */
-.cloud-st-synced{color:#22c55e}
-.cloud-st-dirty{color:#f59e0b}
-.cloud-st-failed{color:var(--warn)}
-.cloud-st-pushing,.cloud-st-pulling{color:var(--accent)}
 
 /* Login modal */
 .sync-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10001;display:none;align-items:center;justify-content:center;opacity:0;transition:opacity .3s}
@@ -76,15 +69,17 @@
 .sync-account-btns .btn{flex:1}
 
 /* Diff panel */
+#cloudDiffBox{max-height:0;overflow:hidden;transition:max-height .35s ease,opacity .3s ease;opacity:0}
+#cloudDiffBox.open{opacity:1}
 .cloud-diff{margin-top:8px;padding:10px 12px;border-radius:8px;background:var(--input-bg);border:1px solid var(--border);max-height:200px;overflow-y:auto}
 .cloud-diff-title{font-size:11px;font-weight:600;color:var(--text3);margin-bottom:8px;letter-spacing:.3px}
 .cloud-diff-empty{font-size:12px;color:var(--text4);text-align:center;padding:8px 0}
 .cloud-diff-sec{margin-bottom:8px}
 .cloud-diff-sec:last-child{margin-bottom:0}
-.cloud-diff-badge{display:inline-block;font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;margin-bottom:4px;letter-spacing:.2px}
-.cloud-diff-badge.add{background:color-mix(in srgb,#22bb88 12%,transparent);color:#22bb88}
-.cloud-diff-badge.del{background:color-mix(in srgb,#e74c3c 12%,transparent);color:#e74c3c}
-.cloud-diff-badge.chg{background:color-mix(in srgb,#f59e0b 12%,transparent);color:#f59e0b}
+.cloud-diff-badge{display:inline-block;font-size:10px;font-weight:500;padding:1px 6px;border-radius:3px;margin-bottom:4px;letter-spacing:.2px}
+.cloud-diff-badge.add{background:color-mix(in srgb,#22bb88 10%,transparent);color:#22bb88}
+.cloud-diff-badge.del{background:color-mix(in srgb,#e74c3c 10%,transparent);color:#e74c3c}
+.cloud-diff-badge.chg{background:color-mix(in srgb,#f59e0b 10%,transparent);color:#f59e0b}
 .cloud-diff-item{display:flex;align-items:center;gap:6px;padding:2px 0;font-size:12px;color:var(--text2)}
 .cloud-diff-name{font-weight:500}
 .cloud-diff-detail{font-size:11px;color:var(--text4)}

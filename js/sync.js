@@ -21,6 +21,7 @@ const QINIU_UPLOAD_HOSTS={z0:'https://upload.qiniup.com',z1:'https://upload-z1.q
 
 let _retryTimer=null;
 let _syncStatus='idle'; // idle|synced|pushing|pulling|failed
+let _hasDiff=false; // 本地与远端数据是否有差异
 let _syncMsg='';
 let _syncBusy=false;
 let _initDone=false;
@@ -218,7 +219,7 @@ async function SYNC_push(){
     else await _qiniuPush(payload);
     localStorage.removeItem(SYNC_DIRTY_KEY);
     SYNC_setTime(Date.now());
-    _setStatus('synced','备份成功');
+    _setStatus('synced','备份成功');_hasDiff=false;
     _stopRetry();
   }catch(e){
     console.warn('[SYNC] push failed:',e);
@@ -268,22 +269,26 @@ function SYNC_openPanel(){
   ov.style.display='flex';
   requestAnimationFrame(()=>ov.classList.add('open'));
   SYNC_refreshPanel();
-  if(SYNC_isConfigured()) SYNC_fetchRemoteTime();
+  if(SYNC_isConfigured()) SYNC_checkRemote();
 }
 function SYNC_closePanel(){
   const ov=document.getElementById('cloudOverlay');
   if(ov){ov.classList.remove('open');setTimeout(()=>{ov.style.display='none';},300);}
 }
-async function SYNC_fetchRemoteTime(){
+async function SYNC_checkRemote(){
   const remote=await SYNC_pull();
-  if(!remote)return;
-  const t=remote.version||0;
-  if(t>0){
-    SYNC_setTime(t);
-    const timeEl=document.getElementById('cloudLastTime');
-    if(timeEl) timeEl.textContent=_fmtTime(t);
+  if(!remote||!remote.data){
+    _hasDiff=SYNC_isConfigured();
     SYNC_refreshPanel();
+    return;
   }
+  const t=remote.version||0;
+  if(t>0) SYNC_setTime(t);
+  const localData=SYNC_collectData();
+  const diffs=_dataDiff(localData,remote.data);
+  _hasDiff=diffs.length>0;
+  if(!_hasDiff) localStorage.removeItem(SYNC_DIRTY_KEY);
+  SYNC_refreshPanel();
 }
 
 function SYNC_refreshPanel(){
@@ -320,11 +325,10 @@ function SYNC_refreshPanel(){
   const syncSt=document.getElementById('cloudSyncStatus');
   if(syncSt){
     if(!configured){syncSt.style.display='none';syncSt.onclick=null;}
-    else if(dirty||_syncStatus==='failed'){syncSt.textContent='本地有修改';syncSt.className='cloud-sync-status dirty';syncSt.style.display='';syncSt.onclick=SYNC_showDiff;}
-    else if(_syncStatus==='synced'){syncSt.textContent='已备份';syncSt.className='cloud-sync-status synced';syncSt.style.display='';syncSt.onclick=null;}
-    else{syncSt.textContent='本地有修改';syncSt.className='cloud-sync-status dirty';syncSt.style.display='';syncSt.onclick=SYNC_showDiff;}
-    if(_syncStatus==='pushing'){syncSt.textContent='备份中...';syncSt.className='cloud-sync-status';syncSt.style.display='';syncSt.onclick=null;}
-    if(_syncStatus==='pulling'){syncSt.textContent='恢复中...';syncSt.className='cloud-sync-status';syncSt.style.display='';syncSt.onclick=null;}
+    else if(_syncStatus==='pushing'){syncSt.textContent='备份中...';syncSt.className='cloud-sync-status';syncSt.style.display='';syncSt.onclick=null;}
+    else if(_syncStatus==='pulling'){syncSt.textContent='恢复中...';syncSt.className='cloud-sync-status';syncSt.style.display='';syncSt.onclick=null;}
+    else if(_syncStatus==='failed'||_hasDiff){syncSt.textContent='本地有修改';syncSt.className='cloud-sync-status dirty';syncSt.style.display='';syncSt.onclick=SYNC_showDiff;}
+    else{syncSt.textContent='已备份';syncSt.className='cloud-sync-status synced';syncSt.style.display='';syncSt.onclick=null;}
   }
 
   // Action links: show when configured

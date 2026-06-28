@@ -405,7 +405,7 @@ function _renderMaintenance(tank){
   // Use maintain log for "last maintenance" date
   const mtLog=MT_loadLog();
   const dailyLog=mtLog.filter(e=>e.type!=='special');
-  const lastMaintEntry=dailyLog.length?dailyLog[dailyLog.length-1]:null;
+  const lastMaintEntry=dailyLog.length?dailyLog[0]:null;
   const lastMaintDate=lastMaintEntry?lastMaintEntry.date:lastTestDate;
   if(lastMaintDate){
     const lastD=new Date(lastMaintDate+'T00:00:00');
@@ -1086,7 +1086,8 @@ function IF_del(){
   if(!inv[arrKey])return;
   // Collect all indices to delete (merged + breed children)
   const delSet=new Set();
-  _ifMergeIndices.forEach(mi=>delSet.add(mi));
+  if(_ifMergeIndices.length) _ifMergeIndices.forEach(mi=>delSet.add(mi));
+  else if(_ifIdx>=0) delSet.add(_ifIdx);
   // If deleting a livestock parent, also remove its children
   if(_ifType==='livestock'){
     _ifMergeIndices.forEach(mi=>{
